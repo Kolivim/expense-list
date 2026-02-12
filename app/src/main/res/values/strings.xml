@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Test3</string>
+    <string name="save">Сохранить</string>
+    <string name="update">Обновить</string>
+</resources>
