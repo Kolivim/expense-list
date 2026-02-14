@@ -7,13 +7,112 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Место для вывода данных по текущему месяцу"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <Button
+        android:id="@+id/buttonUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginEnd="145dp"
+        android:layout_marginBottom="65dp"
+        android:ems="8"
+        android:text="Изменить"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="65dp"
+        android:ems="8"
+        android:text="Удалить"
+        android:onClick="remove"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="15dp"
+        android:ems="8"
+        android:text="Сохранить"
+        android:onClick="add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <EditText
+        android:id="@+id/editTextNameExpense"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="210dp"
+        android:layout_marginBottom="15dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextNumberDecimal"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="135dp"
+        android:layout_marginBottom="15dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="350dp"
+        android:layout_marginBottom="15dp"
+        android:ems="10"
+        android:inputType="date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <ListView
+        android:id="@+id/expenseList"
+        android:choiceMode="multipleChoice"
+        android:layout_width="400dp"
+        android:layout_height="550dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="30dp"
+        />
+
+
+<!--    <ListView-->
+<!--        android:id="@+id/expenseList"-->
+<!--        android:choiceMode="multipleChoice"-->
+<!--    android:choiceMode="singleChoice"-->
+<!--        android:layout_width="400dp"-->
+<!--        android:layout_height="550dp"-->
+<!--        tools:layout_editor_absoluteX="1dp"-->
+<!--        tools:layout_editor_absoluteY="1dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        />-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
