@@ -22,6 +22,10 @@ public class Expense implements Serializable {
     private String stringFormat2 = "dd.MM.yyyy - HH:mm:ss z";
 
 
+    /** Необходимое для DAO : */
+    private Integer id;
+
+
     public Expense() {}
 
 
@@ -99,6 +103,9 @@ public class Expense implements Serializable {
 
     public Integer getRowColor() {return rowColor;}
     public void setRowColor(Integer rowColor) {this.rowColor = rowColor;}
+
+    public Integer getId() {return id;}
+    public void setId(Integer id) {this.id = id;}
 
 
     @Override
