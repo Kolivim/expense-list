@@ -2,6 +2,7 @@ package com.example.test3.expenseList;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Expense implements Serializable {
@@ -16,6 +17,9 @@ public class Expense implements Serializable {
     /** Необходимое для UI : */
     private boolean isDeleted;
     private Integer rowColor;
+
+    private String stringFormat = "dd.MM.yy";
+    private String stringFormat2 = "dd.MM.yyyy - HH:mm:ss z";
 
 
     public Expense() {}
@@ -91,6 +95,7 @@ public class Expense implements Serializable {
 
     public ZonedDateTime getDateTime() {return dateTime;}
     public void setDateTime(ZonedDateTime dateTime) {this.dateTime = dateTime;}
+    public String getDateTimeString() {return this.dateTime.format(DateTimeFormatter.ofPattern(stringFormat));}
 
     public Integer getRowColor() {return rowColor;}
     public void setRowColor(Integer rowColor) {this.rowColor = rowColor;}
@@ -98,8 +103,8 @@ public class Expense implements Serializable {
 
     @Override
     public String toString() {
-        return this.name
-//                .concat(" (").concat(this.descripton == null ? "-" : this.descripton).concat(")")
+        return getDateTimeString()
+                .concat("\t\t").concat(this.name)
                 .concat(this.description == null ? "" : " (".concat(this.description).concat(")"))
                 .concat(", Total Amount = ").concat(getExpenseListTotalAmountString());
     }
