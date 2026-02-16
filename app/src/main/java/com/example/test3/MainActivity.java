@@ -10,6 +10,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
+import com.example.test3.service.ExpanseService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<Expense> selectedUsers = new ArrayList<Expense>();
 
+    ExpanseService expanseService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +33,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        expanseService = new ExpanseService(getBaseContext());
+
         listView = findViewById(R.id.expenseList);
 
 
-        /** Задаём начальные данные, для отладки */
-        ArrayList<Expense> expenseList = new ArrayList<Expense>() {{
-            add(new Expense("Lunch"));
-            add(new Expense("Coffee"));
-            add(new Expense("Supper"));
-        }};
+        ArrayList<Expense> allExpenseListDb = expanseService.getExpanseList();
 
-
-        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1 , expenseList);
+        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseListDb);
 
         listView.setAdapter(arrayAdapter);
 
 
         /** Обработка установки и снятия отметки в списке : */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
@@ -74,19 +74,27 @@ public class MainActivity extends AppCompatActivity {
         String expenseName = expenseNameEditText.getText().toString();
 
         EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
-        Double expense = Double.parseDouble(expenseEditText.getText().toString());
+
+        Double expense = null;
+        if(expenseEditText.getText() != null && !expenseEditText.getText().isEmpty())
+            expense = Double.parseDouble(expenseEditText.getText().toString());
 
         EditText expenseDateEditText = findViewById(R.id.editTextDate);
         String expenseDateTimeString = expenseDateEditText.getText().toString();
 
         String expenseDescription = null;
 
+
         /** Создаём новую запись: */
         if(!expenseName.isEmpty()){
 
             Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
 
-            arrayAdapter.add(newExpense);
+            expanseService.insertExpense(newExpense);
+
+            updateAdapter();
+
+
             cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
             arrayAdapter.notifyDataSetChanged();
 
@@ -98,9 +106,8 @@ public class MainActivity extends AppCompatActivity {
     public void remove(View view){
 
         /** Получаем и удаляем выделенные элементы */
-        for(int i=0; i< selectedUsers.size();i++){
-            arrayAdapter.remove(selectedUsers.get(i));
-        }
+        for(int i = 0; i < selectedUsers.size(); i++) expanseService.removeExpense(selectedUsers.get(i));
+
 
         /** Снимаем все ранее установленные отметки */
         listView.clearChoices();
@@ -108,7 +115,19 @@ public class MainActivity extends AppCompatActivity {
         /** Очищаем массив выбраных объектов */
         selectedUsers.clear();
 
+
+        updateAdapter();
+
         arrayAdapter.notifyDataSetChanged();
+    }
+
+
+    public void updateAdapter() {
+
+        ArrayList<Expense> allExpenseList = expanseService.getExpanseList();
+        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseList);
+        listView.setAdapter(arrayAdapter);
+
     }
 
 
@@ -164,5 +183,61 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Deprecated
+    public void addOld(View view){
+
+        /** Вычитываем введённые пользователем данные: */
+        EditText expenseNameEditText = findViewById(R.id.editTextNameExpense);
+        String expenseName = expenseNameEditText.getText().toString();
+
+        EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
+
+        Double expense = null;
+        if(expenseEditText.getText() != null && !expenseEditText.getText().isEmpty())
+            expense = Double.parseDouble(expenseEditText.getText().toString());
+
+        EditText expenseDateEditText = findViewById(R.id.editTextDate);
+        String expenseDateTimeString = expenseDateEditText.getText().toString();
+
+        String expenseDescription = null;
+
+        /** Создаём новую запись: */
+        if(!expenseName.isEmpty()){
+
+            Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
+
+            expanseService.insertExpense(newExpense);
+
+            // Test :
+            ArrayList<Expense> testList = expanseService.getExpanseList();
+            arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1 , testList);
+            listView.setAdapter(arrayAdapter);
+            // !Test
+
+//            arrayAdapter.add(newExpense);
+            cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
+            arrayAdapter.notifyDataSetChanged();
+
+        }
+
+    }
+
+
+    @Deprecated
+    public void removeOld(View view){
+
+        /** Получаем и удаляем выделенные элементы */
+        for(int i = 0; i < selectedUsers.size(); i++) arrayAdapter.remove(selectedUsers.get(i));
+
+
+        /** Снимаем все ранее установленные отметки */
+        listView.clearChoices();
+
+        /** Очищаем массив выбраных объектов */
+        selectedUsers.clear();
+
+        arrayAdapter.notifyDataSetChanged();
+    }
 
 }
