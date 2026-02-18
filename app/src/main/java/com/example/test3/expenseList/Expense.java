@@ -1,8 +1,9 @@
 package com.example.test3.expenseList;
 
+import com.example.test3.util.Util;
+
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Expense implements Serializable {
@@ -18,12 +19,9 @@ public class Expense implements Serializable {
     private boolean isDeleted;
     private Integer rowColor;
 
-    private String stringFormat = "dd.MM.yy";
-    private String stringFormat2 = "dd.MM.yyyy - HH:mm:ss z";
-
 
     /** Необходимое для DAO : */
-    private Integer id;
+    private Long id;
 
 
     public Expense() {}
@@ -70,6 +68,16 @@ public class Expense implements Serializable {
     }
 
 
+    public Expense(Long id, String name, String description, ZonedDateTime dateTime, boolean isDeleted, Integer rowColor) {
+        this.name = name;
+        this.description = description;
+        this.dateTime = dateTime;
+        this.isDeleted = isDeleted;
+        this.rowColor = rowColor;
+        this.id = id;
+    }
+
+
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
 
@@ -78,7 +86,7 @@ public class Expense implements Serializable {
 
     public ArrayList<Double> getExpenseList() {return expenseList;}
     public void setExpenseList(ArrayList<Double> expenseList) {this.expenseList = expenseList;}
-    public void addExpense(double expense) {
+    public void addPayment(double expense) {
         if(this.expenseList == null) this.expenseList = new ArrayList<>();
         this.expenseList.add(expense);
     }
@@ -99,13 +107,13 @@ public class Expense implements Serializable {
 
     public ZonedDateTime getDateTime() {return dateTime;}
     public void setDateTime(ZonedDateTime dateTime) {this.dateTime = dateTime;}
-    public String getDateTimeString() {return this.dateTime.format(DateTimeFormatter.ofPattern(stringFormat));}
+    public String getDateTimeString() {return this.dateTime.format(Util.dateFormatterSee);}
 
     public Integer getRowColor() {return rowColor;}
     public void setRowColor(Integer rowColor) {this.rowColor = rowColor;}
 
-    public Integer getId() {return id;}
-    public void setId(Integer id) {this.id = id;}
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 
 
     @Override

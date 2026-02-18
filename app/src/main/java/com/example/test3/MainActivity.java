@@ -10,7 +10,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
-import com.example.test3.service.ExpanseService;
+import com.example.test3.service.ExpenseService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<Expense> selectedUsers = new ArrayList<Expense>();
 
-    ExpanseService expanseService;
+    ExpenseService expenseService;
 
 
     @Override
@@ -33,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        expanseService = new ExpanseService(getBaseContext());
+        expenseService = new ExpenseService(getBaseContext());
 
         listView = findViewById(R.id.expenseList);
 
 
-        ArrayList<Expense> allExpenseListDb = expanseService.getExpanseList();
+        ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
 
         arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseListDb);
 
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
             Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
 
-            expanseService.insertExpense(newExpense);
+            expenseService.insertExpense(newExpense);
 
             updateAdapter();
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     public void remove(View view){
 
         /** Получаем и удаляем выделенные элементы */
-        for(int i = 0; i < selectedUsers.size(); i++) expanseService.removeExpense(selectedUsers.get(i));
+        for(int i = 0; i < selectedUsers.size(); i++) expenseService.removeExpense(selectedUsers.get(i));
 
 
         /** Снимаем все ранее установленные отметки */
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateAdapter() {
 
-        ArrayList<Expense> allExpenseList = expanseService.getExpanseList();
+        ArrayList<Expense> allExpenseList = expenseService.getExpenseList();
         arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseList);
         listView.setAdapter(arrayAdapter);
 
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
             Expense newExpense = new Expense(expenseName);
 
-            if(expense != null && !expense.isNaN()) newExpense.addExpense(expense);
+            if(expense != null && !expense.isNaN()) newExpense.addPayment(expense);
 
             if(expenseDateTimeString != null && !expenseDateTimeString.isEmpty()) {
                 ZonedDateTime expenseZonedDateTime = getZoneDateTime(expenseDateTimeString);
@@ -207,10 +207,10 @@ public class MainActivity extends AppCompatActivity {
 
             Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
 
-            expanseService.insertExpense(newExpense);
+            expenseService.insertExpense(newExpense);
 
             // Test :
-            ArrayList<Expense> testList = expanseService.getExpanseList();
+            ArrayList<Expense> testList = expenseService.getExpenseList();
             arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1 , testList);
             listView.setAdapter(arrayAdapter);
             // !Test
