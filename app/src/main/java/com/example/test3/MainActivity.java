@@ -6,11 +6,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
 import com.example.test3.service.ExpenseService;
+import com.example.test3.util.FileExportUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -180,6 +182,49 @@ public class MainActivity extends AppCompatActivity {
         expenseNameEditText.setText("");
         expenseEditText.setText("");
         expenseDateEditText.setText("");
+
+    }
+
+
+    public void exportToTxt(View view) {
+
+        /** Получаем актуальный список расходов */
+        ArrayList<Expense> expenseList = expenseService.getExpenseList();
+
+        if (expenseList.isEmpty()) {
+            Toast.makeText(this, "Нет данных для экспорта", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        /** Используем наш утилитный класс для экспорта */
+        /** Вариант 1: Сохранить в общедоступную папку Downloads
+         * Требует разрешения в манифесте */
+        FileExportUtil.exportExpensesToTxt(this, expenseList);
+
+
+        // Вариант 2: Сохранить в приватную директорию приложения
+        // Не требует разрешений
+        // FileExportUtil.exportToPrivateStorage(this, expenseList);
+
+    }
+
+
+    public void exportToJson(View view) {
+
+        /** Получаем актуальный список расходов */
+        ArrayList<Expense> expenseList = expenseService.getExpenseList();
+
+        if (expenseList.isEmpty()) {
+            Toast.makeText(this, "Нет данных для экспорта", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        /** Используем наш утилитный класс для экспорта в JSON */
+        /** Вариант 1: Сохранить в общедоступную папку Downloads */
+        FileExportUtil.exportExpensesToJson(this, expenseList);
+
+        // Вариант 2: Сохранить в приватную директорию приложения (не требует разрешений)
+        // FileExportUtil.exportJsonToPrivateStorage(this, expenseList);
 
     }
 

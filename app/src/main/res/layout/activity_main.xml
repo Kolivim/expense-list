@@ -53,6 +53,31 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
+    <Button
+        android:id="@+id/buttonExportTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="145dp"
+        android:layout_marginBottom="115dp"
+        android:ems="8"
+        android:text="Экспорт"
+        android:onClick="exportToTxt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/buttonExportJson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="115dp"
+        android:ems="8"
+        android:text="Экспорт в JSON"
+        android:onClick="exportToJson"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
     <EditText
         android:id="@+id/editTextNameExpense"
         android:layout_width="130dp"
