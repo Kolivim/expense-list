@@ -1,5 +1,7 @@
 package com.example.test3;
 
+import android.content.pm.PackageManager;
+import android.Manifest;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /* getScreenSize(); */
 
         expenseService = new ExpenseService(getBaseContext());
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
 
         Double expense = null;
-        if(expenseEditText.getText() != null && !expenseEditText.getText().isEmpty())
+        if(expenseEditText.getText() != null && !expenseEditText.getText().toString().isEmpty())
             expense = Double.parseDouble(expenseEditText.getText().toString());
 
         EditText expenseDateEditText = findViewById(R.id.editTextDate);
@@ -188,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void exportToTxt(View view) {
 
+        Toast.makeText(this, "Экспорт в TXT запущен", Toast.LENGTH_SHORT).show();
+
         /** Получаем актуальный список расходов */
         ArrayList<Expense> expenseList = expenseService.getExpenseList();
 
@@ -211,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void exportToJson(View view) {
 
+        Toast.makeText(this, "Экспорт в JSON запущен", Toast.LENGTH_SHORT).show();
+
         /** Получаем актуальный список расходов */
         ArrayList<Expense> expenseList = expenseService.getExpenseList();
 
@@ -229,6 +237,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /** Метод для обработки результата: */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 100) {
+
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Разрешение получено", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Нет разрешения на запись файлов", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+
+    private void getScreenSize() {
+
+        android.util.DisplayMetrics displayMetrics = new android.util.DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int widthPixels = displayMetrics.widthPixels;
+        int heightPixels = displayMetrics.heightPixels;
+
+
+        float density = displayMetrics.density;
+
+
+        int widthDp = (int) (widthPixels / density);
+        int heightDp = (int) (heightPixels / density);
+
+
+        android.util.Log.d("SCREEN_SIZE", "Ширина в пикселях: " + widthPixels);
+        android.util.Log.d("SCREEN_SIZE", "Высота в пикселях: " + heightPixels);
+        android.util.Log.d("SCREEN_SIZE", "Плотность экрана: " + density);
+        android.util.Log.d("SCREEN_SIZE", "Ширина в dp: " + widthDp);
+        android.util.Log.d("SCREEN_SIZE", "Высота в dp: " + heightDp);
+
+
+        Toast.makeText(this,
+                "Экран: " + widthDp + "dp x " + heightDp + "dp",
+                Toast.LENGTH_LONG).show();
+    }
+
+
     @Deprecated
     public void addOld(View view){
 
@@ -239,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
         EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
 
         Double expense = null;
-        if(expenseEditText.getText() != null && !expenseEditText.getText().isEmpty())
+        if(expenseEditText.getText() != null && !expenseEditText.getText().toString().isEmpty())
             expense = Double.parseDouble(expenseEditText.getText().toString());
 
         EditText expenseDateEditText = findViewById(R.id.editTextDate);

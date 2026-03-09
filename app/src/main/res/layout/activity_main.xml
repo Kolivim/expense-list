@@ -44,9 +44,10 @@
         android:id="@+id/buttonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="0dp"
         android:layout_marginBottom="15dp"
-        android:ems="8"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:text="Сохранить"
         android:onClick="add"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +83,7 @@
         android:id="@+id/editTextNameExpense"
         android:layout_width="130dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="210dp"
+        android:layout_marginEnd="180dp"
         android:layout_marginBottom="15dp"
         android:ems="10"
         android:inputType="text"
@@ -94,7 +95,7 @@
         android:id="@+id/editTextNumberDecimal"
         android:layout_width="50dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="135dp"
+        android:layout_marginEnd="100dp"
         android:layout_marginBottom="15dp"
         android:ems="10"
         android:inputType="numberDecimal"
@@ -105,13 +106,13 @@
         android:id="@+id/editTextDate"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="350dp"
+        android:layout_marginStart="5dp"
         android:layout_marginBottom="15dp"
         android:ems="10"
         android:inputType="date"
         android:hint="dd.MM.yy"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
 
     <ListView
