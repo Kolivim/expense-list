@@ -1,6 +1,7 @@
 package com.example.test3.service;
 
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DATETIME;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DESCRIPTION;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ID;
@@ -9,6 +10,7 @@ import static com.example.test3.dao.ExpenseSQLite.EXPENSE_NAME;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ROW_COLOR;
 import static com.example.test3.dao.ExpenseSQLite.PAYMENT;
 import static com.example.test3.dao.ExpenseSQLite.PAYMENT_EXPENSE_ID;
+import static com.example.test3.dao.ExpenseSQLite.PAYMENT_ID;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_PAYMENT;
 
@@ -16,6 +18,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.test3.dao.ExpenseSQLite;
 import com.example.test3.expenseList.Expense;
@@ -165,5 +168,96 @@ public class ExpenseService {
 
         return result != -1;
     }
+
+
+    public boolean addPaymentToExpense(Expense expense, double payment) {
+
+        if (expense.getId() == null) {
+            Log.e(TAG, "Cannot add payment to expense without ID");
+            return false;
+        }
+
+        SQLiteDatabase db = null;
+
+        try {
+
+            db = dbHelper.getWritableDatabase();
+
+            ContentValues cv = new ContentValues();
+            cv.put(PAYMENT_EXPENSE_ID, expense.getId());
+            cv.put(PAYMENT, payment);
+
+            long result = db.insert(TABLE_PAYMENT, null, cv);
+
+            if (result != -1) {
+                /** Обновляет объект в памяти */
+                expense.addPayment(payment);
+                return true;
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding payment", e);
+        }
+
+        return false;
+    }
+
+
+    public boolean updatePayment(Expense expense, int paymentIndex, double newPayment) {
+        // В реальном приложении нужно хранить ID платежа
+        // Для простоты будем обновлять по индексу (не надёжно!)
+
+        // Получаем ID платежа из БД
+        Long paymentId = getPaymentId(expense.getId(), paymentIndex);
+        if (paymentId == null) return false;
+
+        ContentValues cv = new ContentValues();
+        cv.put(PAYMENT, newPayment);
+
+        int result = dbWrite.update(TABLE_PAYMENT, cv,
+                PAYMENT_ID + " = ?",
+                new String[]{String.valueOf(paymentId)});
+
+        if (result > 0) {
+            // Обновляем в объекте
+            expense.getExpenseList().set(paymentIndex, newPayment);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deletePayment(Expense expense, int paymentIndex) {
+        // Получаем ID платежа из БД
+        Long paymentId = getPaymentId(expense.getId(), paymentIndex);
+        if (paymentId == null) return false;
+
+        int result = dbWrite.delete(TABLE_PAYMENT,
+                PAYMENT_ID + " = ?",
+                new String[]{String.valueOf(paymentId)});
+
+        if (result > 0) {
+            // Удаляем из объекта
+            expense.getExpenseList().remove(paymentIndex);
+            return true;
+        }
+        return false;
+    }
+
+
+    private Long getPaymentId(long expenseId, int index) {
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT " + PAYMENT_ID + " FROM " + TABLE_PAYMENT +
+                        " WHERE " + PAYMENT_EXPENSE_ID + " = " + expenseId +
+                        " ORDER BY " + PAYMENT_ID + " ASC LIMIT 1 OFFSET " + index,
+                null);
+
+        Long paymentId = null;
+        if (cursor.moveToFirst()) {
+            paymentId = cursor.getLong(0);
+        }
+        cursor.close();
+        return paymentId;
+    }
+
 
 }

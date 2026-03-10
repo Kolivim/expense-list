@@ -25,6 +25,7 @@
         android:layout_marginBottom="65dp"
         android:ems="8"
         android:text="Изменить"
+        android:onClick="updateExpense"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -117,7 +118,7 @@
 
     <ListView
         android:id="@+id/expenseList"
-        android:choiceMode="multipleChoice"
+        android:choiceMode="singleChoice"
         android:layout_width="400dp"
         android:layout_height="550dp"
         tools:layout_editor_absoluteX="1dp"

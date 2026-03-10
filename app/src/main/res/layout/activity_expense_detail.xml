@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Информация о расходе -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/textViewExpenseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="Название расхода"/>
+
+        <TextView
+            android:id="@+id/textViewExpenseDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="Описание"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/textViewExpenseDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Дата"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/textViewTotalAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="Общая сумма: 0.00 руб."
+            android:layout_marginTop="8dp"
+            android:textColor="#4CAF50"/>
+    </LinearLayout>
+
+    <!-- Заголовок списка платежей -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Платежи:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Список платежей -->
+    <ListView
+        android:id="@+id/listViewPayments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Кнопка добавления нового платежа -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@android:drawable/edit_text"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/editTextNewPayment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Введите сумму"
+            android:inputType="numberDecimal|numberSigned"
+            android:padding="8dp"/>
+
+        <Button
+            android:id="@+id/buttonAddPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Добавить"
+            android:backgroundTint="#4CAF50"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
+
+    <!-- Кнопка возврата -->
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Назад"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

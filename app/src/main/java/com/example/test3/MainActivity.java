@@ -1,5 +1,6 @@
 package com.example.test3;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
+import com.example.test3.expenseList.ExpenseAdapter;
 import com.example.test3.service.ExpenseService;
 import com.example.test3.util.FileExportUtil;
 
@@ -24,11 +26,17 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayAdapter<Expense> arrayAdapter;
-    ListView listView;
-    ArrayList<Expense> selectedUsers = new ArrayList<Expense>();
+//    ArrayAdapter<Expense> arrayAdapter;
 
-    ExpenseService expenseService;
+    private ExpenseAdapter expenseAdapter;
+
+    private ListView listView;
+
+    private Expense selectedExpense = null;
+
+//    ArrayList<Expense> selectedUsers = new ArrayList<Expense>();
+
+    private ExpenseService expenseService;
 
 
     @Override
@@ -40,36 +48,114 @@ public class MainActivity extends AppCompatActivity {
         /* getScreenSize(); */
 
         expenseService = new ExpenseService(getBaseContext());
-
         listView = findViewById(R.id.expenseList);
 
-
-        ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
-
-        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseListDb);
-
-        listView.setAdapter(arrayAdapter);
+        loadExpenses();
 
 
-        /** Обработка установки и снятия отметки в списке : */
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-
+        // Устанавливаем слушатель через адаптер
+        expenseAdapter.setOnItemClickListener(new ExpenseAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
-                /** Получаем нажатый элемент */
-                Expense expense = arrayAdapter.getItem(position);
-
-                if(listView.isItemChecked(position)) {
-                    selectedUsers.add(expense);
-                } else {
-                    selectedUsers.remove(expense);
+            public void onItemClick(Expense expense, int position) {
+                // Снимаем выделение с предыдущего элемента
+                if (selectedExpense != null) {
+                    int previousPosition = expenseAdapter.getPosition(selectedExpense);
+                    if (previousPosition != -1) {
+                        listView.setItemChecked(previousPosition, false);
+                    }
                 }
 
-            }
+                // Устанавливаем новое выделение
+                listView.setItemChecked(position, true);
+                selectedExpense = expense;
 
+                Toast.makeText(MainActivity.this,
+                        "Выбран: " + selectedExpense.getName() + " (ID: " + selectedExpense.getId() + ")",
+                        Toast.LENGTH_SHORT).show();
+
+                android.util.Log.d("DEBUG", "Выбран расход: " + selectedExpense.getName() +
+                        ", ID: " + selectedExpense.getId());
+            }
         });
 
+
+//// Обработка выделения элементов
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+//                // Снимаем выделение с предыдущего элемента
+//                if (selectedExpense != null) {
+//                    int previousPosition = expenseAdapter.getPosition(selectedExpense);
+//                    if (previousPosition != -1) {
+//                        listView.setItemChecked(previousPosition, false);
+//                    }
+//                }
+//
+//                // Устанавливаем новое выделение
+//                listView.setItemChecked(position, true);
+//                selectedExpense = expenseAdapter.getItem(position);
+//
+//                Toast.makeText(MainActivity.this,
+//                        "Выбран: " + selectedExpense.getName(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
+
+//        ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
+//        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseListDb);
+//        listView.setAdapter(arrayAdapter);
+
+//        expenseAdapter = new ExpenseAdapter(this, allExpenseListDb, expenseService);
+//        listView.setAdapter(expenseAdapter);
+
+
+//        // Обработка выделения элементов
+//        listView.setOnItemClickListener((parent, v, position, id) -> {
+//            Expense expense = expenseAdapter.getItem(position);
+//            if(listView.isItemChecked(position)) {
+//                selectedUsers.add(expense);
+//            } else {
+//                selectedUsers.remove(expense);
+//            }
+//        });
+
+
+//        /** Обработка установки и снятия отметки в списке : */
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+//
+//                /** Получаем нажатый элемент */
+//                Expense expense = arrayAdapter.getItem(position);
+//
+//                if(listView.isItemChecked(position)) {
+//                    selectedUsers.add(expense);
+//                } else {
+//                    selectedUsers.remove(expense);
+//                }
+//
+//            }
+//
+//        });
+
+    }
+
+    private void loadExpenses() {
+        ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
+        expenseAdapter = new ExpenseAdapter(this, allExpenseListDb, expenseService);
+        listView.setAdapter(expenseAdapter);
+
+        clearSelection();
+    }
+
+
+    private void clearSelection() {
+        selectedExpense = null;
+        if (listView != null) {
+            listView.clearChoices();
+            expenseAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -102,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
-            arrayAdapter.notifyDataSetChanged();
+            expenseAdapter.notifyDataSetChanged();
 
         }
 
@@ -111,28 +197,39 @@ public class MainActivity extends AppCompatActivity {
 
     public void remove(View view){
 
-        /** Получаем и удаляем выделенные элементы */
-        for(int i = 0; i < selectedUsers.size(); i++) expenseService.removeExpense(selectedUsers.get(i));
+        if (selectedExpense == null) {
+            Toast.makeText(this, "Выберите расход для удаления", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
-        /** Снимаем все ранее установленные отметки */
-        listView.clearChoices();
-
-        /** Очищаем массив выбраных объектов */
-        selectedUsers.clear();
+        boolean success = expenseService.removeExpense(selectedExpense);
 
 
+        if (success) {
+            Toast.makeText(this, "Расход удалён", Toast.LENGTH_SHORT).show();
+            loadExpenses();
+        } else {
+            Toast.makeText(this, "Ошибка при удалении", Toast.LENGTH_SHORT).show();
+        }
+
+
+        /*
         updateAdapter();
+        expenseAdapter.notifyDataSetChanged();
+        */
 
-        arrayAdapter.notifyDataSetChanged();
     }
 
 
     public void updateAdapter() {
 
         ArrayList<Expense> allExpenseList = expenseService.getExpenseList();
-        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseList);
-        listView.setAdapter(arrayAdapter);
+//        arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1, allExpenseList);
+//        listView.setAdapter(arrayAdapter);
+
+        expenseAdapter = new ExpenseAdapter(this, allExpenseList, expenseService);
+        listView.setAdapter(expenseAdapter);
 
     }
 
@@ -252,6 +349,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void updateExpense(View view) {
+
+        if (selectedExpense == null) {
+            Toast.makeText(this, "Выберите расход для изменения", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(this, ExpenseDetailActivity.class);
+        intent.putExtra("expense_id", selectedExpense.getId());
+        startActivity(intent);
+
+    }
+
+
     private void getScreenSize() {
 
         android.util.DisplayMetrics displayMetrics = new android.util.DisplayMetrics();
@@ -281,60 +392,60 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Deprecated
-    public void addOld(View view){
-
-        /** Вычитываем введённые пользователем данные: */
-        EditText expenseNameEditText = findViewById(R.id.editTextNameExpense);
-        String expenseName = expenseNameEditText.getText().toString();
-
-        EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
-
-        Double expense = null;
-        if(expenseEditText.getText() != null && !expenseEditText.getText().toString().isEmpty())
-            expense = Double.parseDouble(expenseEditText.getText().toString());
-
-        EditText expenseDateEditText = findViewById(R.id.editTextDate);
-        String expenseDateTimeString = expenseDateEditText.getText().toString();
-
-        String expenseDescription = null;
-
-        /** Создаём новую запись: */
-        if(!expenseName.isEmpty()){
-
-            Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
-
-            expenseService.insertExpense(newExpense);
-
-            // Test :
-            ArrayList<Expense> testList = expenseService.getExpenseList();
-            arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1 , testList);
-            listView.setAdapter(arrayAdapter);
-            // !Test
-
-//            arrayAdapter.add(newExpense);
-            cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
-            arrayAdapter.notifyDataSetChanged();
-
-        }
-
-    }
-
-
-    @Deprecated
-    public void removeOld(View view){
-
-        /** Получаем и удаляем выделенные элементы */
-        for(int i = 0; i < selectedUsers.size(); i++) arrayAdapter.remove(selectedUsers.get(i));
+//    @Deprecated
+//    public void addOld(View view){
+//
+//        /** Вычитываем введённые пользователем данные: */
+//        EditText expenseNameEditText = findViewById(R.id.editTextNameExpense);
+//        String expenseName = expenseNameEditText.getText().toString();
+//
+//        EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
+//
+//        Double expense = null;
+//        if(expenseEditText.getText() != null && !expenseEditText.getText().toString().isEmpty())
+//            expense = Double.parseDouble(expenseEditText.getText().toString());
+//
+//        EditText expenseDateEditText = findViewById(R.id.editTextDate);
+//        String expenseDateTimeString = expenseDateEditText.getText().toString();
+//
+//        String expenseDescription = null;
+//
+//        /** Создаём новую запись: */
+//        if(!expenseName.isEmpty()){
+//
+//            Expense newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
+//
+//            expenseService.insertExpense(newExpense);
+//
+//            // Test :
+//            ArrayList<Expense> testList = expenseService.getExpenseList();
+//            arrayAdapter = new ArrayAdapter<Expense>(this, android.R.layout.simple_list_item_1 , testList);
+//            listView.setAdapter(arrayAdapter);
+//            // !Test
+//
+////            arrayAdapter.add(newExpense);
+//            cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
+//            arrayAdapter.notifyDataSetChanged();
+//
+//        }
+//
+//    }
 
 
-        /** Снимаем все ранее установленные отметки */
-        listView.clearChoices();
-
-        /** Очищаем массив выбраных объектов */
-        selectedUsers.clear();
-
-        arrayAdapter.notifyDataSetChanged();
-    }
+//    @Deprecated
+//    public void removeOld(View view){
+//
+//        /** Получаем и удаляем выделенные элементы */
+//        for(int i = 0; i < selectedUsers.size(); i++) arrayAdapter.remove(selectedUsers.get(i));
+//
+//
+//        /** Снимаем все ранее установленные отметки */
+//        listView.clearChoices();
+//
+//        /** Очищаем массив выбраных объектов */
+//        selectedUsers.clear();
+//
+//        arrayAdapter.notifyDataSetChanged();
+//    }
 
 }
