@@ -119,8 +119,9 @@
     <ListView
         android:id="@+id/expenseList"
         android:choiceMode="singleChoice"
-        android:layout_width="400dp"
-        android:layout_height="550dp"
+        android:listSelector="@drawable/list_item_selector"
+        android:layout_width="370dp"
+        android:layout_height="525dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
         app:layout_constraintTop_toTopOf="parent"

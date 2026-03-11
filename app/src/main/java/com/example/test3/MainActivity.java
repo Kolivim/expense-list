@@ -53,30 +53,38 @@ public class MainActivity extends AppCompatActivity {
         loadExpenses();
 
 
-        // Устанавливаем слушатель через адаптер
-        expenseAdapter.setOnItemClickListener(new ExpenseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Expense expense, int position) {
-                // Снимаем выделение с предыдущего элемента
-                if (selectedExpense != null) {
-                    int previousPosition = expenseAdapter.getPosition(selectedExpense);
-                    if (previousPosition != -1) {
-                        listView.setItemChecked(previousPosition, false);
-                    }
-                }
-
-                // Устанавливаем новое выделение
-                listView.setItemChecked(position, true);
-                selectedExpense = expense;
-
-                Toast.makeText(MainActivity.this,
-                        "Выбран: " + selectedExpense.getName() + " (ID: " + selectedExpense.getId() + ")",
-                        Toast.LENGTH_SHORT).show();
-
-                android.util.Log.d("DEBUG", "Выбран расход: " + selectedExpense.getName() +
-                        ", ID: " + selectedExpense.getId());
-            }
-        });
+//        // Устанавливаем слушатель через адаптер
+//        expenseAdapter.setOnItemClickListener(new ExpenseAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(Expense expense, int position) {
+//
+//                selectedExpense = expense;
+//
+//
+////                // Снимаем выделение с предыдущего элемента
+////                if (selectedExpense != null) {
+////                    int previousPosition = expenseAdapter.getPosition(selectedExpense);
+////                    if (previousPosition != -1) {
+////                        listView.setItemChecked(previousPosition, false);
+////                    }
+////                }
+////
+////                // Устанавливаем новое выделение
+////                listView.setItemChecked(position, true);
+////                selectedExpense = expense;
+//
+//
+//                Toast.makeText(MainActivity.this,
+//                        "Выбран: " + selectedExpense.getName() + " (ID: " + selectedExpense.getId() + ")",
+//                        Toast.LENGTH_SHORT).show();
+//
+//                android.util.Log.d("DEBUG", "Выбран расход: " + selectedExpense.getName() +
+//                        ", ID: " + selectedExpense.getId());
+//
+//
+//            }
+//
+//        });
 
 
 //// Обработка выделения элементов
@@ -144,6 +152,24 @@ public class MainActivity extends AppCompatActivity {
     private void loadExpenses() {
         ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
         expenseAdapter = new ExpenseAdapter(this, allExpenseListDb, expenseService);
+
+        /** Устанавливаем слушатель */
+        expenseAdapter.setOnItemClickListener(new ExpenseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Expense expense, int position) {
+
+                selectedExpense = expense;
+                expenseAdapter.setSelectedPosition(position);
+
+//                listView.setItemChecked(position, true);
+
+                Toast.makeText(MainActivity.this, "Выбран: " + expense.getName(),
+                        Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
         listView.setAdapter(expenseAdapter);
 
         clearSelection();
@@ -257,6 +283,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /** Обновляет список при каждом возврате на главную активити */
+        loadExpenses();
+    }
+
+
     public ZonedDateTime getZoneDateTime(String dateString) {
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
@@ -360,6 +394,8 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("expense_id", selectedExpense.getId());
         startActivity(intent);
 
+        /** Обновляет список, после изменения одног из элементов списка */
+        loadExpenses();
     }
 
 

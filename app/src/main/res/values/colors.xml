@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="selected_color">#FFE0E8F0</color>
+    <color name="pressed_color">#E0E0E0</color>   <!-- Светло-серый -->
 </resources>
+
+    <!--
+    #FFF1F0F7
+    Розовый = #FF4081
+    Светло-фиолетовый = #FFE7E0FF
+    #FFE8F0FE = Светло-голубой
+    #FFE1D9FF = Светлый лавандовый
+    #FFD1F0E0 = Светлый мятный
+    #FFFFE0C0 = Светлый персиковый
+    #FFD9E8FF = Светлый голубой
+    #FFFFD9E8 = Светлый розовый
+    #FFFFF0B0 = Светлый лимонный
+    #FFE0E8F0 = Чуть ярче вашего исходного
+    -->

@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.example.test3.R;
 import com.example.test3.service.ExpenseService;
 
@@ -23,6 +25,16 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
     private ExpenseService expenseService;
 
     private OnItemClickListener listener;
+
+    /** Выделение выбранной строки */
+    private int selectedPosition = -1;
+
+
+    public void setSelectedPosition(int position) {
+        this.selectedPosition = position;
+        notifyDataSetChanged();
+    }
+
 
     public interface OnItemClickListener {
         void onItemClick(Expense expense, int position);
@@ -83,6 +95,14 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
                 listener.onItemClick(expense, position);
             }
         });
+
+
+        /** Выделяет выбранную строку */
+        if (position == selectedPosition) {
+            convertView.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
+        } else {
+            convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
 
 
         return convertView;

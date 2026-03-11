@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Состояние "выбрано" -->
+    <item android:state_selected="true" android:drawable="@color/selected_color" />
+    <!-- Состояние "нажато" (для обратной связи при касании) -->
+    <item android:state_pressed="true" android:drawable="@color/pressed_color" />
+    <!-- Обычное состояние -->
+    <item android:drawable="@android:color/transparent" />
+</selector>
+
+
+<!--<item android:state_activated="true" android:drawable="@color/selected_color" />-->
+<!--<item android:state_pressed="true" android:drawable="@color/pressed_color" />-->
+<!--<item android:drawable="@android:color/transparent" />-->
