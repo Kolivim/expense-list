@@ -300,4 +300,17 @@ public class ExpenseService {
     }
 
 
+    /** Обновляет цвет текста строки */
+    public boolean updateExpenseRowColor(Expense expense) {
+        ContentValues cv = new ContentValues();
+        cv.put(EXPENSE_ROW_COLOR, expense.getRowColor());
+
+        int result = dbWrite.update(TABLE_EXPENSE, cv,
+                EXPENSE_ID + " = ?",
+                new String[]{String.valueOf(expense.getId())});
+
+        return result > 0;
+    }
+
+
 }

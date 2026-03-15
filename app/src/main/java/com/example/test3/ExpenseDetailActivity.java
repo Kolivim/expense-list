@@ -1,5 +1,6 @@
 package com.example.test3;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.test3.expenseList.Expense;
 import com.example.test3.payment.PaymentAdapter;
@@ -24,7 +26,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     private TextView textViewName, textViewDescription, textViewDate, textViewTotal;
     private ListView listViewPayments;
     private EditText editTextNewPayment;
-    private Button buttonAdd, buttonBack;
+    private Button buttonAdd, buttonBack, buttonChooseTextColor;
 
     private ExpenseService expenseService;
     private Expense currentExpense;
@@ -56,12 +58,52 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         editTextNewPayment = findViewById(R.id.editTextNewPayment);
         buttonAdd = findViewById(R.id.buttonAddPayment);
         buttonBack = findViewById(R.id.buttonBack);
+        buttonChooseTextColor = findViewById(R.id.buttonChooseTextColor);
     }
 
     private void setupListeners() {
         buttonAdd.setOnClickListener(v -> addNewPayment());
         buttonBack.setOnClickListener(v -> finish());
+        buttonChooseTextColor.setOnClickListener(v -> showTextColorPickerDialog());
     }
+
+
+    private void showTextColorPickerDialog() {
+
+        /** Массив доступных цветов */
+        final Integer[] textColors = {
+                ContextCompat.getColor(this, android.R.color.black),
+                ContextCompat.getColor(this, android.R.color.white),
+                ContextCompat.getColor(this, android.R.color.holo_red_dark),
+                ContextCompat.getColor(this, android.R.color.holo_blue_dark),
+                ContextCompat.getColor(this, android.R.color.holo_green_dark),
+                ContextCompat.getColor(this, android.R.color.holo_orange_dark),
+                ContextCompat.getColor(this, android.R.color.holo_purple),
+                ContextCompat.getColor(this, android.R.color.darker_gray)
+        };
+
+        final String[] colorNames = {
+                "Чёрный", "Белый", "Красный", "Синий", "Зелёный", "Оранжевый", "Фиолетовый", "Серый"
+        };
+
+        new AlertDialog.Builder(this)
+                .setTitle("Выберите цвет текста")
+                .setItems(colorNames, (dialog, which) -> {
+
+                    currentExpense.setRowColor(textColors[which]);
+
+                    if (expenseService.updateExpenseRowColor(currentExpense)) {
+                        Toast.makeText(this, "Цвет текста обновлён", Toast.LENGTH_SHORT).show();
+                        refreshData(); /** перезагружает данные для отображения нового цвета */
+                    } else {
+                        Toast.makeText(this, "Ошибка при сохранении", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
+
+    }
+
 
     private void loadExpense(long expenseId) {
         // Получаем свежие данные из БД
@@ -138,6 +180,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите корректное число", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
 
 //package com.example.test3;

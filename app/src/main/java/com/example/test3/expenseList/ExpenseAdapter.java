@@ -53,6 +53,7 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.list_item_expense, parent, false);
@@ -63,13 +64,14 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
         TextView textViewInfo = convertView.findViewById(R.id.textViewExpenseInfo);
         Button buttonAdd = convertView.findViewById(R.id.buttonAddPayment);
 
-        // Показываем информацию о расходе
+
+        /** Показывает информацию о расходе */
         String expenseText = expense.getName();
         if (expense.getDescription() != null && !expense.getDescription().isEmpty()) {
             expenseText += " (" + expense.getDescription() + ")";
         }
 
-        // Добавляем информацию о платежах
+        /** Добавляет информацию о платежах */
         if (expense.getExpenseList() != null && !expense.getExpenseList().isEmpty()) {
             expenseText += "\nСумма: " + String.format("%.2f", expense.getExpenseListTotalAmount()) +
                     " руб. | Платежей: " + expense.getExpenseList().size();
@@ -79,17 +81,27 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
 
         textViewInfo.setText(expenseText);
 
-//        // Обработчик нажатия на кнопку +
+
+        /** Устанавливает цвет текста */
+        if (expense.getRowColor() != null && expense.getRowColor() != -1) {
+            textViewInfo.setTextColor(expense.getRowColor());
+        } else {
+            /** цвет по умолчанию */
+            textViewInfo.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        }
+
+
+//        /** Обработчик нажатия на кнопку + */
 //        buttonAdd.setOnClickListener(v -> showAddPaymentDialog(position, expense));
 
-        // Обработчик нажатия на кнопку +
+        /** Обработчик нажатия на кнопку + */
         buttonAdd.setOnClickListener(v -> {
             v.setFocusable(true);
             v.requestFocus();
             showAddPaymentDialog(position, expense);
         });
 
-        // Обработчик нажатия на всю строку (кроме кнопки)
+        /** Обработчик нажатия на всю строку (кроме кнопки) */
         convertView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onItemClick(expense, position);
