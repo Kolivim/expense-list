@@ -4,15 +4,17 @@ package com.example.test3.service;
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DATETIME;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DESCRIPTION;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_EXPENSE_TYPE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_IS_DELETED;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_NAME;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ROW_COLOR;
-import static com.example.test3.dao.ExpenseSQLite.PAYMENT;
-import static com.example.test3.dao.ExpenseSQLite.PAYMENT_EXPENSE_ID;
-import static com.example.test3.dao.ExpenseSQLite.PAYMENT_ID;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_EXPENSE_ID;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_ID;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_TYPE_ID;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE;
-import static com.example.test3.dao.ExpenseSQLite.TABLE_PAYMENT;
+import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE_PAYMENT;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,7 +26,6 @@ import com.example.test3.dao.ExpenseSQLite;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.util.Util;
 
-import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
@@ -48,9 +49,15 @@ public class ExpenseService {
     }
 
 
+    /** ExpenseList только ежемесячных расходов */
     public ArrayList<Expense> getExpenseList() {
+        return getExpenseList(1L);
+    }
 
-        ArrayList<Expense> expenseList = getExpenseRowList();
+
+    public ArrayList<Expense> getExpenseList(Long typeId) {
+
+        ArrayList<Expense> expenseList = getExpenseRowList(typeId);
 
         setExpenseListPayments(expenseList);
 
@@ -58,22 +65,28 @@ public class ExpenseService {
     }
 
 
-    public ArrayList<Expense> getExpenseRowList() {
+    public ArrayList<Expense> getExpenseRowList(Long typeId) {
 
         ArrayList<Expense> expenseList = new ArrayList<>();
 
-        Cursor query = dbRead.rawQuery("SELECT * FROM " + TABLE_EXPENSE + " order by expenseId desc;", null);
+        Cursor query = dbRead.rawQuery(
+                "SELECT * FROM " + TABLE_EXPENSE + " " +
+                " where " + EXPENSE_EXPENSE_TYPE_ID + " = " + typeId.toString() + " " +
+                " order by " + EXPENSE_ID + " desc;",
+                null
+        );
 
         while(query.moveToNext()){
 
             Long expenseId = query.getLong(0);
-            String expenseName = query.getString(1);
-            String expenseDescription = query.getString(2);
-            String expenseDateTime = query.getString(3);
-            int expenseIsDelete = query.getInt(4);
-            int expenseRowColor = query.getInt(5);                                                /** Визуальное оформление позднее выделить в отдельную таблицу, со связью по expenseId */
+            Long returnTypeId = query.getLong(1);
+            String expenseName = query.getString(2);
+            String expenseDescription = query.getString(3);
+            String expenseDateTime = query.getString(4);
+            int expenseIsDelete = query.getInt(5);
+            int expenseRowColor = query.getInt(6);                                                /** Визуальное оформление позднее выделить в отдельную таблицу, со связью по expenseId */
 
-            Expense expense = new Expense(expenseId, expenseName, expenseDescription,
+            Expense expense = new Expense(expenseId, returnTypeId, expenseName, expenseDescription,
                     ZonedDateTime.parse(expenseDateTime, Util.dateFormatterInsert), (expenseIsDelete == 1),
                     expenseRowColor);
 
@@ -95,9 +108,9 @@ public class ExpenseService {
     public void setExpensePayments(Expense expense) {
 
         Cursor query = dbRead.rawQuery(
-                "SELECT * FROM " + TABLE_PAYMENT +
-                    " where " + PAYMENT_EXPENSE_ID + " = " + expense.getId() +
-                    " order by paymentId asc;" ,
+                "SELECT * FROM " + TABLE_EXPENSE_PAYMENT +
+                    " where " + EXPENSE_PAYMENT_EXPENSE_ID + " = " + expense.getId() +
+                    " order by " + EXPENSE_ID + " asc;" ,
                 null);
 
         while(query.moveToNext()){
@@ -134,6 +147,11 @@ public class ExpenseService {
     public Expense insertExpenseRow(Expense expense) {
 
         ContentValues cv = new ContentValues();
+
+
+        if (expense.getTypeId() == null) {throw new IllegalArgumentException("TypeId не установлен для Expense: " + expense.getName());}
+        cv.put(EXPENSE_EXPENSE_TYPE_ID, expense.getTypeId());
+
         cv.put(EXPENSE_NAME, expense.getName());
         if (expense.getDescription() != null) cv.put(EXPENSE_DESCRIPTION, expense.getDescription());
         cv.put(EXPENSE_DATETIME, expense.getDateTime().format(Util.dateFormatterInsert));
@@ -153,10 +171,10 @@ public class ExpenseService {
     public boolean insertPaymentRow(Expense expense) {
 
         ContentValues cv = new ContentValues();
-        cv.put(PAYMENT_EXPENSE_ID, expense.getId());
-        cv.put(PAYMENT, expense.getExpenseList().get(0));                                           /** Забираем первый элемент, т.к. при создании м.б. не более одного элемента */
+        cv.put(EXPENSE_PAYMENT_EXPENSE_ID, expense.getId());
+        cv.put(EXPENSE_PAYMENT, expense.getExpenseList().get(0));                                           /** Забираем первый элемент, т.к. при создании м.б. не более одного элемента */
 
-        long result = dbWrite.insert(TABLE_PAYMENT, null, cv);
+        long result = dbWrite.insert(TABLE_EXPENSE_PAYMENT, null, cv);
 
         return result != -1;
     }
@@ -164,7 +182,33 @@ public class ExpenseService {
 
     public boolean removeExpense(Expense expense) {
 
-        long result = dbWrite.delete(TABLE_EXPENSE, EXPENSE_ID + " = " + expense.getId().toString(), null /*new String {"name"} */);
+
+//        long result = dbWrite.delete(TABLE_EXPENSE,
+//                EXPENSE_ID + " = " + expense.getId().toString(),
+//                null /*new String {"name"} */);
+
+
+        long result = 0;
+
+        try {
+
+            dbWrite.beginTransaction();
+
+            /** Удаляет все связанные платежи из expense_payment для переданной expense */
+            dbWrite.delete(TABLE_EXPENSE_PAYMENT, "expense_id = ?",
+                    new String[]{String.valueOf(expense.getId().toString())});
+
+            result = dbWrite.delete(TABLE_EXPENSE, EXPENSE_ID + " = ?",
+                    new String[]{String.valueOf(expense.getId().toString())});
+
+            dbWrite.setTransactionSuccessful();
+            Log.d("ExpenseService", "Удалено записей: " + result);
+
+        } catch (Exception e) {
+            Log.e("ExpenseService", "Ошибка при удалении расхода expense: ".concat(expense.toString()), e);
+        } finally {
+            dbWrite.endTransaction();
+        }
 
         return result != -1;
     }
@@ -184,10 +228,10 @@ public class ExpenseService {
             db = dbHelper.getWritableDatabase();
 
             ContentValues cv = new ContentValues();
-            cv.put(PAYMENT_EXPENSE_ID, expense.getId());
-            cv.put(PAYMENT, payment);
+            cv.put(EXPENSE_PAYMENT_EXPENSE_ID, expense.getId());
+            cv.put(EXPENSE_PAYMENT, payment);
 
-            long result = db.insert(TABLE_PAYMENT, null, cv);
+            long result = db.insert(TABLE_EXPENSE_PAYMENT, null, cv);
 
             if (result != -1) {
                 /** Обновляет объект в памяти */
@@ -204,22 +248,18 @@ public class ExpenseService {
 
 
     public boolean updatePayment(Expense expense, int paymentIndex, double newPayment) {
-        // В реальном приложении нужно хранить ID платежа
-        // Для простоты будем обновлять по индексу (не надёжно!)
 
-        // Получаем ID платежа из БД
         Long paymentId = getPaymentId(expense.getId(), paymentIndex);
         if (paymentId == null) return false;
 
         ContentValues cv = new ContentValues();
-        cv.put(PAYMENT, newPayment);
+        cv.put(EXPENSE_PAYMENT, newPayment);
 
-        int result = dbWrite.update(TABLE_PAYMENT, cv,
-                PAYMENT_ID + " = ?",
+        int result = dbWrite.update(TABLE_EXPENSE_PAYMENT, cv,
+                EXPENSE_PAYMENT_ID + " = ?",
                 new String[]{String.valueOf(paymentId)});
 
         if (result > 0) {
-            // Обновляем в объекте
             expense.getExpenseList().set(paymentIndex, newPayment);
             return true;
         }
@@ -231,8 +271,8 @@ public class ExpenseService {
         Long paymentId = getPaymentId(expense.getId(), paymentIndex);
         if (paymentId == null) return false;
 
-        int result = dbWrite.delete(TABLE_PAYMENT,
-                PAYMENT_ID + " = ?",
+        int result = dbWrite.delete(TABLE_EXPENSE_PAYMENT,
+                EXPENSE_PAYMENT_ID + " = ?",
                 new String[]{String.valueOf(paymentId)});
 
         if (result > 0) {
@@ -246,9 +286,9 @@ public class ExpenseService {
 
     private Long getPaymentId(long expenseId, int index) {
         Cursor cursor = dbRead.rawQuery(
-                "SELECT " + PAYMENT_ID + " FROM " + TABLE_PAYMENT +
-                        " WHERE " + PAYMENT_EXPENSE_ID + " = " + expenseId +
-                        " ORDER BY " + PAYMENT_ID + " ASC LIMIT 1 OFFSET " + index,
+                "SELECT " + EXPENSE_PAYMENT_ID + " FROM " + TABLE_EXPENSE_PAYMENT +
+                        " WHERE " + EXPENSE_PAYMENT_EXPENSE_ID + " = " + expenseId +
+                        " ORDER BY " + EXPENSE_PAYMENT_ID + " ASC LIMIT 1 OFFSET " + index,
                 null);
 
         Long paymentId = null;

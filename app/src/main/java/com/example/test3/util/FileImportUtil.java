@@ -27,11 +27,8 @@ public class FileImportUtil {
      * @throws JSONException если ошибка парсинга JSON
      */
     public static ArrayList<Expense> importExpensesFromJson(File file) throws IOException, JSONException {
-
         ArrayList<Expense> expenseList = new ArrayList<>();
 
-
-        /** Читаем весь файл в строку */
         StringBuilder jsonString = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -40,13 +37,14 @@ public class FileImportUtil {
             }
         }
 
-        /** Парсим JSON */
         JSONArray jsonArray = new JSONArray(jsonString.toString());
 
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObj = jsonArray.getJSONObject(i);
 
             Long id = jsonObj.has("id") && !jsonObj.isNull("id") ? jsonObj.getLong("id") : null;
+            Long typeId = jsonObj.has("typeId") && !jsonObj.isNull("typeId") ?
+                    jsonObj.getLong("typeId") : null;
             String name = jsonObj.getString("name");
             String description = jsonObj.has("description") && !jsonObj.isNull("description") ?
                     jsonObj.getString("description") : null;
@@ -58,9 +56,10 @@ public class FileImportUtil {
             Integer rowColor = jsonObj.has("rowColor") && !jsonObj.isNull("rowColor") ?
                     jsonObj.getInt("rowColor") : null;
 
-            Expense expense = new Expense(id, name, description, dateTime, isDeleted, rowColor);
 
-            /** Читаем платежи */
+            Expense expense = new Expense(id, typeId, name, description, dateTime, isDeleted, rowColor);
+
+
             if (jsonObj.has("payments")) {
                 JSONArray paymentsArray = jsonObj.getJSONArray("payments");
                 for (int j = 0; j < paymentsArray.length(); j++) {

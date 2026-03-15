@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:backgroundTint="#4CAF50"
-        android:minWidth="48dp"/>
+        android:minWidth="35dp"/>
 
 </LinearLayout>

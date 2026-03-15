@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ExpenseService expenseService;
 
+    public static Long TYPE_MONTHLY_EXPENSES = 1L;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,11 +179,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void clearSelection() {
+
         selectedExpense = null;
+
         if (listView != null) {
             listView.clearChoices();
             expenseAdapter.notifyDataSetChanged();
         }
+
     }
 
 
@@ -213,8 +218,10 @@ public class MainActivity extends AppCompatActivity {
             updateAdapter();
 
 
-            cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
-            expenseAdapter.notifyDataSetChanged();
+            loadExpenses();
+
+//            cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
+//            expenseAdapter.notifyDataSetChanged();
 
         }
 
@@ -264,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(expenseName != null && !expenseName.isEmpty()) {
 
-            Expense newExpense = new Expense(expenseName);
+            Expense newExpense = new Expense(expenseName, TYPE_MONTHLY_EXPENSES);
 
             if(expense != null && !expense.isNaN()) newExpense.addPayment(expense);
 

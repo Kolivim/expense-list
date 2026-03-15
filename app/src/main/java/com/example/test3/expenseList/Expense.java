@@ -11,6 +11,7 @@ public class Expense implements Serializable {
     private String name;
     private String description;
     private ZonedDateTime dateTime;
+    private Long typeId;
 
     private ArrayList<Double> expenseList;
 
@@ -27,8 +28,9 @@ public class Expense implements Serializable {
     public Expense() {}
 
 
-    public Expense(String expenseName)  {
-        this.name= expenseName;
+    public Expense(String expenseName, Long typeId)  {
+        this.typeId = typeId;
+        this.name = expenseName;
         this.isDeleted = false;
         this.dateTime = ZonedDateTime.now();
     }
@@ -68,7 +70,8 @@ public class Expense implements Serializable {
     }
 
 
-    public Expense(Long id, String name, String description, ZonedDateTime dateTime, boolean isDeleted, Integer rowColor) {
+    public Expense(Long id, Long typeId, String name, String description, ZonedDateTime dateTime, boolean isDeleted, Integer rowColor) {
+        this.typeId = typeId;
         this.name = name;
         this.description = description;
         this.dateTime = dateTime;
@@ -114,6 +117,9 @@ public class Expense implements Serializable {
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
+
+    public Long getTypeId() {return typeId;}
+    public void setTypeId(Long typeId) {this.typeId = typeId;}
 
 
     @Override

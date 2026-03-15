@@ -242,6 +242,7 @@ public class FileExportUtil  {
                     /** Начинаем объект расхода */
                     writer.write("  {\n");
                     writer.write("    \"id\": " + (expense.getId() != null ? expense.getId() : "null") + ",\n");
+                    writer.write("    \"typeId\": " + (expense.getTypeId() != null ? expense.getTypeId() : "null") + ",\n");
                     writer.write("    \"name\": \"" + escapeJson(expense.getName()) + "\",\n");
 
                     if (expense.getDescription() != null && !expense.getDescription().isEmpty()) {
