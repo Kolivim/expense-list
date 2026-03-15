@@ -91,6 +91,11 @@ public class ExpenseAdapter extends ArrayAdapter<Expense> {
         }
 
 
+        /** Добавляет в интерфейс вывод даты */
+        TextView textViewDate = convertView.findViewById(R.id.textViewExpenseDate);
+        textViewDate.setText(expense.getDateTimeString());
+
+
 //        /** Обработчик нажатия на кнопку + */
 //        buttonAdd.setOnClickListener(v -> showAddPaymentDialog(position, expense));
 

@@ -26,7 +26,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     private TextView textViewName, textViewDescription, textViewDate, textViewTotal;
     private ListView listViewPayments;
     private EditText editTextNewPayment;
-    private Button buttonAdd, buttonBack, buttonChooseTextColor;
+    private Button buttonAdd, buttonBack, buttonChooseTextColor, buttonEditDescription;
 
     private ExpenseService expenseService;
     private Expense currentExpense;
@@ -59,12 +59,14 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         buttonAdd = findViewById(R.id.buttonAddPayment);
         buttonBack = findViewById(R.id.buttonBack);
         buttonChooseTextColor = findViewById(R.id.buttonChooseTextColor);
+        buttonEditDescription = findViewById(R.id.buttonEditDescription);
     }
 
     private void setupListeners() {
         buttonAdd.setOnClickListener(v -> addNewPayment());
         buttonBack.setOnClickListener(v -> finish());
         buttonChooseTextColor.setOnClickListener(v -> showTextColorPickerDialog());
+        buttonEditDescription.setOnClickListener(v -> showEditDescriptionDialog());
     }
 
 
@@ -180,6 +182,63 @@ public class ExpenseDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите корректное число", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    /** Диалог редактирования описания */
+    private void showEditDescriptionDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Редактировать описание");
+
+        /** Создаёт поле ввода */
+        final EditText input = new EditText(this);
+        input.setHint("Введите описание");
+
+
+        /** Заполняет текущим описанием, если оно есть */
+        if (currentExpense.getDescription() != null && !currentExpense.getDescription().isEmpty()) {
+            input.setText(currentExpense.getDescription());
+        }
+
+        input.setSelection(input.getText().length()); /** Перемещает курсор в конец текста */
+        builder.setView(input);
+
+
+        /** Кнопки */
+        builder.setPositiveButton("Сохранить", (dialog, which) -> {
+
+            String newDescription = input.getText().toString().trim();
+
+            currentExpense.setDescription(newDescription);
+
+            /** Сохраняет в БД */
+            if (expenseService.updateExpenseDescription(currentExpense)) {
+                Toast.makeText(this, "Описание обновлено", Toast.LENGTH_SHORT).show();
+                updateDisplay();                                                                    /** Обновляет отображение */
+            } else {
+                Toast.makeText(this, "Ошибка при сохранении", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        builder.setNegativeButton("Отмена", null);
+
+        /** Кнопка Очистить */
+        builder.setNeutralButton("Очистить", (dialog, which) -> {
+
+            currentExpense.setDescription("");
+
+            if (expenseService.updateExpenseDescription(currentExpense)) {
+                Toast.makeText(this, "Описание очищено", Toast.LENGTH_SHORT).show();
+                updateDisplay();
+            }
+
+        });
+
+
+        builder.show();
+    }
+
 
 }
 

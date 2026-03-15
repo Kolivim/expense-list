@@ -313,4 +313,24 @@ public class ExpenseService {
     }
 
 
+    /**
+     * Обновляет описание Expense
+     * @param expense расходная операуия с обновлённым описанием
+     * @return true если успешно, false в противном случае
+     */
+    public boolean updateExpenseDescription(Expense expense) {
+
+        ContentValues cv = new ContentValues();
+        cv.put(EXPENSE_DESCRIPTION, expense.getDescription());
+
+        int result = dbWrite.update(TABLE_EXPENSE, cv,
+                EXPENSE_ID + " = ?",
+                new String[]{String.valueOf(expense.getId())});
+
+        Log.d(TAG, "Результат сохранения описания: " + result);
+
+        return result > 0;
+    }
+
+
 }
