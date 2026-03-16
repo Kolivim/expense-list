@@ -27,6 +27,14 @@
             android:name=".ExpenseDetailActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".MonthAdminActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".DepositDetailActivity"
+            android:exported="false" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />

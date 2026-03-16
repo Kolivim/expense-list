@@ -7,16 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Место для вывода данных по текущему месяцу"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-
     <Button
         android:id="@+id/buttonUpdate"
         android:layout_width="wrap_content"
@@ -78,6 +68,21 @@
         android:onClick="exportToJson"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- Вынести на список вкладок : -->
+    <Button
+        android:id="@+id/buttonMonthAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="145dp"
+        android:layout_marginBottom="165dp"
+        android:ems="8"
+        android:text="Управление месяцами"
+        android:onClick="openMonthAdmin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <!-- !Вынести на список вкладок -->
 
 
     <EditText
