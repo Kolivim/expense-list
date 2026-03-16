@@ -98,6 +98,20 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/buttonChooseTextColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выбрать цвет текста"
+        android:layout_marginTop="8dp"/>
+
+    <Button
+        android:id="@+id/buttonEditDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Редактировать описание"
+        android:layout_marginTop="8dp"/>
+
+    <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

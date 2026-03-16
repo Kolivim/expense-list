@@ -1,5 +1,6 @@
 package com.example.test3;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.test3.deposit.Deposit;
 import com.example.test3.month.Month;
@@ -26,7 +28,7 @@ public class DepositDetailActivity extends AppCompatActivity {
     private TextView textViewName, textViewDescription, textViewDate, textViewMonth, textViewTotal;
     private ListView listViewPayments;
     private EditText editTextNewPayment;
-    private Button buttonAdd, buttonBack;
+    private Button buttonAdd, buttonBack, buttonChooseTextColor, buttonEditDescription;
 
     private DepositService depositService;
     private MonthService monthService;
@@ -62,12 +64,98 @@ public class DepositDetailActivity extends AppCompatActivity {
         editTextNewPayment = findViewById(R.id.editTextNewDepositPayment);
         buttonAdd = findViewById(R.id.buttonAddDepositPayment);
         buttonBack = findViewById(R.id.buttonBack);
+        buttonChooseTextColor = findViewById(R.id.buttonChooseTextColor);
+        buttonEditDescription = findViewById(R.id.buttonEditDescription);
     }
 
 
     private void setupListeners() {
         buttonAdd.setOnClickListener(v -> addNewPayment());
         buttonBack.setOnClickListener(v -> finish());
+        buttonChooseTextColor.setOnClickListener(v -> showTextColorPickerDialog());
+        buttonEditDescription.setOnClickListener(v -> showEditDescriptionDialog());
+    }
+
+
+    private void showTextColorPickerDialog() {
+
+        final Integer[] textColors = {
+                ContextCompat.getColor(this, android.R.color.black),
+                ContextCompat.getColor(this, android.R.color.white),
+                ContextCompat.getColor(this, android.R.color.holo_red_dark),
+                ContextCompat.getColor(this, android.R.color.holo_blue_dark),
+                ContextCompat.getColor(this, android.R.color.holo_green_dark),
+                ContextCompat.getColor(this, android.R.color.holo_orange_dark),
+                ContextCompat.getColor(this, android.R.color.holo_purple),
+                ContextCompat.getColor(this, android.R.color.darker_gray)
+        };
+
+
+        final String[] colorNames = {
+                "Чёрный", "Белый", "Красный", "Синий",
+                "Зелёный", "Оранжевый", "Фиолетовый", "Серый"
+        };
+
+
+        new AlertDialog.Builder(this)
+                .setTitle("Выберите цвет текста")
+                .setItems(colorNames, (dialog, which) -> {
+
+                    currentDeposit.setRowColor(textColors[which]);
+                    if (depositService.updateDeposit(currentDeposit)) {
+                        Toast.makeText(this, "Цвет обновлён", Toast.LENGTH_SHORT).show();
+                        refreshData();
+                    }
+
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
+
+    }
+
+
+    private void showEditDescriptionDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Редактировать описание");
+
+        final EditText input = new EditText(this);
+        input.setHint("Введите описание");
+
+        if (currentDeposit.getDescription() != null) {
+            input.setText(currentDeposit.getDescription());
+            input.setSelection(input.getText().length());
+        }
+
+        builder.setView(input);
+
+        builder.setPositiveButton("Сохранить", (dialog, which) -> {
+
+            String newDescription = input.getText().toString().trim();
+            currentDeposit.setDescription(newDescription.isEmpty() ? null : newDescription);
+
+            if (depositService.updateDeposit(currentDeposit)) {
+                Toast.makeText(this, "Описание обновлено", Toast.LENGTH_SHORT).show();
+                updateDisplay();
+            } else {
+                Toast.makeText(this, "Ошибка при сохранении", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        builder.setNegativeButton("Отмена", null);
+        builder.setNeutralButton("Очистить", (dialog, which) -> {
+
+            currentDeposit.setDescription(null);
+
+            if (depositService.updateDeposit(currentDeposit)) {
+                Toast.makeText(this, "Описание очищено", Toast.LENGTH_SHORT).show();
+                updateDisplay();
+            }
+
+        });
+
+        builder.show();
     }
 
 

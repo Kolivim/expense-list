@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.example.test3.deposit.Deposit;
 
 import java.util.List;
@@ -66,6 +68,17 @@ public class DepositListAdapter extends ArrayAdapter<Deposit> {
         buttonDelete.setOnClickListener(v -> {
             if (listener != null) listener.onDeleteClick(deposit);
         });
+
+        /** Устанавливает цвет текста */
+        if (deposit.getRowColor() != null && deposit.getRowColor() != -1) {
+            textViewName.setTextColor(deposit.getRowColor());
+            textViewAmount.setTextColor(deposit.getRowColor());
+            textViewPayments.setTextColor(deposit.getRowColor());
+        } else {
+            textViewName.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+            textViewAmount.setTextColor(ContextCompat.getColor(context, R.color.black));
+            textViewPayments.setTextColor(ContextCompat.getColor(context, R.color.black));
+        }
 
         return convertView;
     }
