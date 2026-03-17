@@ -21,6 +21,7 @@ public class MonthService {
 
     public static Long TYPE_MONTHLY_EXPENSES = 1L;
     public static Long TYPE_MONTHLY_DEPOSIT = 1L;
+    public static Long TYPE_MONTHLY_DEPOSIT_PLAN = 5L;
 
 
     private Context context;
@@ -438,8 +439,17 @@ public class MonthService {
         for (Deposit deposit : deposits) {
             totalDepositAmount += deposit.getTotalAmount();
         }
+
         dto.setTotalDepositAmount(totalDepositAmount);
         dto.setDepositsCount(deposits.size());
+
+
+        /** Получает планируемый возврат (отдельным запросом) */
+        double plannedReturnAmount = 0.0;
+        if (month.getId() != null) plannedReturnAmount = getPlannedReturnForMonth(month.getId());
+        dto.setPlannedReturnAmount(plannedReturnAmount);
+
+        Log.d(TAG, "Month ID=" + month.getId() + ", plannedReturn=" + plannedReturnAmount);
 
 
         /** Рассчитываем баланс */
@@ -501,6 +511,36 @@ public class MonthService {
         cursor.close();
 
         return month;
+    }
+
+
+    /**
+     * Получает планируемый возврат для указанного месяца (typeId == 5)
+     * @param monthId ID месяца
+     * @return сумма планируемого возврата
+     */
+    public double getPlannedReturnForMonth(long monthId) {
+
+        double plannedReturn = 0.0;
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT " + ExpenseSQLite.DEPOSIT_PAYMENT +
+                        " FROM " + ExpenseSQLite.TABLE_DEPOSIT_PAYMENT + " dp" +
+                        " JOIN " + ExpenseSQLite.TABLE_DEPOSIT + " d ON dp." + ExpenseSQLite.DEPOSIT_PAYMENT_DEPOSIT_ID +
+                        " = d." + ExpenseSQLite.DEPOSIT_ID +
+                        " WHERE d." + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + monthId +
+                        " AND d." + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_MONTHLY_DEPOSIT_PLAN + /** тип 5 = Планируемый возврат */
+                        " AND d." + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0",
+                null);
+
+
+        while (cursor.moveToNext()) {
+            plannedReturn += cursor.getDouble(0);
+        }
+
+        cursor.close();
+
+        return plannedReturn;
     }
 
 

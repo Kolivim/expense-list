@@ -45,7 +45,9 @@ public class DepositService {
      */
     public long insertDeposit(Deposit deposit) {
 
-        Log.d(TAG, "insertDeposit: " + deposit.getName() + ", typeId=" + deposit.getTypeId());
+        Log.d(TAG, "insertDeposit: " + deposit.getName() + ", typeId=" + deposit.getTypeId() +
+                ", expenseId=" + deposit.getExpenseId());
+
 
         ContentValues cv = new ContentValues();
 

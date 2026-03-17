@@ -35,9 +35,11 @@ public class MonthAdminActivity extends AppCompatActivity {
 
     private static final String TAG = "MonthAdminActivity";
 
+    private static final Long TYPE_PLANNED_RETURN = 5L;
+
     private ListView listViewMonths;
     private TextView textViewTotalExpenses, textViewTotalDeposits, textViewTotalBalance;
-    private Button buttonAddDeposit, buttonBack;
+    private Button buttonAddDeposit, buttonBack, buttonAddPlannedReturn;
 
     private MonthService monthService;
     private DepositService depositService;
@@ -68,6 +70,7 @@ public class MonthAdminActivity extends AppCompatActivity {
         textViewTotalBalance = findViewById(R.id.textViewTotalBalance);
         buttonAddDeposit = findViewById(R.id.buttonAddDeposit);
         buttonBack = findViewById(R.id.buttonBack);
+        buttonAddPlannedReturn = findViewById(R.id.buttonAddPlannedReturn);
     }
 
     private void setupListeners() {
@@ -80,6 +83,18 @@ public class MonthAdminActivity extends AppCompatActivity {
             }
 
             showAddDepositDialog();
+
+        });
+
+
+        buttonAddPlannedReturn.setOnClickListener(v -> {
+
+            if (selectedMonthDto == null) {
+                Toast.makeText(this, "Выберите месяц", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            showAddPlannedReturnDialog();
 
         });
 
@@ -109,6 +124,7 @@ public class MonthAdminActivity extends AppCompatActivity {
                     selectedMonthDto = monthlyDtos.get(i);
                     adapter.setSelectedPosition(i);
                     buttonAddDeposit.setEnabled(true);
+                    buttonAddPlannedReturn.setEnabled(true);
                     Log.d(TAG, "Восстановлен выбранный месяц: " + selectedMonthDto.getMonth().getMonthYear());
                     found = true;
                     break;
@@ -146,6 +162,8 @@ public class MonthAdminActivity extends AppCompatActivity {
             selectedMonthDto = dto;
             adapter.setSelectedPosition(position);
             buttonAddDeposit.setEnabled(true);
+            buttonAddPlannedReturn.setEnabled(true);
+
             Toast.makeText(MonthAdminActivity.this,
                     "Выбран: " + dto.getMonth().getMonthYear(),
                     Toast.LENGTH_SHORT).show();
@@ -352,6 +370,86 @@ public class MonthAdminActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+
+    private void showAddPlannedReturnDialog() {
+
+        if (selectedMonthDto == null) {
+            Toast.makeText(this, "Выберите месяц", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Планируемый возврат за " + selectedMonthDto.getMonth().getMonthYear());
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_deposit, null);
+        EditText editTextName = view.findViewById(R.id.editTextDepositName);
+        EditText editTextAmount = view.findViewById(R.id.editTextDepositAmount);
+        EditText editTextDescription = view.findViewById(R.id.editTextDepositDescription);
+
+        /** Предлагает название по умолчанию */
+        editTextName.setText("Планируемый возврат за " + selectedMonthDto.getMonth().getMonthYear());
+        editTextDescription.setHint("Комментарий к планируемому возврату");
+
+        builder.setView(view);
+
+        builder.setPositiveButton("Добавить", (dialog, which) -> {
+            String name = editTextName.getText().toString().trim();
+            String amountStr = editTextAmount.getText().toString().trim();
+            String description = editTextDescription.getText().toString().trim();
+
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (amountStr.isEmpty()) {
+                Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
+            try {
+
+                double amount = Double.parseDouble(amountStr);
+
+                /** Создаёт новый deposit с типом 5 (Планируемый возврат) */
+                Deposit deposit = new Deposit(name, TYPE_PLANNED_RETURN);
+                if(!description.isEmpty()) deposit.setDescription(description);
+
+                /** Создаёт дату с первым числом выбранного месяца */
+                java.time.ZonedDateTime monthDate = java.time.ZonedDateTime.now()
+                        .withYear(selectedMonthDto.getMonth().getYear())
+                        .withMonth(selectedMonthDto.getMonth().getMonth())
+                        .withDayOfMonth(1);
+                deposit.setDateTime(monthDate);
+
+                deposit.addPayment(amount);
+
+                /** Устанавливает expenseId = ID месяца */
+                deposit.setExpenseId(selectedMonthDto.getMonth().getId());
+
+
+                /** Сохраняет в БД */
+                long id = depositService.insertDeposit(deposit);
+
+                if (id != -1) {
+                    Toast.makeText(this, "Планируемый возврат добавлен", Toast.LENGTH_SHORT).show();
+                    loadData();                                                                     /** Перезагружает данные */
+                } else {
+                    Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                }
+
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Некорректная сумма", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
     }
 
 

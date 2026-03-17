@@ -59,6 +59,38 @@
             android:gravity="end"/>
     </LinearLayout>
 
+
+    <!-- НОВАЯ СТРОКА: Планируемый возврат и остаток -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp"
+        android:paddingTop="4dp"
+        android:background="#C2F4DBCF">
+
+        <TextView
+            android:id="@+id/textViewPlannedReturn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textColor="#CBFF9800"
+        android:text="План: 0.00 руб."/>
+
+        <TextView
+            android:id="@+id/textViewPlannedBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textColor="#3F51B5"
+        android:text="Остаток от плана: 0.00 руб."
+        android:gravity="end"/>
+    </LinearLayout>
+
+<!--    android:textStyle="bold"-->
+
     <!-- Разделитель -->
     <View
         android:layout_width="match_parent"

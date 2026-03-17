@@ -1,6 +1,7 @@
 package com.example.test3.month;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class MonthAdminAdapter extends ArrayAdapter<MonthlyDto> {
+
+    private static final String TAG = "MonthAdminAdapter";
 
     private Context context;
     private List<MonthlyDto> monthlyDtos;
@@ -59,6 +62,9 @@ public class MonthAdminAdapter extends ArrayAdapter<MonthlyDto> {
         TextView textViewExpenseStats = convertView.findViewById(R.id.textViewExpenseStats);
         TextView textViewDepositStats = convertView.findViewById(R.id.textViewDepositStats);
 
+        TextView textViewPlannedReturn = convertView.findViewById(R.id.textViewPlannedReturn);
+        TextView textViewPlannedBalance = convertView.findViewById(R.id.textViewPlannedBalance);
+
 
         /** Название месяца */
         if (dto.getMonth() != null) {
@@ -94,6 +100,39 @@ public class MonthAdminAdapter extends ArrayAdapter<MonthlyDto> {
                 df.format(dto.getTotalDepositAmount()),
                 dto.getDepositsCount());
         textViewDepositStats.setText(depositText);
+
+
+        double plannedReturn = dto.getPlannedReturnAmount();
+        double plannedBalance = dto.getPlannedBalance();
+
+        if (plannedReturn != 0) {
+
+            /** Если есть планируемый возврат, показываем информацию */
+            textViewPlannedReturn.setText("План: " + df.format(plannedReturn) + " руб.");
+            textViewPlannedReturn.setVisibility(View.VISIBLE);
+
+            textViewPlannedBalance.setText("Остаток от плана: " + df.format(plannedBalance) + " руб.");
+            textViewPlannedBalance.setVisibility(View.VISIBLE);
+
+            if (plannedBalance > 0) {
+                textViewPlannedBalance.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
+            } else if (plannedBalance < 0) {
+                textViewPlannedBalance.setTextColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+            } else {
+                textViewPlannedBalance.setTextColor(ContextCompat.getColor(context, android.R.color.darker_gray));
+            }
+
+        } else {
+
+            /** Если планируемого возврата нет, скрываем строку */
+            textViewPlannedReturn.setVisibility(View.GONE);
+            textViewPlannedBalance.setVisibility(View.GONE);
+
+        }
+
+
+        Log.d(TAG, "Displaying month: " + dto.getMonth().getMonthYear() +
+                ", plannedReturn=" + plannedReturn + ", plannedBalance=" + plannedBalance);
 
 
         /** Выделение выбранной строки */

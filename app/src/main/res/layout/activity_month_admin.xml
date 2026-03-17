@@ -77,6 +77,16 @@
             android:layout_weight="1"
             android:text="Взносы"
             android:enabled="false"/>
+
+        <Button
+            android:id="@+id/buttonAddPlannedReturn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Плановый возврат"
+            android:layout_marginStart="4dp"
+            android:enabled="false"/>
+
     </LinearLayout>
 
     <!-- Список месяцев -->

@@ -41,6 +41,12 @@ public class MonthlyDto implements Serializable {
     private List<Deposit> depositList;
 
 
+    /** Планируемый возврат (тип взноса 5 - Планируемый возврат ежемесячных трат) */
+    private double plannedReturnAmount;
+
+    /** Остаток, после учёта планируемого возврата */
+    private double plannedBalance;
+
     /** Итог, после возврата (может быть не полным возвратом), рассчётная величина */
     private double balance;
 
@@ -63,6 +69,8 @@ public class MonthlyDto implements Serializable {
         this.totalDepositAmount = 0.0;
         this.depositsCount = 0;
         this.balance = 0.0;
+        this.plannedReturnAmount = 0.0;
+        this.plannedBalance = 0.0;
 
     }
 
@@ -75,6 +83,7 @@ public class MonthlyDto implements Serializable {
     public void setTotalExpenseAmount(double totalExpenseAmount) {
         this.totalExpenseAmount = totalExpenseAmount;
         calculateBalance();
+        calculatePlannedBalance();
     }
 
 
@@ -97,6 +106,7 @@ public class MonthlyDto implements Serializable {
     public void setTotalDepositAmount(double totalDepositAmount) {
         this.totalDepositAmount = totalDepositAmount;
         calculateBalance();
+        calculatePlannedBalance();
     }
 
 
@@ -113,6 +123,12 @@ public class MonthlyDto implements Serializable {
 
     public double getBalance() {return balance;}
     public void setBalance(double balance) {this.balance = balance;}
+
+    public double getPlannedReturnAmount() {return plannedReturnAmount;}
+    public void setPlannedReturnAmount(double plannedReturnAmount) {
+        this.plannedReturnAmount = plannedReturnAmount;
+        calculatePlannedBalance();
+    }
 
 
     /** Добавляет расход в список и пересчитывает статистику */
@@ -166,6 +182,7 @@ public class MonthlyDto implements Serializable {
         }
 
         calculateBalance();
+        calculatePlannedBalance();
     }
 
 
@@ -176,11 +193,13 @@ public class MonthlyDto implements Serializable {
 
             this.depositsCount = 0;
             this.totalDepositAmount = 0.0;
+            this.plannedReturnAmount = 0.0;
 
         } else {
 
             this.depositsCount = depositList.size();
             this.totalDepositAmount = 0.0;
+            this.plannedReturnAmount = 0.0;
 
             for (Deposit deposit : depositList) {
                 this.totalDepositAmount += deposit.getTotalAmount();
@@ -189,6 +208,7 @@ public class MonthlyDto implements Serializable {
         }
 
         calculateBalance();
+        calculatePlannedBalance();
     }
 
 
@@ -196,6 +216,14 @@ public class MonthlyDto implements Serializable {
     private void calculateBalance() {
         this.balance = this.totalDepositAmount - this.totalExpenseAmount;
     }
+
+    private void calculatePlannedBalance() {
+        this.plannedBalance = this.plannedReturnAmount - this.totalExpenseAmount;
+    }
+
+
+    public double getPlannedBalance() {return plannedBalance;}
+    public void setPlannedBalance(double plannedBalance) {this.plannedBalance = plannedBalance;}
 
 
     /** Очищает все данные */
@@ -208,6 +236,8 @@ public class MonthlyDto implements Serializable {
         this.totalDepositAmount = 0.0;
         this.depositsCount = 0;
         this.balance = 0.0;
+        this.plannedReturnAmount = 0.0;
+        this.plannedBalance = 0.0;
     }
 
 
@@ -222,6 +252,8 @@ public class MonthlyDto implements Serializable {
                 .append(", totalDeposit=").append(String.format("%.2f", totalDepositAmount))
                 .append(", deposits=").append(depositsCount)
                 .append(", balance=").append(String.format("%.2f", balance))
+                .append(", plannedReturn=").append(String.format("%.2f", plannedReturnAmount))
+                .append(", plannedBalance=").append(String.format("%.2f", plannedBalance))          // НОВОЕ
                 .append("}");
         return sb.toString();
     }

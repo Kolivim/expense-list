@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ExpenseSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String DATABASE_NAME = "ExpenseDB";
 
@@ -240,11 +240,12 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO " + TABLE_DEPOSIT_TYPE +
                 " (" + DEPOSIT_TYPE_NAME + ") VALUES " +
-                "('Погашение ежемесячных затрат'), " +              /** == "('Ежемесячные расходы'), " */
-//                "('Ежемесячное планирование бюджета'), " +        /** Отсутсвует в чистом виде, частично заменяется следующей строкой */
-                "('Ежемесячные взносы на кредитку'), " +            /** Вперед, для трат их позднее, Коммуналка и etc. */
-                "('Погашение затрат по длинным займам с кредитных средств'), " +
-                "('Погашение затрат по длинным займам с собственных средств') ";
+                "('Погашение ежемесячных затрат'), " +                                              /** 1. == "('Ежемесячные расходы'), " */
+//                "('Ежемесячное планирование бюджета'), " +                                        /** Отсутсвует в чистом виде, частично заменяется следующей строкой */
+                "('Ежемесячные взносы на кредитку'), " +                                            /** 2. Вперед, для трат их позднее, Коммуналка и etc. */
+                "('Погашение затрат по длинным займам с кредитных средств'), " +                    /** 3. */
+                "('Погашение затрат по длинным займам с собственных средств'), " +                  /** 4. */
+                "('Планируемый возврат ежемесячных трат') ";                                        /** 5. Для подсчёта остатка ДС, выделенных на месяц */
 //                "('Коммунальные платежи') ";
 
         sqLiteDatabase.execSQL(sql);
@@ -405,6 +406,8 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_METER);
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_MONTH);
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_MONTH_TYPE);
 
 
         onCreate(sqLiteDatabase);
