@@ -43,18 +43,18 @@ public class MonthService {
      * Синхронизирует таблицу month с данными из expense и deposit
      * Создаёт отсутствующие записи в month и связывает с ними deposit
      */
-    public void syncMonths() {
+    public void syncMonths(Long typeId) {
         Log.d(TAG, "Начало синхронизации месяцев");
 
 
         /** Получает все уникальные месяцы из expense и deposit */
-        List<Month> monthsFromData = getAllMonthsWithData();
+        List<Month> monthsFromData = getAllMonthsWithData(typeId);
 
 
         for (Month month : monthsFromData) {
 
             /** Проверяем, есть ли такой месяц в таблице month */
-            Month existingMonth = findMonthInDb(month.getYear(), month.getMonth());
+            Month existingMonth = findMonthInDb(month.getYear(), month.getMonth(), month.getTypeId());
 
             if (existingMonth == null) {
 
@@ -81,12 +81,13 @@ public class MonthService {
 
 
     /** Проверяет наличие месяца в таблице month */
-    private Month findMonthInDb(int year, int month) {
+    private Month findMonthInDb(int year, int month, Long typeId) {
 
         Cursor cursor = dbRead.rawQuery(
                 "SELECT * FROM " + ExpenseSQLite.TABLE_MONTH +
                         " WHERE " + ExpenseSQLite.MONTH_YEAR + " = " + year +
-                        " AND " + ExpenseSQLite.MONTH_MONTH + " = " + month,
+                        " AND " + ExpenseSQLite.MONTH_MONTH + " = " + month +
+                " AND " + ExpenseSQLite.MONTH_MONTH_TYPE_ID + " = " + typeId,
                 null);
 
         Month monthObj = null;
@@ -104,6 +105,11 @@ public class MonthService {
         ContentValues cv = new ContentValues();
         cv.put(ExpenseSQLite.MONTH_YEAR, month.getYear());
         cv.put(ExpenseSQLite.MONTH_MONTH, month.getMonth());
+        cv.put(ExpenseSQLite.MONTH_MONTH_TYPE_ID, month.getTypeId());
+
+        Log.d(TAG, "insertMonth: year=" + month.getYear() +
+                ", month=" + month.getMonth() +
+                ", typeId=" + month.getTypeId());
 
         return dbWrite.insert(ExpenseSQLite.TABLE_MONTH, null, cv);
     }
@@ -117,6 +123,7 @@ public class MonthService {
 
         int year = cursor.getInt(cursor.getColumnIndexOrThrow(ExpenseSQLite.MONTH_YEAR));
         int monthValue = cursor.getInt(cursor.getColumnIndexOrThrow(ExpenseSQLite.MONTH_MONTH));
+        long typeId = cursor.getLong(cursor.getColumnIndexOrThrow(ExpenseSQLite.MONTH_MONTH_TYPE_ID));
 
         if (monthValue < 1 || monthValue > 12) {
             Log.e(TAG, "⚠️ В БД найден некорректный месяц: " + monthValue + " для ID=" + month.getId() +
@@ -126,6 +133,7 @@ public class MonthService {
 
         month.setYear(year);
         month.setMonth(monthValue);
+        month.setTypeId(typeId);
 
         return month;
     }
@@ -187,17 +195,17 @@ public class MonthService {
 
 
     /** Получает или создаёт месяц по году и номеру */
-    public Month getOrCreateMonth(int year, int month) {
+    public Month getOrCreateMonth(int year, int month, Long typeId) {
 
         /** Сначала ищет в БД */
-        Month existingMonth = findMonthInDb(year, month);
+        Month existingMonth = findMonthInDb(year, month, typeId);
         if (existingMonth != null) {
             return existingMonth;
         }
 
 
         /** Если нет - создаёт и сохраняет */
-        Month newMonth = new Month(year, month);
+        Month newMonth = new Month(year, month, typeId);
         long id = insertMonth(newMonth);
         newMonth.setId(id);
 
@@ -208,7 +216,7 @@ public class MonthService {
 
 
     /** Получает все месяцы, для которых есть расходы (typeId == 1) */
-    public List<Month> getMonthsWithExpenses() {
+    public List<Month> getMonthsWithExpenses(Long typeId) {
 
         List<Month> months = new ArrayList<>();
 
@@ -227,7 +235,7 @@ public class MonthService {
         while (cursor.moveToNext()) {
             int year = 2000 + Integer.parseInt(cursor.getString(0));
             int month = Integer.parseInt(cursor.getString(1));
-            months.add(new Month(year, month));
+            months.add(new Month(year, month, typeId));
         }
 
         cursor.close();
@@ -238,7 +246,7 @@ public class MonthService {
 
 
     /** Получает все месяцы, для которых есть взносы (typeId == 1) */
-    public List<Month> getMonthsWithDeposits() {
+    public List<Month> getMonthsWithDeposits(Long typeId) {
 
         List<Month> months = new ArrayList<>();
 
@@ -257,7 +265,7 @@ public class MonthService {
         while (cursor.moveToNext()) {
             int year = 2000 + Integer.parseInt(cursor.getString(0));
             int month = Integer.parseInt(cursor.getString(1));
-            months.add(new Month(year, month));
+            months.add(new Month(year, month, typeId));
         }
 
         cursor.close();
@@ -268,7 +276,8 @@ public class MonthService {
 
 
     /** Получает все месяцы, для которых есть данные (расходы или взносы) */
-    public List<Month> getAllMonthsWithData() {
+    public List<Month> getAllMonthsWithData(Long typeId) {
+
         List<Month> months = new ArrayList<>();
 
         String query =
@@ -296,12 +305,12 @@ public class MonthService {
             int month = Integer.parseInt(cursor.getString(1));
 
             /** Проверяеn, есть ли месяц в БД */
-            Month dbMonth = findMonthInDb(year, month);
+            Month dbMonth = findMonthInDb(year, month, typeId);
 
             if (dbMonth != null) {
                 months.add(dbMonth); /** добавляет с ID из БД */
             } else {
-                months.add(new Month(year, month)); /** добавляет без ID */
+                months.add(new Month(year, month, typeId)); /** добавляет без ID */
             }
 
         }
@@ -441,9 +450,9 @@ public class MonthService {
 
 
     /** Получает все имеющиеся MonthlyDto, для всех месяцев, для последующего вывода в интерфейсе Активити */
-    public List<MonthlyDto> getAllMonthlyDtos() {
+    public List<MonthlyDto> getAllMonthlyDtos(Long typeId) {
 
-        List<Month> months = getAllMonthsWithData();
+        List<Month> months = getAllMonthsWithData(typeId);
         List<MonthlyDto> dtos = new ArrayList<>();
 
         for (Month month : months) dtos.add(getMonthlyDto(month));

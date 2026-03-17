@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ExpenseSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     private static final String DATABASE_NAME = "ExpenseDB";
 
@@ -70,9 +70,17 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     /** Таблица месяцев */
     public static final String TABLE_MONTH = "month";
     public static final String MONTH_ID = "id";
+    public static final String MONTH_MONTH_TYPE_ID = "type_id";
     public static final String MONTH_YEAR = "year";
     public static final String MONTH_MONTH = "month";
     /** !Таблица месяцев */
+
+
+    /** Таблица типов месяцев */
+    public static final String TABLE_MONTH_TYPE = "month_type";
+    public static final String MONTH_TYPE_ID = "id";
+    public static final String MONTH_TYPE_NAME = "name";
+    /** !Таблица типов месяцев */
 
 
     /** Таблица хранит список платежей, относящихся к каждой из записей Deposit (M-to-O) */
@@ -91,6 +99,27 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     /** !Таблица типов взносов */
 
 
+    /** Таблица показаний счетчиков */
+    public static final String TABLE_METER = "meter";
+    public static final String METER_ID = "id";
+
+    public static final String METER_MONTH_ID = "month_id";
+    public static final String METER_NAME = "name";
+    public static final String METER_VALUE = "value";
+    /** !Таблица показаний счетчиков */
+
+
+    /** Таблица номеров счетов */
+    public static final String TABLE_ACCOUNT_NUMBER = "account_number";
+    public static final String ACCOUNT_NUMBER_ID = "id";
+    /** expenseId либо depositId, в зависимости от типа */
+    public static final String ACCOUNT_NUMBER_NUMBER_PARENT_ID = "parent_id";
+    /** 0 либо 1 - 0 это expense, 1 это deposit */
+    public static final String ACCOUNT_NUMBER_TYPE = "name";
+    public static final String ACCOUNT_NUMBER_NUMBER = "number";
+    /** !Таблица номеров счетов */
+
+
     public ExpenseSQLite(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -103,13 +132,18 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         createExpensePaymentTable(sqLiteDatabase);
         createExpenseTypeTable(sqLiteDatabase);
         insertExpenseType(sqLiteDatabase);
-        createMonthTable(sqLiteDatabase);
+        createAccountNumberTable(sqLiteDatabase);
 
         createDepositTable(sqLiteDatabase);
         createDepositPaymentTable(sqLiteDatabase);
         createDepositTypeTable(sqLiteDatabase);
         insertDepositType(sqLiteDatabase);
 
+        createMonthTypeTable(sqLiteDatabase);
+        insertMonthTypes(sqLiteDatabase);
+        createMonthTable(sqLiteDatabase);
+
+        createMeterTable(sqLiteDatabase);
     }
 
 
@@ -236,13 +270,38 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
                 MONTH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 MONTH_YEAR + " INTEGER NOT NULL, " +
                 MONTH_MONTH + " INTEGER NOT NULL, " +
-                "UNIQUE(" + MONTH_YEAR + ", " + MONTH_MONTH + "), " +
+                MONTH_MONTH_TYPE_ID + " INTEGER NOT NULL, " +
+                "UNIQUE(" + MONTH_YEAR + ", " + MONTH_MONTH + ", "+ MONTH_MONTH_TYPE_ID + "), " +
 /*                "CHECK (" + MONTH_MONTH + " >= 1 AND " + MONTH_MONTH + " <= 12) " + */
                 "CHECK (" + MONTH_MONTH + " BETWEEN 1 AND 12) " +
                 ")";
 
         sqLiteDatabase.execSQL(sql);
 
+    }
+
+
+    /** Создание таблицы типов месяцев */
+    public void createMonthTypeTable(SQLiteDatabase sqLiteDatabase) {
+
+        String sql = "CREATE TABLE " + TABLE_MONTH_TYPE + " ( " +
+                MONTH_TYPE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MONTH_TYPE_NAME + " TEXT NOT NULL UNIQUE" +
+                ")";
+
+        sqLiteDatabase.execSQL(sql);
+    }
+
+
+    /** Заполнение таблицы типов месяцев */
+    public void insertMonthTypes(SQLiteDatabase sqLiteDatabase) {
+
+        String sql = "INSERT INTO " + TABLE_MONTH_TYPE +
+                " (" + MONTH_TYPE_NAME + ") VALUES " +
+                "('Ежемесячные расходы'), " +                                                       /** typeId = 1 */
+                "('Передача показаний')";                                                           /** typeId = 2 */
+
+        sqLiteDatabase.execSQL(sql);
     }
 
 
@@ -293,6 +352,34 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     }
 
 
+    public void createMeterTable(SQLiteDatabase sqLiteDatabase) {
+
+        String sql = "CREATE TABLE " + TABLE_METER + " ( " +
+                METER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                METER_MONTH_ID + " INTEGER NOT NULL, " +
+                METER_NAME + " TEXT NOT NULL, " +
+                METER_VALUE + " REAL NOT NULL " +
+                ")";
+
+        sqLiteDatabase.execSQL(sql);
+
+    }
+
+
+    public void createAccountNumberTable(SQLiteDatabase sqLiteDatabase) {
+
+        String sql = "CREATE TABLE " + TABLE_ACCOUNT_NUMBER + " ( " +
+                ACCOUNT_NUMBER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ACCOUNT_NUMBER_NUMBER_PARENT_ID + " INTEGER NOT NULL, " +
+                ACCOUNT_NUMBER_TYPE + " INTEGER NOT NULL, " +
+                ACCOUNT_NUMBER_NUMBER + " TEXT NOT NULL, " +
+                "CHECK (" + ACCOUNT_NUMBER_TYPE + " IN (0, 1)) " +
+                ")";
+
+        sqLiteDatabase.execSQL(sql);
+    }
+
+
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
@@ -305,7 +392,7 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_TYPE);
 
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_MONTH);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNT_NUMBER);
 
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_DEPOSIT);
@@ -313,6 +400,11 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_DEPOSIT_PAYMENT);
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_DEPOSIT_TYPE);
+
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_METER);
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_MONTH);
 
 
         onCreate(sqLiteDatabase);

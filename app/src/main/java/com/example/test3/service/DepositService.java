@@ -1,5 +1,7 @@
 package com.example.test3.service;
 
+import static com.example.test3.month.Month.TYPE_MONTHLY_EXPENSES;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -108,7 +110,7 @@ public class DepositService {
                 Log.d(TAG, "Для deposit type=1 определяем месяц: " + month + "/" + year);
 
                 /** Получает или создаём объект месяца */
-                Month monthObj = monthService.getOrCreateMonth(year, month);
+                Month monthObj = monthService.getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);
 
                 if (monthObj != null && monthObj.getId() != null) {
 

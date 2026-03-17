@@ -6,7 +6,11 @@ import java.io.Serializable;
  * и для прикрепления соответствующего им итогового возврата */
 public class Month implements Serializable {
 
+    public static final Long TYPE_MONTHLY_EXPENSES = 1L;                                            /** Константа для типа "Ежемесячные расходы" */
+    public static final Long TYPE_METER_READINGS = 2L;                                              /** Константа для типа "Передача показаний" */
+
     private Long id;
+    private Long typeId;
     private Integer year;
     private Integer month;                                                                          /** 1-12 */
     private String monthYear;                                                                       /** Март 2026 */
@@ -15,9 +19,10 @@ public class Month implements Serializable {
     public Month() {}
 
 
-    public Month(int year, int month) {
+    public Month(int year, int month, Long typeId) {
         this.year = year;
         this.month = month;
+        this.typeId = typeId;
         this.monthYear = getMonthName(month) + " " + year;
     }
 
@@ -54,6 +59,14 @@ public class Month implements Serializable {
     private void updateMonthYear() {
         if(this.year != null && this.month != null) this.monthYear = getMonthName(month) + " " + year;
     }
+
+
+    public Long getTypeId() {return typeId;}
+    public void setTypeId(Long typeId) {this.typeId = typeId;}
+
+    public void setYear(Integer year) {this.year = year;}
+
+    public void setMonth(Integer month) {this.month = month;}
 
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.test3;
 
+import static com.example.test3.month.Month.TYPE_MONTHLY_EXPENSES;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,6 +44,7 @@ public class MonthAdminActivity extends AppCompatActivity {
     private List<MonthlyDto> monthlyDtos;
     private MonthAdminAdapter adapter;
     private MonthlyDto selectedMonthDto = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +133,7 @@ public class MonthAdminActivity extends AppCompatActivity {
 
     private void loadData() {
 
-        monthlyDtos = monthService.getAllMonthlyDtos();
+        monthlyDtos = monthService.getAllMonthlyDtos(TYPE_MONTHLY_EXPENSES);
 
         if (monthlyDtos.isEmpty()) {
             Toast.makeText(this, "Нет данных за месяцы", Toast.LENGTH_LONG).show();
@@ -341,13 +344,6 @@ public class MonthAdminActivity extends AppCompatActivity {
                 });
 
         listView.setAdapter(adapter);
-
-
-        /** Исходная рабочая реализация */
-        /*
-        builder.setView(dialogView);
-        AlertDialog dialog = builder.create();
-        */
 
 
         buttonClose.setOnClickListener(v -> {
