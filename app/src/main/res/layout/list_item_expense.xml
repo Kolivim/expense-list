@@ -3,23 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="12dp">
 
-    <TextView
-        android:id="@+id/textViewExpenseInfo"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="14sp"
-        android:paddingEnd="8dp"/>
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textViewExpenseDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="#666666"
-        android:layout_marginEnd="8dp"/>
+        <TextView
+            android:id="@+id/textViewExpenseInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/textViewExpenseDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginTop="2dp"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/buttonAddPayment"
@@ -27,6 +32,214 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:backgroundTint="#4CAF50"
-        android:minWidth="35dp"/>
+        android:minWidth="48dp"
+        android:layout_gravity="center_vertical"
+        />
 
 </LinearLayout>
+
+
+                    <!-- Первый вариант : -->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:padding="8dp">-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExpenseInfo"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        android:textSize="14sp"-->
+<!--        android:paddingEnd="8dp"/>-->
+
+<!--    &lt;!&ndash;        android:maxLines="2"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:ellipsize="end"&ndash;&gt;-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExpenseDate"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="12sp"-->
+<!--        android:textColor="#666666"-->
+<!--        android:layout_marginEnd="8dp"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonAddPayment"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="+"-->
+<!--        android:backgroundTint="#4CAF50"-->
+<!--        android:minWidth="25dp"/>-->
+
+<!--</LinearLayout>-->
+                        <!-- !Первый вариант -->
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="vertical"-->
+<!--    android:padding="8dp"-->
+<!--    android:background="?android:attr/selectableItemBackground">-->
+
+<!--    &lt;!&ndash; Верхняя строка с названием и датой &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseInfo"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:maxLines="3"-->
+<!--            android:ellipsize="end"/>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseDate"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="12sp"-->
+<!--            android:textColor="#666666"-->
+<!--            android:layout_marginStart="8dp"/>-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Нижняя строка с суммой и кнопкой &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="4dp">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewTotalAmount"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:textSize="14sp"-->
+<!--            android:textColor="#4CAF50"-->
+<!--            android:text="Сумма: 0.00 руб."/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonAddPayment"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="+"-->
+<!--            android:backgroundTint="#4CAF50"-->
+<!--            android:minWidth="48dp"/>-->
+<!--    </LinearLayout>-->
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:padding="8dp"-->
+<!--    android:minHeight="64dp">-->
+
+<!--    &lt;!&ndash; Левая часть с названием и суммой &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        android:orientation="vertical">-->
+
+<!--        &lt;!&ndash; Первая строка: название + дата (горизонтально) &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewExpenseInfo"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:textSize="14sp"-->
+<!--                android:maxLines="3"-->
+<!--                android:ellipsize="end"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewExpenseDate"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#666666"-->
+<!--                android:layout_marginStart="8dp"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Вторая строка: сумма &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/textViewTotalAmount"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="13sp"-->
+<!--            android:textColor="#4CAF50"-->
+<!--            android:text="Сумма: 0.00 руб."-->
+<!--            android:layout_marginTop="4dp"/>-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Кнопка справа &ndash;&gt;-->
+<!--    <Button-->
+<!--        android:id="@+id/buttonAddPayment"-->
+<!--        android:layout_width="48dp"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:text="+"-->
+<!--        android:textSize="24sp"-->
+<!--        android:textColor="#4A148C"-->
+<!--        android:gravity="center"-->
+<!--        android:backgroundTint="#E1BEE7"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:insetTop="0dp"-->
+<!--        android:insetBottom="0dp"/>-->
+<!--</LinearLayout>-->
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="wrap_content"-->
+    <!--    android:padding="8dp"-->
+    <!--    android:minHeight="48dp">-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textViewExpenseInfo"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintEnd_toStartOf="@+id/textViewExpenseDate"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        android:textSize="14sp"-->
+    <!--        app:layout_constrainedWidth="true"/>-->
+
+    <!--    <TextView-->
+    <!--        android:id="@+id/textViewExpenseDate"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintEnd_toStartOf="@+id/buttonAddPayment"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        android:layout_marginEnd="8dp"-->
+    <!--        android:textSize="12sp"-->
+    <!--        android:textColor="#666666"/>-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/buttonAddPayment"-->
+    <!--        android:layout_width="48dp"-->
+    <!--        android:layout_height="48dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        android:text="+"-->
+    <!--        android:textSize="24sp"-->
+    <!--        android:textColor="#9C27B0"-->
+    <!--        android:gravity="center"-->
+    <!--        android:backgroundTint="#4CAF50"-->
+    <!--        android:minWidth="35dp"/>-->
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
