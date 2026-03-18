@@ -449,6 +449,10 @@ public class MonthAdminActivity extends AppCompatActivity {
 
 
         builder.setNegativeButton("Отмена", null);
+        builder.setNeutralButton("Список плановых взносов", (dialog, which) -> {
+            showPlannedDepositsListDialog();
+        });
+
         builder.show();
     }
 
@@ -500,6 +504,127 @@ public class MonthAdminActivity extends AppCompatActivity {
                         listViewMonths.postDelayed(() -> {
                             Log.d(TAG, "Показываем обновлённый список взносов");
                             showDepositsListDialog();
+                        }, 300);
+
+                    } else {
+                        Log.e(TAG, "Ошибка при удалении deposit ID=" + deposit.getId());
+                        Toast.makeText(this, "Ошибка при удалении", Toast.LENGTH_SHORT).show();
+                    }
+
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
+
+    }
+
+
+    /** Показывает список плановых взносов (тип 5) для выбранного месяца */
+    private void showPlannedDepositsListDialog() {
+
+        if (selectedMonthDto == null) {
+            Log.d(TAG, "showPlannedDepositsListDialog: selectedMonthDto == null");
+            Toast.makeText(this, "Выберите месяц", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Log.d(TAG, "showPlannedDepositsListDialog для месяца ID=" + selectedMonthDto.getMonth().getId() +
+                ", " + selectedMonthDto.getMonth().getMonthYear());
+
+
+        List<Deposit> plannedDepositsForMonth = depositService.getPlannedDepositsForMonth(selectedMonthDto.getMonth().getId());
+
+//        List<Deposit> allPlannedDeposits = depositService.getDepositsByType(TYPE_PLANNED_RETURN);
+//        List<Deposit> plannedDepositsForMonth = new ArrayList<>();
+//        for (Deposit deposit : allPlannedDeposits) {
+//            if (deposit.getExpenseId() != null &&
+//                    deposit.getExpenseId().equals(selectedMonthDto.getMonth().getId())) {
+//                plannedDepositsForMonth.add(deposit);
+//            }
+//        }
+
+
+        Log.d(TAG, "Получено плановых взносов из БД: " + plannedDepositsForMonth.size());
+
+        if (plannedDepositsForMonth.isEmpty()) {
+            Log.d(TAG, "Нет плановых взносов за этот месяц");
+            Toast.makeText(this, "Нет плановых взносов за этот месяц", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        for (Deposit d : plannedDepositsForMonth) {
+            Log.d(TAG, "  Плановый взнос ID=" + d.getId() + ", название=" + d.getName() +
+                    ", сумма=" + d.getTotalAmount() + ", платежей=" +
+                    (d.getPayments() != null ? d.getPayments().size() : 0));
+        }
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Плановые взносы за " + selectedMonthDto.getMonth().getMonthYear());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_deposit_list, null);
+        ListView listView = dialogView.findViewById(R.id.listViewDeposits);
+        Button buttonClose = dialogView.findViewById(R.id.buttonClose);
+
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+
+        DepositListAdapter adapter = new DepositListAdapter(this, plannedDepositsForMonth,
+                new DepositListAdapter.OnDepositActionListener() {
+
+                    @Override
+                    public void onEditClick(Deposit deposit) {
+
+                        Log.d(TAG, "onEditClick: planned deposit ID=" + deposit.getId());
+                        dialog.dismiss();                                                           /** Закрывает диалог списка */
+                        Intent intent = new Intent(MonthAdminActivity.this, DepositDetailActivity.class);
+                        intent.putExtra("deposit_id", deposit.getId());
+                        startActivity(intent);
+
+                    }
+
+                    @Override
+                    public void onDeleteClick(Deposit deposit) {
+                        Log.d(TAG, "onDeleteClick: planned deposit ID=" + deposit.getId());
+                        confirmDeletePlannedDeposit(deposit, dialog);
+                    }
+
+                });
+
+        listView.setAdapter(adapter);
+
+        buttonClose.setOnClickListener(v -> {
+            Log.d(TAG, "Диалог плановых взносов закрыт по кнопке");
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+
+    /** Метод для подтверждения удаления планового взноса */
+    private void confirmDeletePlannedDeposit(Deposit deposit, AlertDialog parentDialog) {
+        Log.d(TAG, "confirmDeletePlannedDeposit: пытаемся удалить deposit ID=" + deposit.getId() +
+                ", название=" + deposit.getName());
+
+        new AlertDialog.Builder(this)
+                .setTitle("Удаление планового взноса")
+                .setMessage("Удалить плановый взнос \"" + deposit.getName() + "\" вместе со всеми платежами?")
+                .setPositiveButton("Удалить", (d, which) -> {
+                    Log.d(TAG, "Пользователь подтвердил удаление");
+
+                    boolean success = depositService.deleteDeposit(deposit.getId());
+                    Log.d(TAG, "Результат удаления: " + success);
+
+                    if (success) {
+                        Toast.makeText(this, "Плановый взнос удалён", Toast.LENGTH_SHORT).show();
+                        parentDialog.dismiss();                                                     /** Закрывает диалог списка */
+                        loadData();
+
+                        /** Показываемт обновлённый список */
+                        listViewMonths.postDelayed(() -> {
+                            Log.d(TAG, "Показываем обновлённый список плановых взносов");
+                            showPlannedDepositsListDialog();
                         }, 300);
 
                     } else {

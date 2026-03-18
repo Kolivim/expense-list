@@ -396,6 +396,35 @@ public class DepositService {
 
 
     /**
+     * Получает плановые взносы (тип 5) для указанного месяца
+     * @param monthId ID месяца
+     * @return список Deposit с типом 5 для этого месяца
+     */
+    public List<Deposit> getPlannedDepositsForMonth(long monthId) {
+        List<Deposit> deposits = new ArrayList<>();
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + MonthService.TYPE_MONTHLY_DEPOSIT_PLAN +
+                        " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+                        " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + monthId +
+                        " ORDER BY " + ExpenseSQLite.DEPOSIT_DATETIME + " DESC",
+                null);
+
+
+        while (cursor.moveToNext()) {
+            Deposit deposit = cursorToDeposit(cursor);
+            loadPaymentsForDeposit(deposit);
+            deposits.add(deposit);
+        }
+
+        cursor.close();
+
+        return deposits;
+    }
+
+
+    /**
      * Обновляет существующий deposit
      * @param deposit объект Deposit с обновлёнными данными
      * @return true если успешно, false в противном случае
