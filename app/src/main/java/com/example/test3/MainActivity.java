@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.Manifest;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -49,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
 
         /* getScreenSize(); */
 
+
+        /** Настройка Toolbar */
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Мои расходы");
+        }
+
+
         expenseService = new ExpenseService(getBaseContext());
         listView = findViewById(R.id.expenseList);
 
@@ -80,6 +92,33 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(expenseAdapter);
 
         clearSelection();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+//        View rootView = getWindow().getDecorView().getRootView();
+
+        if (id == R.id.action_month_admin) {
+            openMonthAdmin(null);
+            return true;
+        } else if (id == R.id.action_export_txt) {
+            exportToTxt(null);
+            return true;
+        } else if (id == R.id.action_export_json) {
+            exportToJson(null);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 

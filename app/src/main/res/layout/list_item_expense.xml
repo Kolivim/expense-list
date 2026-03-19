@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:padding="8dp">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -15,7 +15,8 @@
             android:id="@+id/textViewExpenseInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"/>
+            android:lineSpacingExtra="0dp"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/textViewExpenseDate"
@@ -23,6 +24,7 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textColor="#666666"
+            android:lineSpacingExtra="0dp"
             android:layout_marginTop="2dp"/>
     </LinearLayout>
 
@@ -32,7 +34,8 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:backgroundTint="#4CAF50"
-        android:minWidth="48dp"
+        android:minWidth="30dp"
+        android:lineSpacingExtra="0dp"
         android:layout_gravity="center_vertical"
         />
 

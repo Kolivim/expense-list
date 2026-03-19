@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="48dp"
+    android:layout_height="?android:attr/actionBarSize"
+    android:gravity="center">
+
+    <!-- Иконка уведомлений -->
+    <ImageView
+        android:id="@+id/icon_notification"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_notifications"
+        android:tint="@android:color/white" />
+
+    <!-- Бейдж (кружок с числом) -->
+    <TextView
+        android:id="@+id/badge_count"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="top|end"
+        android:background="@drawable/badge_background"
+        android:text="3"
+        android:textSize="10sp"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:visibility="gone" />
+
+</FrameLayout>

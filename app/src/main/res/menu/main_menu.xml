@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Управление месяцами -->
+    <item
+        android:id="@+id/action_month_admin"
+        android:title="Управление месяцами"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
+
+<!--    <item-->
+<!--        android:id="@+id/separator"-->
+<!--        android:title="───────────────────"-->
+<!--        android:enabled="false" />-->
+
+
+    <!-- Экспорт (с подменю) -->
+    <item
+        android:id="@+id/action_export"
+        android:title="Экспорт"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/action_export_txt"
+                android:title="Экспорт в TXT" />
+            <item
+                android:id="@+id/action_export_json"
+                android:title="Экспорт в JSON" />
+        </menu>
+    </item>
+
+</menu>
+
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<!--<menu xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto">-->
+
+<!--&lt;!&ndash; Управление месяцами с ActionView &ndash;&gt;-->
+<!--<item-->
+<!--    android:id="@+id/action_month_admin"-->
+<!--    android:title="Управление месяцами"-->
+<!--    android:icon="@drawable/ic_calendar"-->
+<!--    app:actionViewClass="android.widget.Button"-->
+<!--    app:showAsAction="never" />-->
+
+<!--&lt;!&ndash; Экспорт (с подменю) &ndash;&gt;-->
+<!--<item-->
+<!--    android:id="@+id/action_export"-->
+<!--    android:title="Экспорт"-->
+<!--    app:showAsAction="never">-->
+<!--    <menu>-->
+<!--        <item-->
+<!--            android:id="@+id/action_export_txt"-->
+<!--            android:title="Экспорт в TXT"-->
+<!--            app:actionViewClass="android.widget.Button" />-->
+<!--        <item-->
+<!--            android:id="@+id/action_export_json"-->
+<!--            android:title="Экспорт в JSON"-->
+<!--            app:actionViewClass="android.widget.Button" />-->
+<!--    </menu>-->
+<!--</item>-->
+
+<!--</menu>-->
