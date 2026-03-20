@@ -15,6 +15,7 @@ import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_TYPE_ID;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE_PAYMENT;
+import static com.example.test3.service.DepositService.TYPE_CREDIT_LOAN_REPAYMENT;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,11 +24,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.test3.dao.ExpenseSQLite;
+import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.util.Util;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExpenseService {
 
@@ -306,7 +309,7 @@ public class ExpenseService {
     }
 
     public boolean deletePayment(Expense expense, int paymentIndex) {
-        // Получаем ID платежа из БД
+
         Long paymentId = getPaymentId(expense.getId(), paymentIndex);
         if (paymentId == null) return false;
 
@@ -315,7 +318,6 @@ public class ExpenseService {
                 new String[]{String.valueOf(paymentId)});
 
         if (result > 0) {
-            // Удаляем из объекта
             expense.getExpenseList().remove(paymentIndex);
             return true;
         }
@@ -369,6 +371,30 @@ public class ExpenseService {
         Log.d(TAG, "Результат сохранения описания: " + result);
 
         return result > 0;
+    }
+
+
+    public double getCurrentLoanAmount(Expense expense) {
+
+        double totalPayments = expense.getExpenseListTotalAmount();
+
+
+        double totalRepayments = 0.0;
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT SUM(" + ExpenseSQLite.DEPOSIT_PAYMENT + ") " +
+                        "FROM " + ExpenseSQLite.TABLE_DEPOSIT_PAYMENT + " dp " +
+                        "JOIN " + ExpenseSQLite.TABLE_DEPOSIT + " d ON dp." + ExpenseSQLite.DEPOSIT_PAYMENT_DEPOSIT_ID + " = d." + ExpenseSQLite.DEPOSIT_ID + " " +
+                        "WHERE d." + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_CREDIT_LOAN_REPAYMENT + " " +
+                        "AND d." + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expense.getId(),
+                null);
+
+        if (cursor.moveToFirst() && !cursor.isNull(0)) {
+            totalRepayments = cursor.getDouble(0);
+        }
+        cursor.close();
+
+        return totalPayments - totalRepayments;
     }
 
 

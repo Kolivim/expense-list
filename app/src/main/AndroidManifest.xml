@@ -34,6 +34,10 @@
             android:name=".LongLoansActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".LongLoanDetailActivity"
+            android:exported="false" />
+
 
         <activity
             android:name=".MonthAdminActivity"

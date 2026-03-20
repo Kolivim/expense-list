@@ -23,19 +23,22 @@ public class ExpenseDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "ExpenseDetailActivity";
 
-    private TextView textViewName, textViewDescription, textViewDate, textViewTotal;
-    private ListView listViewPayments;
-    private EditText editTextNewPayment;
-    private Button buttonAdd, buttonBack, buttonChooseTextColor, buttonEditDescription;
+    protected TextView textViewName, textViewDescription, textViewDate, textViewTotal;
+    protected ListView listViewPayments;
+    protected EditText editTextNewPayment;
+    protected Button buttonAdd, buttonBack, buttonChooseTextColor, buttonEditDescription;
 
-    private ExpenseService expenseService;
-    private Expense currentExpense;
-    private PaymentAdapter paymentAdapter;
+    protected ExpenseService expenseService;
+    protected Expense currentExpense;
+    protected PaymentAdapter paymentAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_expense_detail);
+
+        setContentView(getLayoutResourceId());                                                      //        setContentView(R.layout.activity_expense_detail);
 
         long expenseId = getIntent().getLongExtra("expense_id", -1);
         Log.d(TAG, "Получен ID: " + expenseId);
@@ -45,11 +48,16 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         initViews();
         setupListeners();
 
-        // Загружаем данные
         loadExpense(expenseId);
     }
 
-    private void initViews() {
+
+    protected int getLayoutResourceId() {
+        return R.layout.activity_expense_detail;
+    }
+
+
+    protected void initViews() {
         textViewName = findViewById(R.id.textViewExpenseName);
         textViewDescription = findViewById(R.id.textViewExpenseDescription);
         textViewDate = findViewById(R.id.textViewExpenseDate);
@@ -62,7 +70,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         buttonEditDescription = findViewById(R.id.buttonEditDescription);
     }
 
-    private void setupListeners() {
+    protected void setupListeners() {
         buttonAdd.setOnClickListener(v -> addNewPayment());
         buttonBack.setOnClickListener(v -> finish());
         buttonChooseTextColor.setOnClickListener(v -> showTextColorPickerDialog());
@@ -70,7 +78,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     }
 
 
-    private void showTextColorPickerDialog() {
+    protected void showTextColorPickerDialog() {
 
         /** Массив доступных цветов */
         final Integer[] textColors = {
@@ -129,7 +137,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     }
 
 
-    private void loadExpense(long expenseId) {
+    protected void loadExpense(long expenseId) {
 
         currentExpense = expenseService.getExpenseById(expenseId);
 
@@ -142,7 +150,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         updateDisplay();
     }
 
-    private void updateDisplay() {
+    protected void updateDisplay() {
         textViewName.setText(currentExpense.getName());
 
         if (currentExpense.getDescription() != null && !currentExpense.getDescription().isEmpty()) {
@@ -168,13 +176,12 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         listViewPayments.setAdapter(paymentAdapter);
     }
 
-    private void refreshData() {
-        Log.d(TAG, "Обновление данных...");
-        // Просто перезагружаем расход заново***
+    protected void refreshData() {
+        Log.d(TAG, "Обновление данных для currentExpense с id = ".concat(currentExpense.getId().toString()));
         loadExpense(currentExpense.getId());
     }
 
-    private void addNewPayment() {
+    protected void addNewPayment() {
         String paymentStr = editTextNewPayment.getText().toString().trim();
 
         if (paymentStr.isEmpty()) {
@@ -188,7 +195,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
             if (expenseService.addPaymentToExpense(currentExpense, payment)) {
                 editTextNewPayment.setText("");
                 Toast.makeText(this, "Платёж добавлен", Toast.LENGTH_SHORT).show();
-                // Перезагружаем данные
+
                 refreshData();
             } else {
                 Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();
@@ -200,7 +207,7 @@ public class ExpenseDetailActivity extends AppCompatActivity {
 
 
     /** Диалог редактирования описания */
-    private void showEditDescriptionDialog() {
+    protected void showEditDescriptionDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Редактировать описание");

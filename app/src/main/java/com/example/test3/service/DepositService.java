@@ -21,6 +21,9 @@ public class DepositService {
     private static final String TAG = "DepositService";
 
     public static Long TYPE_MONTHLY_DEPOSIT = 1L;                                                   /** Погашение ежемесячных затрат */
+    public static Long TYPE_CREDIT_LOAN_REPAYMENT = 3L;                                             /** Погашение затрат по длинным займам с кредитных средств */
+    public static Long TYPE_MYSELF_LOAN_REPAYMENT = 4L;                                             /** Погашение затрат по длинным займам с собственных средств */
+    public static Long TYPE_PLANNED_RETURN = 5L;                                                    /** Планируемый возврат */
 
     private Context context;
     private ExpenseSQLite dbHelper;
@@ -648,6 +651,33 @@ public class DepositService {
         }
 
         return deposit;
+    }
+
+
+    /**
+     * Получает список Погашений(Deposit) с типом 3, для указанного займа
+     * @param expenseId ID займа (Expense)
+     * @return список Погашений
+     */
+    public List<Deposit> getRepaymentsForExpense(long expenseId) {
+        List<Deposit> repayments = new ArrayList<>();
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_CREDIT_LOAN_REPAYMENT +
+                            " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId +
+                            " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+                        " ORDER BY " + ExpenseSQLite.DEPOSIT_DATETIME + " ASC",
+                null);
+
+        while (cursor.moveToNext()) {
+            Deposit deposit = cursorToDeposit(cursor);
+            loadPaymentsForDeposit(deposit);
+            repayments.add(deposit);
+        }
+
+        cursor.close();
+        return repayments;
     }
 
 

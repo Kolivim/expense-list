@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- Левая часть: информация о займе -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewExpenseInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="0dp"
+            android:textSize="14sp" />
+
+        <!-- Строка: Погашено | Количество погашений -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Погашено: "
+                android:textSize="12sp"
+                android:textColor="#4CAF50" />
+
+            <TextView
+                android:id="@+id/textViewTotalRepaid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#4CAF50"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" | "
+                android:textSize="12sp"
+                android:textColor="#4CAF50" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Погашений: "
+                android:textSize="12sp"
+                android:textColor="#4CAF50" />
+
+            <TextView
+                android:id="@+id/textViewPaymentsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#4CAF50"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Строка: Остаток -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Остаток: "
+                android:textSize="12sp"
+                android:textColor="#666666" />
+
+            <TextView
+                android:id="@+id/textViewRemainingDebt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Дата -->
+        <TextView
+            android:id="@+id/textViewExpenseDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:lineSpacingExtra="0dp"
+            android:layout_marginTop="2dp" />
+
+    </LinearLayout>
+
+    <!-- Правая часть: кнопки друг под другом -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+
+        <Button
+            android:id="@+id/buttonRepayLoan"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Погасить"
+            android:backgroundTint="#FF9800"
+            android:textSize="12sp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:id="@+id/buttonAddPayment"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:backgroundTint="#4CAF50"
+            android:textSize="20sp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:padding="8dp">-->
+
+<!--    &lt;!&ndash; Левая часть: информация о займе &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        android:orientation="vertical">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseInfo"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:textSize="14sp" />-->
+
+<!--        &lt;!&ndash; Строка: Погашено (сумма) &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Погашено: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewTotalRepaid"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Строка: Количество погашений (отдельное поле) &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Погашений: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#2196F3"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewPaymentsCount"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#2196F3"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Строка: Остаток &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Остаток: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#666666"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewRemainingDebt"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Дата &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseDate"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="12sp"-->
+<!--            android:textColor="#666666"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:layout_marginTop="2dp"/>-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Правая часть: кнопки друг под другом &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_gravity="center_vertical">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonRepayLoan"-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Погасить"-->
+<!--            android:backgroundTint="#FF9800"-->
+<!--            android:textSize="12sp"-->
+<!--            android:paddingTop="8dp"-->
+<!--            android:paddingBottom="8dp"-->
+<!--            android:layout_marginBottom="4dp"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonAddPayment"-->
+<!--            android:layout_width="80dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="+"-->
+<!--            android:backgroundTint="#4CAF50"-->
+<!--            android:textSize="20sp"-->
+<!--            android:paddingTop="4dp"-->
+<!--            android:paddingBottom="4dp"-->
+<!--            android:textStyle="bold"/>-->
+
+<!--    </LinearLayout>-->
+
+<!--</LinearLayout>-->
+
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:padding="8dp">-->
+
+<!--    &lt;!&ndash; Левая часть: информация о займе &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        android:orientation="vertical">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseInfo"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:textSize="14sp" />-->
+
+<!--        &lt;!&ndash; Строка: Погашено &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Погашено: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewTotalRepaid"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Строка: Остаток (на отдельной строке) &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Остаток: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#666666"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewRemainingDebt"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        &lt;!&ndash; Дата &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseDate"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="12sp"-->
+<!--            android:textColor="#666666"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:layout_marginTop="2dp"/>-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Правая часть: кнопки друг под другом &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_gravity="center_vertical">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonRepayLoan"-->
+<!--            android:layout_width="70dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Погасить"-->
+<!--            android:backgroundTint="#FF9800"-->
+<!--            android:textSize="11sp"-->
+<!--            android:paddingTop="8dp"-->
+<!--            android:paddingBottom="8dp"-->
+<!--            android:layout_marginBottom="4dp"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonAddPayment"-->
+<!--            android:layout_width="70dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="+"-->
+<!--            android:backgroundTint="#4CAF50"-->
+<!--            android:textSize="18sp"-->
+<!--            android:paddingTop="4dp"-->
+<!--            android:paddingBottom="4dp"-->
+<!--            android:textStyle="bold"/>-->
+
+<!--    </LinearLayout>-->
+
+<!--</LinearLayout>-->
+
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal"-->
+<!--    android:padding="8dp">-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_weight="1"-->
+<!--        android:orientation="vertical">-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseInfo"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:textSize="14sp" />-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="2dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Погашено: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewTotalRepaid"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#4CAF50"-->
+<!--                android:textStyle="bold"-->
+<!--                android:layout_marginEnd="8dp"/>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Остаток: "-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="#666666"/>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewRemainingDebt"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textStyle="bold"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/textViewExpenseDate"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="12sp"-->
+<!--            android:textColor="#666666"-->
+<!--            android:lineSpacingExtra="0dp"-->
+<!--            android:layout_marginTop="2dp"/>-->
+<!--    </LinearLayout>-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_gravity="center_vertical">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonRepayLoan"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Погасить"-->
+<!--            android:backgroundTint="#FF9800"-->
+<!--            android:minWidth="60dp"-->
+<!--            android:textSize="11sp"-->
+<!--            android:layout_marginEnd="4dp"/>-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonAddPayment"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="+"-->
+<!--            android:backgroundTint="#4CAF50"-->
+<!--            android:minWidth="30dp"-->
+<!--            android:lineSpacingExtra="0dp"/>-->
+
+<!--    </LinearLayout>-->
+
+<!--</LinearLayout>-->
