@@ -107,7 +107,8 @@ public class ExpenseDetailActivity extends AppCompatActivity {
     }
 
 
-    private void loadExpense(long expenseId) {
+    @Deprecated
+    private void loadExpenseOld(long expenseId) {
         // Получаем свежие данные из БД
         ArrayList<Expense> expenses = expenseService.getExpenseList();
 
@@ -117,6 +118,20 @@ public class ExpenseDetailActivity extends AppCompatActivity {
                 break;
             }
         }
+
+        if (currentExpense == null) {
+            Toast.makeText(this, "Расход не найден", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        updateDisplay();
+    }
+
+
+    private void loadExpense(long expenseId) {
+
+        currentExpense = expenseService.getExpenseById(expenseId);
 
         if (currentExpense == null) {
             Toast.makeText(this, "Расход не найден", Toast.LENGTH_SHORT).show();

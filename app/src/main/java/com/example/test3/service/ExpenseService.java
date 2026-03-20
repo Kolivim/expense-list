@@ -101,6 +101,45 @@ public class ExpenseService {
     }
 
 
+    /**
+     * Получает расход по его ID
+     * @param id ID расхода
+     * @return объект Expense или null, если не найден
+     */
+    public Expense getExpenseById(long id) {
+
+        Cursor query = dbRead.rawQuery(
+                "SELECT * FROM " + TABLE_EXPENSE + " " +
+                        " WHERE " + EXPENSE_ID + " = " + id,
+                null
+        );
+
+        Expense expense = null;
+
+        if (query.moveToFirst()) {
+            Long expenseId = query.getLong(0);
+            Long returnTypeId = query.getLong(1);
+            String expenseName = query.getString(2);
+            String expenseDescription = query.getString(3);
+            String expenseDateTime = query.getString(4);
+            int expenseIsDelete = query.getInt(5);
+            int expenseRowColor = query.getInt(6);
+
+            expense = new Expense(expenseId, returnTypeId, expenseName, expenseDescription,
+                    ZonedDateTime.parse(expenseDateTime, Util.dateFormatterInsert),
+                    (expenseIsDelete == 1), expenseRowColor);
+
+
+            /** Загружает платежи для этого расхода */
+            setExpensePayments(expense);
+        }
+
+        query.close();
+
+        return expense;
+    }
+
+
     public void setExpenseListPayments(ArrayList<Expense> expenseList) {
         for (Expense expense : expenseList) setExpensePayments(expense);
     }

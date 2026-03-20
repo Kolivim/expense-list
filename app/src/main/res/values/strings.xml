@@ -1,5 +1,20 @@
 <resources>
+
     <string name="app_name">Test3</string>
     <string name="save">Сохранить</string>
     <string name="update">Обновить</string>
+
+
+    <string name="expense_monthly">Ежемесячные расходы</string>
+    <string name="expense_monthly_planning">Ежемесячное планирование бюджета</string>
+    <string name="expense_long_credit_loans">Длинные займы с кредитных средств</string>
+    <string name="expense_long_myself_loans">Длинные займы с собственных средств</string>
+    <string name="expense_utility_bills">Коммунальные платежи</string>
+
+<!--    "('Погашение ежемесячных затрат')-->
+<!--    "('Ежемесячные взносы на кредитку')-->
+<!--    "('Погашение затрат по длинным займам с кредитных средств')-->
+<!--    "('Погашение затрат по длинным займам с собственных средств')-->
+<!--    "('Планируемый возврат ежемесячных трат')-->
+
 </resources>

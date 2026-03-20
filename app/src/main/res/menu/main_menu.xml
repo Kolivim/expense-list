@@ -9,6 +9,12 @@
         android:icon="@drawable/ic_calendar"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_long_loan"
+        android:title="Длинные займы"
+        android:icon="@drawable/ic_loan"
+        app:showAsAction="never" />
+
 <!--    <item-->
 <!--        android:id="@+id/separator"-->
 <!--        android:title="───────────────────"-->

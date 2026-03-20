@@ -110,10 +110,13 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_month_admin) {
             openMonthAdmin(null);
             return true;
+        } else if (id == R.id.action_long_loan) {
+            openLongLoans(null);
+            return true;
         } else if (id == R.id.action_export_txt) {
             exportToTxt(null);
             return true;
-        } else if (id == R.id.action_export_json) {
+        }else if (id == R.id.action_export_json) {
             exportToJson(null);
             return true;
         }
@@ -355,6 +358,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void openMonthAdmin(View view) {
         Intent intent = new Intent(this, MonthAdminActivity.class);
+        startActivity(intent);
+    }
+
+
+    /** Длинные займы с кредитных средств */
+    public void openLongLoans(View view) {
+        Intent intent = new Intent(this, LongLoansActivity.class);
         startActivity(intent);
     }
 
