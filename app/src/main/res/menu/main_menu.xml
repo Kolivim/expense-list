@@ -15,6 +15,12 @@
         android:icon="@drawable/ic_loan"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_long_loan_own_funds"
+        android:title="Длинные займы личные"
+        android:icon="@drawable/ic_loan"
+        app:showAsAction="never" />
+
 <!--    <item-->
 <!--        android:id="@+id/separator"-->
 <!--        android:title="───────────────────"-->

@@ -30,6 +30,11 @@
             android:name=".ExpenseDetailActivity"
             android:exported="false" />
 
+
+        <activity
+            android:name=".LongLoansUniversalActivity"
+            android:exported="false" />
+
         <activity
             android:name=".LongLoansActivity"
             android:exported="false" />

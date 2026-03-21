@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:fitsSystemWindows="true">
+
+    <!-- Заголовок -->
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Информация о цветах строк -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Для изменения цвета строки: нажмите на строку для выбора, затем используйте кнопку 'Выбрать цвет' в деталях расхода"
+        android:textSize="11sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Общая сумма -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@android:drawable/edit_text"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/textViewLongLoansTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="Общая сумма: 0.00 руб."
+            android:textColor="#2196F3"/>
+    </LinearLayout>
+
+    <!-- Список займов -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Список займов:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <ListView
+        android:id="@+id/listViewLongLoans"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:choiceMode="singleChoice"
+        android:listSelector="@drawable/list_item_selector"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Кнопки изменения и удаления -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/buttonUpdateLoan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Изменить"
+            android:textSize="13sp"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/buttonDeleteLoan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Удалить"
+            android:textSize="13sp"/>
+    </LinearLayout>
+
+    <!-- Поля ввода и кнопка сохранения -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@android:drawable/edit_text"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/editTextLoanDate"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.25"
+            android:hint="dd.MM.yy"
+            android:inputType="date"
+            android:layout_marginEnd="4dp"/>
+
+        <EditText
+            android:id="@+id/editTextLoanName"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.5"
+            android:hint="Название займа"
+            android:inputType="text"
+            android:layout_marginEnd="4dp"/>
+
+        <EditText
+            android:id="@+id/editTextLoanAmount"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.25"
+            android:hint="Сумма"
+            android:inputType="numberDecimal"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/buttonSaveLoan"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="12sp"
+            android:text="Сохранить"/>
+    </LinearLayout>
+
+    <!-- Кнопка назад -->
+    <Button
+        android:id="@+id/buttonBackLongLoans"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Назад"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

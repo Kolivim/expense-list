@@ -681,4 +681,32 @@ public class DepositService {
     }
 
 
+    /**
+     * Получает все погашения указанного типа для займа
+     * @param expenseId ID займа
+     * @param repaymentType тип погашения (3 - кредитные, 4 - собственные)
+     * @return список погашений
+     */
+    public List<Deposit> getRepaymentsForExpenseByType(long expenseId, Long repaymentType) {
+        List<Deposit> repayments = new ArrayList<>();
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + repaymentType +
+                        " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId +
+                        " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+                        " ORDER BY " + ExpenseSQLite.DEPOSIT_DATETIME + " ASC",
+                null);
+
+        while (cursor.moveToNext()) {
+            Deposit deposit = cursorToDeposit(cursor);
+            loadPaymentsForDeposit(deposit);
+            repayments.add(deposit);
+        }
+
+        cursor.close();
+        return repayments;
+    }
+
+
 }

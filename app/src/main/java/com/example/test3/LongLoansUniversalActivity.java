@@ -1,10 +1,10 @@
 package com.example.test3;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,12 +26,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class LongLoansActivity extends AppCompatActivity {
+public class LongLoansUniversalActivity extends AppCompatActivity {
 
-    private static final String TAG = "LongLoansActivity";
+    private static final String TAG = "LongLoansUniversalActivity";
+    private static final String EXTRA_LOAN_TYPE = "loan_type";
+    private static final String EXTRA_TITLE = "title";
 
-    /** Тип "Длинные займы с кредитных средств" - ID из таблицы type_expense */
-    public static final Long TYPE_CREDIT_LOANS = 3L;
+    private static final String EXTRA_REPAYMENT_TYPE = "repayment_type";
 
     private ListView listViewLoans;
     private TextView textViewTotalAmount;
@@ -40,14 +41,54 @@ public class LongLoansActivity extends AppCompatActivity {
 
     private ExpenseService expenseService;
     private DepositService depositService;
-    private LongLoanAdapter loanAdapter;
+    private LongLoanUniversalAdapter loanAdapter;
     private ArrayList<Expense> loansList;
     private Expense selectedLoan = null;
 
+    private Long loanType;
+    private String activityTitle;
+    private Long repaymentType;
+
+
+    public static void start(Context context, long loanType, Long repaymentType, String title) {
+        Intent intent = new Intent(context, LongLoansUniversalActivity.class);
+        intent.putExtra(EXTRA_LOAN_TYPE, loanType);
+        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra("repayment_type", repaymentType);
+        context.startActivity(intent);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_long_loans);
+        setContentView(R.layout.activity_long_loans_own_funds); //  activity_long_loans
+
+        loanType = getIntent().getLongExtra(EXTRA_LOAN_TYPE, 3L);
+        activityTitle = getIntent().getStringExtra(EXTRA_TITLE);
+        repaymentType = getIntent().getLongExtra(EXTRA_REPAYMENT_TYPE, DepositService.TYPE_CREDIT_LOAN_REPAYMENT);
+
+//        if (activityTitle == null) {
+//            activityTitle = loanType == 3L ?
+//                    "Длинные займы (кредитные средства)" : "Длинные займы (собственные средства)";
+//        }
+//
+//        setTitle(activityTitle);
+
+
+        /** Устанавливает заголовок */
+        TextView textViewTitle = findViewById(R.id.textViewTitle);
+        if (textViewTitle != null) {
+            if (activityTitle != null && !activityTitle.isEmpty()) {
+                textViewTitle.setText(activityTitle);
+            } else if (loanType == 3L) {
+                textViewTitle.setText("Длинные займы (кредитные средства)");
+            } else {
+                textViewTitle.setText("Длинные займы (собственные средства)");
+            }
+        }
+
 
         expenseService = new ExpenseService(this);
         depositService = new DepositService(this);
@@ -57,13 +98,13 @@ public class LongLoansActivity extends AppCompatActivity {
         loadLoans();
     }
 
+
     private void initViews() {
         listViewLoans = findViewById(R.id.listViewLongLoans);
         textViewTotalAmount = findViewById(R.id.textViewLongLoansTotal);
 
         buttonSave = findViewById(R.id.buttonSaveLoan);
         buttonBack = findViewById(R.id.buttonBackLongLoans);
-
         buttonUpdate = findViewById(R.id.buttonUpdateLoan);
         buttonDelete = findViewById(R.id.buttonDeleteLoan);
 
@@ -72,7 +113,9 @@ public class LongLoansActivity extends AppCompatActivity {
         editTextAmount = findViewById(R.id.editTextLoanAmount);
     }
 
+
     private void setupListeners() {
+
         buttonBack.setOnClickListener(v -> finish());
         buttonSave.setOnClickListener(v -> addNewLoan());
 
@@ -91,10 +134,13 @@ public class LongLoansActivity extends AppCompatActivity {
             }
             confirmDeleteLoan(selectedLoan);
         });
+
     }
 
+
     private void loadLoans() {
-        loansList = expenseService.getExpenseList(TYPE_CREDIT_LOANS);
+
+        loansList = expenseService.getExpenseList(loanType);
 
         if (loansList.isEmpty()) {
             textViewTotalAmount.setText("Общая сумма: 0.00 руб.");
@@ -106,12 +152,13 @@ public class LongLoansActivity extends AppCompatActivity {
             textViewTotalAmount.setText(String.format("Общая сумма: %.2f руб.", total));
         }
 
-        loanAdapter = new LongLoanAdapter(this, loansList, expenseService, depositService);
+        loanAdapter = new LongLoanUniversalAdapter(this, loansList, expenseService, depositService, repaymentType);
         loanAdapter.setOnItemClickListener((expense, position) -> {
+
             selectedLoan = expense;
             loanAdapter.setSelectedPosition(position);
-            Toast.makeText(LongLoansActivity.this,
-                    "Выбран: " + expense.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Выбран: " + expense.getName(), Toast.LENGTH_SHORT).show();
+
         });
 
         loanAdapter.setOnRepayClickListener(loan -> showRepayDialog(loan));
@@ -119,7 +166,9 @@ public class LongLoansActivity extends AppCompatActivity {
         listViewLoans.setAdapter(loanAdapter);
     }
 
+
     private void addNewLoan() {
+
         String name = editTextName.getText().toString().trim();
         String amountStr = editTextAmount.getText().toString().trim();
         String dateStr = editTextDate.getText().toString().trim();
@@ -134,10 +183,12 @@ public class LongLoansActivity extends AppCompatActivity {
             return;
         }
 
+
         try {
+
             double amount = Double.parseDouble(amountStr);
 
-            Expense newLoan = new Expense(name, TYPE_CREDIT_LOANS);
+            Expense newLoan = new Expense(name, loanType);
             newLoan.addPayment(amount);
 
             if (!dateStr.isEmpty()) {
@@ -158,9 +209,12 @@ public class LongLoansActivity extends AppCompatActivity {
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Введите корректную сумму", Toast.LENGTH_SHORT).show();
         }
+
     }
 
+
     private ZonedDateTime parseDate(String dateString) {
+
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
         try {
             Date date = formatter.parse(dateString);
@@ -169,6 +223,7 @@ public class LongLoansActivity extends AppCompatActivity {
             Toast.makeText(this, "Некорректный формат даты (используйте дд.ММ.гг)", Toast.LENGTH_SHORT).show();
             return null;
         }
+
     }
 
 
@@ -181,7 +236,7 @@ public class LongLoansActivity extends AppCompatActivity {
         double totalRepaid = getTotalRepaid(loan);
         double remainingDebt = totalLoan - totalRepaid;
 
-        String message = String.format("Займ: %s\nИсходная сумма: %.2f руб.\nУже погашено: %.2f руб.\nОстаток долга: %.2f руб.\n\nВведите сумму для погашения:",
+        String message = String.format("Займ: %s\nCумма займа: %.2f руб.\nПогашено: %.2f руб.\nОстаток долга: %.2f руб.\n\nВведите сумму для погашения:",
                 loan.getName(), totalLoan, totalRepaid, remainingDebt);
 
         builder.setMessage(message);
@@ -196,7 +251,6 @@ public class LongLoansActivity extends AppCompatActivity {
         builder.setPositiveButton("Погасить", (dialog, which) -> {
 
             String amountStr = input.getText().toString().trim();
-
             if (amountStr.isEmpty()) {
                 Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
                 return;
@@ -217,10 +271,9 @@ public class LongLoansActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 Deposit repaymentDeposit = new Deposit(
                         "Погашение: " + loan.getName(),
-                        DepositService.TYPE_CREDIT_LOAN_REPAYMENT
+                        repaymentType
                 );
 
                 repaymentDeposit.setDescription("Погашение займа \"" + loan.getName() + "\" на сумму " + repaymentAmount + " руб.");
@@ -254,35 +307,20 @@ public class LongLoansActivity extends AppCompatActivity {
     private void showDepositsListDialog(Expense loan) {
 
         if (loan == null) {
-            Log.d(TAG, "showDepositsListDialog: loan == null");
             Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Log.d(TAG, "showDepositsListDialog для займа ID=" + loan.getId() +
-                ", " + loan.getName());
-
-        List<Deposit> repayments = depositService.getRepaymentsForExpense(loan.getId());
-
-        Log.d(TAG, "Получено погашений из БД: " + (repayments != null ? repayments.size() : 0));
+        List<Deposit> repayments = depositService.getRepaymentsForExpenseByType(loan.getId(), repaymentType);
 
         if (repayments == null || repayments.isEmpty()) {
-            Log.d(TAG, "Нет погашений по этому займу");
             Toast.makeText(this, "Нет погашений по этому займу", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        for (Deposit d : repayments) {
-            Log.d(TAG, "  Погашение ID=" + d.getId() + ", название=" + d.getName() +
-                    ", сумма=" + d.getTotalAmount() + ", платежей=" +
-                    (d.getPayments() != null ? d.getPayments().size() : 0));
-        }
-
-        /** Создаёт диалог */
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("История погашений займа: " + loan.getName());
 
-        /** Инфлейтим layout */
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_deposit_list, null);
         ListView listView = dialogView.findViewById(R.id.listViewDeposits);
         Button buttonClose = dialogView.findViewById(R.id.buttonClose);
@@ -290,60 +328,43 @@ public class LongLoansActivity extends AppCompatActivity {
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
 
-        /** Создаём адаптер для списка погашений с кнопками */
         DepositListAdapter adapter = new DepositListAdapter(this, repayments,
                 new DepositListAdapter.OnDepositActionListener() {
 
                     @Override
                     public void onEditClick(Deposit deposit) {
-                        Log.d(TAG, "onEditClick: deposit ID=" + deposit.getId());
                         dialog.dismiss();
-
-                        /** Открывает детали для редактирования */
-                        Intent intent = new Intent(LongLoansActivity.this, DepositDetailActivity.class);
+                        Intent intent = new Intent(LongLoansUniversalActivity.this, DepositDetailActivity.class);
                         intent.putExtra("deposit_id", deposit.getId());
                         startActivity(intent);
                     }
 
                     @Override
                     public void onDeleteClick(Deposit deposit) {
-                        Log.d(TAG, "onDeleteClick: deposit ID=" + deposit.getId());
                         confirmDeleteRepayment(deposit, loan, dialog);
                     }
 
                 });
 
         listView.setAdapter(adapter);
-
-        buttonClose.setOnClickListener(v -> {
-            Log.d(TAG, "Диалог закрыт по кнопке");
-            dialog.dismiss();
-        });
-
+        buttonClose.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
 
     private void confirmDeleteRepayment(Deposit deposit, Expense loan, AlertDialog parentDialog) {
-        Log.d(TAG, "confirmDeleteRepayment: пытаемся удалить deposit ID=" + deposit.getId() +
-                ", название=" + deposit.getName());
 
         new AlertDialog.Builder(this)
                 .setTitle("Удаление погашения")
                 .setMessage("Удалить погашение \"" + deposit.getName() + "\" на сумму " +
                         String.format("%.2f", deposit.getTotalAmount()) + " руб.?")
                 .setPositiveButton("Удалить", (dialog, which) -> {
-                    Log.d(TAG, "Пользователь подтвердил удаление");
 
-                    boolean success = depositService.deleteDeposit(deposit.getId());
-                    Log.d(TAG, "Результат удаления: " + success);
-
-                    if (success) {
+                    if (depositService.deleteDeposit(deposit.getId())) {
                         Toast.makeText(this, "Погашение удалено", Toast.LENGTH_SHORT).show();
                         parentDialog.dismiss();
                         loadLoans();
                     } else {
-                        Log.e(TAG, "Ошибка при удалении deposit ID=" + deposit.getId());
                         Toast.makeText(this, "Ошибка при удалении", Toast.LENGTH_SHORT).show();
                     }
 
@@ -354,13 +375,14 @@ public class LongLoansActivity extends AppCompatActivity {
 
 
     private void openLoanDetail(Expense loan) {
-        Intent intent = new Intent(this, /* LongLoanDetailActivity.class */ ExpenseDetailActivity.class);
+        Intent intent = new Intent(this, LongLoanDetailActivity.class);
         intent.putExtra("expense_id", loan.getId());
         startActivity(intent);
     }
 
 
     private void confirmDeleteLoan(Expense loan) {
+
         new AlertDialog.Builder(this)
                 .setTitle("Удаление займа")
                 .setMessage("Удалить займ \"" + loan.getName() + "\" вместе со всеми платежами и погашениями?")
@@ -382,7 +404,7 @@ public class LongLoansActivity extends AppCompatActivity {
 
     private double getTotalRepaid(Expense loan) {
         double total = 0.0;
-        List<Deposit> repayments = depositService.getRepaymentsForExpense(loan.getId());
+        List<Deposit> repayments = depositService.getRepaymentsForExpenseByType(loan.getId(), repaymentType);
         for (Deposit deposit : repayments) {
             total += deposit.getTotalAmount();
         }

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
 import com.example.test3.expenseList.ExpenseAdapter;
+import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 import com.example.test3.util.FileExportUtil;
 
@@ -112,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_long_loan) {
             openLongLoans(null);
+            return true;
+        } else if (id == R.id.action_long_loan_own_funds) {
+            openLongLoansOwnFunds(null);
             return true;
         } else if (id == R.id.action_export_txt) {
             exportToTxt(null);
@@ -366,6 +370,14 @@ public class MainActivity extends AppCompatActivity {
     public void openLongLoans(View view) {
         Intent intent = new Intent(this, LongLoansActivity.class);
         startActivity(intent);
+    }
+
+
+    /** Длинные займы с собственнных средств */
+    public void openLongLoansOwnFunds(View view) {
+        LongLoansUniversalActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
+//        Intent intent = new Intent(this, LongLoansActivity.class);
+//        startActivity(intent);
     }
 
 
