@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Мои расходы");
+            getSupportActionBar().setTitle("Мои финансы");
         }
 
 
