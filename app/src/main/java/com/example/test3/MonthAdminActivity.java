@@ -269,6 +269,7 @@ public class MonthAdminActivity extends AppCompatActivity {
 
                 if (id != -1) {
                     Toast.makeText(this, "Взнос добавлен", Toast.LENGTH_SHORT).show();
+                    monthService.linkDeposit(deposit);
                     loadData();                                                                     /** Перезагружает данные */
                 } else {
                     Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();
@@ -436,6 +437,7 @@ public class MonthAdminActivity extends AppCompatActivity {
 
                 if (id != -1) {
                     Toast.makeText(this, "Планируемый возврат добавлен", Toast.LENGTH_SHORT).show();
+                    monthService.linkDeposit(deposit);
                     loadData();                                                                     /** Перезагружает данные */
                 } else {
                     Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();

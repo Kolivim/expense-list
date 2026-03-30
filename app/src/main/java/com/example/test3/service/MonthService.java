@@ -81,6 +81,76 @@ public class MonthService {
     }
 
 
+/** Реализация для MonthAdminActivity : */
+    /**
+     * Связывает новый созданный в БД deposit с месяцем (если месяца нет - создаёт его)
+     * @param deposit объект Deposit для связки
+     * @return успешно ли связана запись Deposit с месяцем
+     */
+    public boolean linkDeposit(Deposit deposit) {
+        Log.d(TAG, "linkDeposit: " + deposit.getName() + ", typeId=" + deposit.getTypeId() +
+                ", expenseId=" + deposit.getExpenseId());
+
+        boolean isSuccess = true;
+
+        long id = deposit.getId();
+
+        /** Получает дату из deposit */
+        String dateStr;
+        if (deposit.getDateTime() != null) {
+            dateStr = deposit.getDateTime().format(Util.dateFormatterInsert);
+        } else {
+            dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);
+        }
+
+
+        /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
+        try {
+
+            int month = Integer.parseInt(dateStr.substring(3, 5));
+            int year = 2000 + Integer.parseInt(dateStr.substring(6, 8));
+
+            Log.d(TAG, "Для deposit с type==1 определяем месяц: " + month + "/" + year);
+
+            /** Получает или создаём объект месяца */
+            Month monthObj = getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);
+
+            if (monthObj != null && monthObj.getId() != null) {
+
+                /** Обновляет deposit, устанавливая expenseId = ID месяца */
+                ContentValues updateCv = new ContentValues();
+                updateCv.put(ExpenseSQLite.DEPOSIT_EXPENSE_ID, monthObj.getId());
+
+                int updated = dbWrite.update(
+                        ExpenseSQLite.TABLE_DEPOSIT,
+                        updateCv,
+                        ExpenseSQLite.DEPOSIT_ID + " = ?",
+                        new String[]{String.valueOf(id)}
+                );
+
+                if (updated > 0) {
+                    Log.d(TAG, "Deposit ID = " + id + " связан с месяцем ID = " +
+                            monthObj.getId() + " (" + monthObj.getMonthYear() + ")");
+                    deposit.setExpenseId(monthObj.getId());
+                } else {
+                    Log.e(TAG, "Не удалось обновить deposit с monthId");
+                    isSuccess = false;
+                }
+
+            } else {
+                Log.e(TAG, "Не удалось получить/создать месяц для " + month + "/" + year);
+                isSuccess = false;
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка при сохранении ссылки на месяц для Deposit: " + deposit, e);
+        }
+
+        return isSuccess;
+    }
+/** !Реализация для MonthAdminActivity */
+
+
     /** Проверяет наличие месяца в таблице month */
     private Month findMonthInDb(int year, int month, Long typeId) {
 

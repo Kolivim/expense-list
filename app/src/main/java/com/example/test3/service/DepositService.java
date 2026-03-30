@@ -29,7 +29,14 @@ public class DepositService {
     private ExpenseSQLite dbHelper;
     private SQLiteDatabase dbWrite;
     private SQLiteDatabase dbRead;
-    private MonthService monthService;
+    /* private MonthService monthService; */
+
+//    private MonthService getMonthService() {
+//        if (monthService == null) {
+//            monthService = new MonthService(context);
+//        }
+//        return monthService;
+//    }
 
 
     public DepositService(Context context) {
@@ -37,7 +44,7 @@ public class DepositService {
         this.dbHelper = new ExpenseSQLite(context);
         this.dbWrite = dbHelper.getWritableDatabase();
         this.dbRead = dbHelper.getReadableDatabase();
-        this.monthService = new MonthService(context);
+//        this.monthService = new MonthService(context);
     }
 
 
@@ -93,60 +100,62 @@ public class DepositService {
         Log.d(TAG, "Deposit вставлен с ID: " + id);
         deposit.setId(id);
 
-        /** Если у взноса (с type=1, погашение ежемесячных затрат) expenseId не установлен,
-         * определяет Month по дате взноса */
-        if (deposit.getTypeId() == TYPE_MONTHLY_DEPOSIT && deposit.getExpenseId() == null) {
 
-            /** Получает дату из deposit */
-            String dateStr;
-            if (deposit.getDateTime() != null) {
-                dateStr = deposit.getDateTime().format(Util.dateFormatterInsert);
-            } else {
-                dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);
-            }
-
-
-            /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
-            try {
-
-                int month = Integer.parseInt(dateStr.substring(3, 5));
-                int year = 2000 + Integer.parseInt(dateStr.substring(6, 8));
-
-                Log.d(TAG, "Для deposit type=1 определяем месяц: " + month + "/" + year);
-
-                /** Получает или создаём объект месяца */
-                Month monthObj = monthService.getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);
-
-                if (monthObj != null && monthObj.getId() != null) {
-
-                    /** Обновляет deposit, устанавливая expenseId = ID месяца */
-                    ContentValues updateCv = new ContentValues();
-                    updateCv.put(ExpenseSQLite.DEPOSIT_EXPENSE_ID, monthObj.getId());
-
-                    int updated = dbWrite.update(
-                            ExpenseSQLite.TABLE_DEPOSIT,
-                            updateCv,
-                            ExpenseSQLite.DEPOSIT_ID + " = ?",
-                            new String[]{String.valueOf(id)}
-                    );
-
-                    if (updated > 0) {
-                        Log.d(TAG, "Deposit ID = " + id + " связан с месяцем ID = " +
-                                monthObj.getId() + " (" + monthObj.getMonthYear() + ")");
-                        deposit.setExpenseId(monthObj.getId());
-                    } else {
-                        Log.e(TAG, "Не удалось обновить deposit с monthId");
-                    }
-
-                } else {
-                    Log.e(TAG, "Не удалось получить/создать месяц для " + month + "/" + year);
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при парсинге даты: " + dateStr, e);
-            }
-
-        }
+        /** Для взноса (с type=1, погашение ежемесячных затрат) определение Month по дате взноса вынесено в вызывающий insertDeposit(Deposit deposit) MonthService */
+//        /** Если у взноса (с type=1, погашение ежемесячных затрат) expenseId не установлен,
+//         * определяет Month по дате взноса */
+//        if (deposit.getTypeId() == TYPE_MONTHLY_DEPOSIT && deposit.getExpenseId() == null) {
+//
+//            /** Получает дату из deposit */
+//            String dateStr;
+//            if (deposit.getDateTime() != null) {
+//                dateStr = deposit.getDateTime().format(Util.dateFormatterInsert);
+//            } else {
+//                dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);
+//            }
+//
+//
+//            /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
+//            try {
+//
+//                int month = Integer.parseInt(dateStr.substring(3, 5));
+//                int year = 2000 + Integer.parseInt(dateStr.substring(6, 8));
+//
+//                Log.d(TAG, "Для deposit type=1 определяем месяц: " + month + "/" + year);
+//
+//                /** Получает или создаём объект месяца */
+//                Month monthObj = monthService.getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);
+//
+//                if (monthObj != null && monthObj.getId() != null) {
+//
+//                    /** Обновляет deposit, устанавливая expenseId = ID месяца */
+//                    ContentValues updateCv = new ContentValues();
+//                    updateCv.put(ExpenseSQLite.DEPOSIT_EXPENSE_ID, monthObj.getId());
+//
+//                    int updated = dbWrite.update(
+//                            ExpenseSQLite.TABLE_DEPOSIT,
+//                            updateCv,
+//                            ExpenseSQLite.DEPOSIT_ID + " = ?",
+//                            new String[]{String.valueOf(id)}
+//                    );
+//
+//                    if (updated > 0) {
+//                        Log.d(TAG, "Deposit ID = " + id + " связан с месяцем ID = " +
+//                                monthObj.getId() + " (" + monthObj.getMonthYear() + ")");
+//                        deposit.setExpenseId(monthObj.getId());
+//                    } else {
+//                        Log.e(TAG, "Не удалось обновить deposit с monthId");
+//                    }
+//
+//                } else {
+//                    Log.e(TAG, "Не удалось получить/создать месяц для " + month + "/" + year);
+//                }
+//
+//            } catch (Exception e) {
+//                Log.e(TAG, "Ошибка при сохранении ссылки на месяц для Deposit: " + deposit, e);
+//            }
+//
+//        }
 
 
         /** Если есть платежи, вставляет их */
