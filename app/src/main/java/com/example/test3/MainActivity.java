@@ -1,14 +1,15 @@
 package com.example.test3;
 
+import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
+import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNYNG;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.Manifest;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.expenseList.Expense;
 import com.example.test3.expenseList.ExpenseAdapter;
+import com.example.test3.monthly.expense.planning.MonthExpensePlanningActivity;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 import com.example.test3.util.FileExportUtil;
@@ -122,6 +124,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }else if (id == R.id.action_export_json) {
             exportToJson(null);
+            return true;
+        }else if (id == R.id.action_month_expense_plannyng) {
+            openMonthExpensePlanning(null);
             return true;
         }
 
@@ -378,6 +383,22 @@ public class MainActivity extends AppCompatActivity {
         LongLoansUniversalActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
 //        Intent intent = new Intent(this, LongLoansActivity.class);
 //        startActivity(intent);
+    }
+
+
+    /** Ежемесячное планирование расходов */
+    public void openMonthExpensePlanning(View view) {
+        Log.d("openMonthExpensePlannyng", "startMethod");
+
+//        MonthExpensePlannyngActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
+
+//        /*
+        Intent intent = new Intent(this, MonthExpensePlanningActivity.class);
+        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_EXPENSE_PLANNYNG);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+//        */
+
     }
 
 

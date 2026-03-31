@@ -1,6 +1,7 @@
 package com.example.test3.service;
 
 import static com.example.test3.month.Month.TYPE_MONTHLY_EXPENSES;
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNING;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -54,7 +55,6 @@ public class DepositService {
      * @return ID вставленной записи или -1 в случае ошибки
      */
     public long insertDeposit(Deposit deposit) {
-
         Log.d(TAG, "insertDeposit: " + deposit.getName() + ", typeId=" + deposit.getTypeId() +
                 ", expenseId=" + deposit.getExpenseId());
 
@@ -716,6 +716,39 @@ public class DepositService {
         cursor.close();
         return repayments;
     }
+
+
+/** Реализация для планирования бюджета : */
+    /** Получает взносы переданного типа, для переданного ExpsenseId */
+    public List<Deposit> getExpenseDeposits(Long expenseId, /* Long monthTypeId, */ Long depositTypeId) {
+        Log.d("getExpenseDeposits", "startMethod, expenseId: " + expenseId +
+                /* ", monthTypeId: " + monthTypeId + */ ", depositTypeId: " + depositTypeId);
+
+        List<Deposit> deposits = new ArrayList<>();
+
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * " +
+                        "FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + depositTypeId +
+                        " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+                        " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId,
+                null);
+
+
+        while (cursor.moveToNext()) {
+            Deposit deposit = cursorToDeposit(cursor);
+            loadPaymentsForDeposit(deposit);
+            deposits.add(deposit);
+        }
+        cursor.close();
+
+
+        Log.d("getExpenseDeposits", "endMethod, для expenseId: " + expenseId +
+                " к возврату List<Deposit> deposits: " + deposits);
+        return deposits;
+    }
+/** !Реализация для планирования бюджета */
 
 
 }

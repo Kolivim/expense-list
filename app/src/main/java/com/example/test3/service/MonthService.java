@@ -1,5 +1,10 @@
 package com.example.test3.service;
 
+import static com.example.test3.month.Month.TYPE_MONTHLY_EXPENSES;
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNING;
+import static com.example.test3.util.Util.TYPE_EXPENSE_MONTH_PLANNING;
+import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNYNG;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +16,10 @@ import com.example.test3.month.Month;
 import com.example.test3.month.MonthlyDto;
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.monthly.expense.planning.MonthlyExpensePlanningDto;
+import com.example.test3.util.Util;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +28,7 @@ public class MonthService {
     private static final String TAG = "MonthService";
 
     public static Long TYPE_MONTHLY_EXPENSES = 1L;
+    /* Из Util берём TYPE_MONTHLY_EXPENSE_PLANNYNG == 3L */
     public static Long TYPE_MONTHLY_DEPOSIT = 1L;
     public static Long TYPE_MONTHLY_DEPOSIT_PLAN = 5L;
 
@@ -29,6 +38,15 @@ public class MonthService {
     private SQLiteDatabase dbRead;
     private SQLiteDatabase dbWrite;
     private ExpenseService expenseService;
+    private DepositService depositService;
+
+//    private DepositService getDepositService() {
+//        if (depositService == null) {
+//            depositService = new DepositService(context);
+//            /** В DepositService уже будет ленивая инициализация MonthService */
+//        }
+//        return depositService;
+//    }
 
 
     public MonthService(Context context) {
@@ -37,6 +55,7 @@ public class MonthService {
         this.dbRead = dbHelper.getReadableDatabase();
         this.dbWrite = dbHelper.getWritableDatabase();
         this.expenseService = new ExpenseService(context);
+        this.depositService = new DepositService(context);
     }
 
 
@@ -96,24 +115,24 @@ public class MonthService {
         long id = deposit.getId();
 
         /** Получает дату из deposit */
-        String dateStr;
-        if (deposit.getDateTime() != null) {
-            dateStr = deposit.getDateTime().format(Util.dateFormatterInsert);
-        } else {
-            dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);
-        }
+        String dateStr;                                                                             /** A */
+        if (deposit.getDateTime() != null) {                                                        /** A */
+            dateStr = deposit.getDateTime().format(Util.dateFormatterInsert);                       /** A */
+        } else {                                                                                    /** A */
+            dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);               /** A */
+        }                                                                                           /** A */
 
 
         /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
         try {
 
-            int month = Integer.parseInt(dateStr.substring(3, 5));
-            int year = 2000 + Integer.parseInt(dateStr.substring(6, 8));
+            int month = Integer.parseInt(dateStr.substring(3, 5));                                  /** A */
+            int year = 2000 + Integer.parseInt(dateStr.substring(6, 8));                            /** A */
 
-            Log.d(TAG, "Для deposit с type==1 определяем месяц: " + month + "/" + year);
+            Log.d(TAG, "Для deposit с type==1 определяем месяц: " + month + "/" + year);            /** A */
 
             /** Получает или создаём объект месяца */
-            Month monthObj = getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);
+            Month monthObj = getOrCreateMonth(year, month, TYPE_MONTHLY_EXPENSES);                  /** A */
 
             if (monthObj != null && monthObj.getId() != null) {
 
@@ -393,7 +412,7 @@ public class MonthService {
 
 
     /** Получает расходы за указанный месяц */
-    private List<Expense> getExpensesForMonth(Month month) {
+    private List<Expense> getExpensesForMonth(Month month) {                                        /** TODO : сделал копию, вынес expenseType */
 
         List<Expense> expenses = new ArrayList<>();
 
@@ -539,6 +558,371 @@ public class MonthService {
 
         return dtos;
     }
+
+
+/** Реализация для MonthlyExpensePlanning : */
+    /** Получает все имеющиеся MonthlyExpensePlanningDto, для всех месяцев,
+     * для последующего вывода в интерфейсе Активити */
+    public List<MonthlyExpensePlanningDto> getAllMonthlyExpensePlannyngDtos(Long typeId) {
+        Log.d("getAllMonthlyExpensePlannyngDtos", "startMethod, typeId = " + typeId);
+
+        List<Month> monthList = getMonthList(typeId);
+
+        /*
+        List<MonthlyExpensePlannyngDto> dtos = new ArrayList<>();
+        for (Month month : months) dtos.add(getMonthlyExpensePlannyngDto(month));
+        */
+
+        return getMonthlyExpensePlanningDtoList(monthList) ;
+    }
+
+
+    /** @param typeId Тип месяца, записи которого необходимо получить
+     * @return Все месяцы указанного типа, записи которого сохранены в БД */
+    public List<Month> getMonthList(Long typeId) {
+        Log.d("getMonthList", "startMethod, typeId = " + typeId);
+
+        List<Month> months = new ArrayList<>();
+
+        String query =
+                "SELECT " +
+                    " * " +
+                "FROM " + ExpenseSQLite.TABLE_MONTH + " " +
+                "WHERE " + ExpenseSQLite.MONTH_MONTH_TYPE_ID + " = " + typeId + " " +
+//                    "AND " + ExpenseSQLite.EXPENSE_IS_DELETED + " = 0 " +
+                "ORDER BY year DESC, month DESC";
+
+        Cursor cursor = dbRead.rawQuery(query, null);
+
+        while (cursor.moveToNext()) {
+            months.add(cursorToMonth(cursor));
+        }
+
+        cursor.close();
+
+        return months;
+    }
+
+
+    public List<MonthlyExpensePlanningDto> getMonthlyExpensePlanningDtoList(List<Month> monthList) {
+        Log.d("getMonthlyExpensePlanningDtoList", "startMethod, monthList: " + monthList);
+
+        List<MonthlyExpensePlanningDto> dtos = new ArrayList<>();
+        for (Month month : monthList) dtos.add(getMonthlyExpensePlanningDto(month));
+
+        return dtos;
+    }
+
+
+    /** Получает MonthlyExpensePlannyngDto для переданного в month месяца
+     * @param month Месяц, для которого собираются его запланированные расходы */
+    public MonthlyExpensePlanningDto getMonthlyExpensePlanningDto(Month month) {
+        Log.d("getMonthlyExpensePlannyngDto", "startMethod, month: " + month);
+
+        MonthlyExpensePlanningDto dto = new MonthlyExpensePlanningDto(month);
+
+
+        /** Получает расходы за месяц */
+        List<Expense> expenses = getExpensesForMonth(month, TYPE_EXPENSE_MONTH_PLANNING);
+        dto.setExpenseList(expenses);
+
+
+/** Рассчитывает статистику по расходам : */
+        double totalExpenseAmount = 0;
+        int paymentsCount = 0;
+        double totalDepositAmount = 0;
+        int depositCount = 0;
+//        int depositPaymentsCount = 0;
+
+        for (Expense expense : expenses) {
+
+            /** Получает внесённые к каждой из имеющихся Expense взносы (typeId == 6) */
+            List<Deposit> deposits = depositService.getExpenseDeposits(
+                    expense.getId(), TYPE_DEPOSIT_MONTH_PLANNING);
+
+            expense.setDepositList(deposits);
+
+
+    /** Рассчитываем статистику : */
+            /** 1. По планируемому бюджету : */
+            totalExpenseAmount += expense.getExpenseListTotalAmount();
+            if (expense.getExpenseList() != null) paymentsCount += expense.getExpenseList().size();
+
+            /** 2. Рассчитываем статистику по уже выполненным взносам */
+            for (Deposit deposit : deposits) {
+                totalDepositAmount += deposit.getTotalAmount();
+                depositCount++;
+            }
+    /** !Рассчитываем статистику */
+
+
+        }
+
+        dto.setTotalExpenseAmount(totalExpenseAmount);
+        dto.setExpensesCount(expenses.size());
+        dto.setPaymentsCount(paymentsCount);
+        dto.setTotalDepositAmount(totalDepositAmount);
+        dto.setDepositsCount(depositCount);
+
+        /** ___. Рассчитываем текущий баланс */
+        dto.setBalance(totalDepositAmount - totalExpenseAmount);
+/** !Рассчитывает статистику по расходам */
+
+
+        Log.d("getMonthlyExpensePlannyngDto",
+                "endMethod, к возврату MonthlyExpensePlannyngDto: " + dto);
+        return dto;
+    }
+
+
+    /** Получает расходы за указанный в month месяц, для указанного в expenseType типа расходоа */
+    private List<Expense> getExpensesForMonth(Month month, Long expenseType) {
+        Log.d("getExpensesForMonth", "startMethod, month: " + month +
+                ", expenseType = " + expenseType);
+
+        List<Expense> expenses = new ArrayList<>();
+
+        String monthStr = String.format("%02d", month.getMonth());
+        String yearStr = String.valueOf(month.getYear()).substring(2);                    /** 2026 -> "26" */
+
+
+        /** Получает все расходы за месяц */
+        ArrayList<Expense> allExpenses = expenseService.getExpenseList(expenseType);
+
+
+        /** Фильтрует по указанному в month месяцу */
+        for (Expense expense : allExpenses) {
+
+            String expenseDate = expense.getDateTime().format(com.example.test3.util.Util.dateFormatterInsert);
+            String expenseMonth = expenseDate.substring(3, 5);
+            String expenseYear = expenseDate.substring(6, 8);
+
+            if (expenseMonth.equals(monthStr) && expenseYear.equals(yearStr)) {
+                expenses.add(expense);
+            }
+
+        }
+
+        return expenses;
+    }
+
+
+    public Month getOrCreatePlanningExpenseMonth(Expense expense) {
+        Log.d(TAG, "getOrCreatePlanningExpenseMonth: Expense name = " + expense.getName() +
+                ", typeId =" + expense.getTypeId() + ", expenseId =" + expense.getId());
+
+
+        return getOrCreatePlanningExpenseMonth(expense.getDateTime());
+
+
+//        /** Получает дату из expense */
+//        String dateStr;                                                                             /** A */
+//        if (expense.getDateTime() != null) {                                                        /** A */
+//            dateStr = expense.getDateTime().format(Util.dateFormatterInsert);                       /** A */
+//        } else {                                                                                    /** A */
+//            dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);               /** A */
+//        }                                                                                           /** A */
+//
+//
+//        /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
+//        Integer monthInt = null;
+//        Integer yearInt = null;
+//        try {
+//            monthInt = Integer.parseInt(dateStr.substring(3, 5));                                   /** A */
+//            yearInt = 2000 + Integer.parseInt(dateStr.substring(6, 8));                             /** A */
+//        } catch (Exception e) {
+//            Log.e(TAG, "Ошибка парсинга даты dateStr: " + dateStr, e);
+//        }
+//
+//
+//        /** Получает или создаём объект месяца */
+//        Month month = null;
+//
+//        if(monthInt != null && yearInt != null) {
+//            month = getOrCreateMonth(yearInt, monthInt, TYPE_MONTHLY_EXPENSE_PLANNYNG);
+//        } else {
+//            Log.e(TAG, "Ошибка даты, месяц не был запрошен/создан");
+//        }
+//
+//
+//        return month;
+    }
+
+
+    public Month getOrCreatePlanningExpenseMonth(ZonedDateTime createDate) {
+        Log.d(TAG, "getOrCreatePlanningExpenseMonth: createDate = " + createDate);
+
+
+// TODO: Переписать на прямое получение monthInt и yearInt из ZDT :
+        /** Получает дату : */
+        String dateStr;                                                                             /** A */
+        if (createDate != null) {                                                                   /** A */
+            dateStr = createDate.format(Util.dateFormatterInsert);                                  /** A */
+        } else {                                                                                    /** A */
+            dateStr = java.time.ZonedDateTime.now().format(Util.dateFormatterInsert);               /** A */
+        }                                                                                           /** A */
+
+
+        /** Извлекает месяц и год из даты (формат "dd.MM.yy") */
+        Integer monthInt = null;
+        Integer yearInt = null;
+        try {
+            monthInt = Integer.parseInt(dateStr.substring(3, 5));                                   /** A */
+            yearInt = 2000 + Integer.parseInt(dateStr.substring(6, 8));                             /** A */
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка парсинга даты dateStr: " + dateStr, e);
+        }
+// TODO: !Переписать на прямое получение monthInt и yearInt из ZDT
+
+
+        /** Получает или создаём объект месяца */
+        Month month = null;
+
+        if(monthInt != null && yearInt != null) {
+            month = getOrCreateMonth(yearInt, monthInt, TYPE_MONTHLY_EXPENSE_PLANNYNG);
+        } else {
+            Log.e(TAG, "Ошибка даты, месяц не был запрошен/создан");
+        }
+
+
+        return month;
+    }
+
+
+//    private List<Deposit> getExpenseDeposits(Long expenseId) {
+//
+//        List<Deposit> deposits = new ArrayList<>();
+//
+//
+//        /** Ищет deposit с type=1, у которых expenseId = ID месяца */
+//        Cursor cursor = dbRead.rawQuery(
+//                "SELECT * " +
+//                        "FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+//                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_MONTHLY_DEPOSIT +
+//                            " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+//                            " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId +
+//                            " AND " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_DEPOSIT_MONTH_PLANNING,
+//                null);
+//
+//
+//        while (cursor.moveToNext()) {
+//            Deposit deposit = cursorToDeposit(cursor);
+//            loadPaymentsForDeposit(deposit);
+//            deposits.add(deposit);
+//        }
+//        cursor.close();
+//
+//
+//        return deposits;
+//    }
+
+
+    /**
+     * Удаляет месяц типа 3L, со всеми его дочерними расходами и взносами.
+     * @param monthlyExpensePlanningDto DTO удаляемого месяца
+     * @return true, если удаление успешно, false в противном случае
+     */
+    public boolean removeMonth(MonthlyExpensePlanningDto monthlyExpensePlanningDto) {
+        Log.d("removeMonth",
+                "startMethod, MonthlyExpensePlanningDto: " + monthlyExpensePlanningDto);
+
+        if(!checkBeforeRemove(monthlyExpensePlanningDto)) return false;
+
+
+//        dbWrite.beginTransaction();
+
+        Long monthId = monthlyExpensePlanningDto.getMonth().getId();
+
+        try {
+
+            /** 1. Удаляет все Expense и их Deposit's */
+            List<Expense> expenses = monthlyExpensePlanningDto.getExpenseList();
+
+            if (expenses != null && !expenses.isEmpty()) {
+
+                for (Expense expense : expenses) {
+
+                    if (expense.getId() != null) {
+
+                        /** Удаляет депозиты, связанные с этой Expense */
+                        List<Deposit> deposits = expense.getDepositList();
+                        if (deposits != null && !deposits.isEmpty()) {
+                            for (Deposit deposit : deposits) {
+                                if (!depositService.deleteDeposit(deposit.getId())) {
+                                    Log.e(TAG, "removeMonth: Не удалось удалить депозит ID=" + deposit.getId());
+                                    dbWrite.endTransaction();
+                                    return false;
+                                }
+                            }
+                        }
+
+                        /** Удаляет сам Expense (и её Payment's) */
+                        if (!expenseService.removeExpense(expense)) {
+                            Log.e(TAG, "removeMonth: Не удалось удалить расход ID=" + expense.getId());
+                            dbWrite.endTransaction();
+                            return false;
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+            /** 2. Удаляет запись месяца, соответствие типа проверено на входе в метод, не дублируем */
+            int deleted = dbWrite.delete(ExpenseSQLite.TABLE_MONTH,
+                    ExpenseSQLite.MONTH_ID + " = ?",
+                    new String[]{String.valueOf(monthId)});
+
+            if (deleted == 0) Log.w(TAG, "removeMonth: Месяц с ID " + monthId + " не найден в БД");
+
+
+//            dbWrite.setTransactionSuccessful();
+            Log.d(TAG, "removeMonth: Месяц ID=" + monthId + " успешно удалён");
+            return true;
+
+        } catch (Exception e) {
+            Log.e(TAG, "removeMonth: Ошибка при удалении месяца", e);
+            return false;
+        } finally {
+//            dbWrite.endTransaction();
+        }
+
+
+    }
+
+
+    public boolean checkBeforeRemove(MonthlyExpensePlanningDto monthlyExpensePlanningDto) {
+        Log.d("checkBeforeRemove",
+                "startMethod, MonthlyExpensePlanningDto: " + monthlyExpensePlanningDto);
+
+        if (monthlyExpensePlanningDto == null || monthlyExpensePlanningDto.getMonth() == null) {
+            Log.e(TAG, "removeMonth: DTO или месяц равен null");
+            return false;
+        }
+
+        Month month = monthlyExpensePlanningDto.getMonth();
+        Long monthId = month.getId();
+        if (monthId == null) {
+            Log.e(TAG, "removeMonth: ID месяца равен null");
+            return false;
+        }
+
+        /** Проверяем тип месяца — удаляем только для планирования (typeId == 3) */
+        if (month.getTypeId() != null && month.getTypeId() != 3L) {
+            Log.w(TAG, "removeMonth: Месяц имеет тип " + month.getTypeId() +
+                    ", не поддерживаемый для удаления через этот метод");
+            return false;
+        }
+
+
+        Log.d("checkBeforeRemove",
+                "endMethod, к возврату TRUE для MonthlyExpensePlanningDto: " +
+                        monthlyExpensePlanningDto);
+        return true;
+    }
+/** !Реализация для MonthlyExpensePlanning */
 
 
     /** Преобразует курсор в объект Deposit */

@@ -52,6 +52,15 @@
             android:name=".DepositDetailActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".monthly.expense.planning.MonthExpensePlanningActivity"
+            android:label="Планирование расходов"
+            android:exported="false" />
+
+        <activity
+            android:name=".monthly.expense.planning.MonthExpenseDetailActivity"
+            android:exported="false" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />

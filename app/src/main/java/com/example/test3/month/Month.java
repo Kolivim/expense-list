@@ -6,8 +6,10 @@ import java.io.Serializable;
  * и для прикрепления соответствующего им итогового возврата */
 public class Month implements Serializable {
 
+    /** Типы месяцев */
     public static final Long TYPE_MONTHLY_EXPENSES = 1L;                                            /** Константа для типа "Ежемесячные расходы" */
     public static final Long TYPE_METER_READINGS = 2L;                                              /** Константа для типа "Передача показаний" */
+    /** public static final Long TYPE_MONTHLY_EXPENSE_PLANNYNG = 3L - Константа для типа "Ежемесячное планирование расходов" */
 
     private Long id;
     private Long typeId;

@@ -21,6 +21,12 @@
         android:icon="@drawable/ic_loan"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_month_expense_plannyng"
+        android:title="Ежемесячное планирование"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
+
 <!--    <item-->
 <!--        android:id="@+id/separator"-->
 <!--        android:title="───────────────────"-->

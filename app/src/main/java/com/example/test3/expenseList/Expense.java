@@ -1,10 +1,12 @@
 package com.example.test3.expenseList;
 
+import com.example.test3.deposit.Deposit;
 import com.example.test3.util.Util;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Expense implements Serializable {
 
@@ -23,6 +25,12 @@ public class Expense implements Serializable {
 
     /** Необходимое для DAO : */
     private Long id;
+
+
+    /** Необходимое для DTO : */
+    /** Deposit может быть (при расходах, относящихся к планированию бюджета),
+     * а может и отсутствовать (при текущих месячных расходах) */
+    private List<Deposit> depositList;
 
 
     public Expense() {}
@@ -120,6 +128,14 @@ public class Expense implements Serializable {
 
     public Long getTypeId() {return typeId;}
     public void setTypeId(Long typeId) {this.typeId = typeId;}
+
+
+    public List<Deposit> getDepositList() {return depositList;}
+    public void setDepositList(List<Deposit> depositList) {this.depositList = depositList;}
+    public void addDeposit(Deposit deposit) {
+        if(this.depositList == null) this.depositList = new ArrayList<>();
+        this.depositList.add(deposit);
+    }
 
 
     @Override
