@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Название расхода:"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/editTextExpenseName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Например: Продукты"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сумма:"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextExpenseAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="0.00"
+        android:inputType="numberDecimal"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Описание (необязательно):"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+
+    <EditText
+        android:id="@+id/editTextExpenseDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите описание"
+        android:inputType="textMultiLine"/>
+
+</LinearLayout>

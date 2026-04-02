@@ -3,6 +3,7 @@ package com.example.test3.monthly.expense.planning;
 import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
 import static com.example.test3.util.Util.TYPE_EXPENSE_MONTH_PLANNING;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.example.test3.LongLoansUniversalActivity;
 import com.example.test3.MonthAdminActivity;
 import com.example.test3.R;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.month.Month;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 import com.example.test3.service.MonthService;
@@ -72,7 +74,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("loadExpenses", "startMethod");
+        Log.d("loadExpenses" + getCurrentMethodName(), "startMethod");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_month_expense_planning);
@@ -104,7 +106,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         loadData();
 
-        Log.d("loadExpenses", "endMethod");
+        Log.d("loadExpenses" + getCurrentMethodName(), "endMethod");
     }
 
 
@@ -153,6 +155,24 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         adapter.setSelectedGroupPosition(-1);
         selectedMonthPosition = -1;                                                                 /** сбрасывает выбор месяца */
+
+
+        /** Обработчик нажатия кнопки (+) на заголовке месяца */
+        adapter.setOnAddExpenseClickListener(this::showAddExpenseDialogForMonth);                   //  adapter.setOnAddExpenseClickListener(dto -> { showAddExpenseDialogForMonth(dto); });
+
+
+        /** Обработчик нажатия самого заголовка месяца */
+        adapter.setOnGroupClickListener(groupPosition -> {
+
+            Log.d("loadExpenses" + getCurrentMethodName(), "click setOnGroupClickListener() start");
+
+            selectedMonthPosition = groupPosition;
+            adapter.setSelectedGroupPosition(groupPosition);
+            Toast.makeText(this,
+                    "Выбран месяц: " + monthDtoList.get(groupPosition).getMonth().getMonthYear(),
+                    Toast.LENGTH_SHORT).show();
+
+        });
 
 
 //        updateTotalStats();
@@ -211,7 +231,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
 
     public void add(View view) {
-        Log.d(TAG, "startMethod");
+        Log.d(TAG + getCurrentMethodName(), "startMethod");
 
         EditText expenseNameEditText = findViewById(R.id.editTextNameExpense);
         String expenseName = expenseNameEditText.getText().toString();
@@ -236,68 +256,12 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         loadData();
         cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
-        Log.d(TAG, "endMethod");
+        Log.d(TAG + getCurrentMethodName(), "endMethod");
     }
-//    public void add(View view){
-//        Log.d(TAG, "startMethod");
-//
-//        /** Вычитываем введённые пользователем данные: */
-//        EditText expenseNameEditText = findViewById(R.id.editTextNameExpense);
-//        String expenseName = expenseNameEditText.getText().toString();
-//
-//        EditText expenseEditText = findViewById(R.id.editTextNumberDecimal);
-//
-//        Double expense = null;
-//        if(expenseEditText.getText() != null && !expenseEditText.getText().toString().isEmpty())
-//            expense = Double.parseDouble(expenseEditText.getText().toString());
-//
-//        EditText expenseDateEditText = findViewById(R.id.editTextDate);
-//        String expenseDateTimeString = expenseDateEditText.getText().toString();
-//
-//        String expenseDescription = null;
-//
-//
-//        /** Создаёт новую запись Expense : */
-//        Expense newExpense = null;
-//        if(!expenseName.isEmpty()){
-//
-//            newExpense = getNewExpense(expenseName, expense, expenseDateTimeString, expenseDescription);
-//
-//            expenseService.insertExpense(newExpense);
-//
-////            updateAdapter();
-//        }
-//        /** !Создаёт новую запись Expense */
-//
-//
-//        /** Создаёт новую запись Month : */
-//        if(newExpense != null) monthService.getOrCreatePlanningExpenseMonth(newExpense);
-//        /** !Создаёт новую запись Month */
-//
-//
-//        /** Перезагружает Activity : */
-//        loadData();
-//        cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
-//        /** !Перезагружает Activity */
-//
-//
-//        Log.d(TAG, "endMethod");
-//    }
 
 
     public void remove(View view){
-        Log.d(TAG, "startMethod");
-
-        /*
-        if (selectedMonthDto == null) {
-            Toast.makeText(this, "Выберите расход для удаления", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.d(TAG, "Получен к удалению selectedMonthDto: ".concat(selectedMonthDto.toString()));
-
-        boolean success = monthService.removeMonth(selectedMonthDto);
-        */
+        Log.d(TAG + getCurrentMethodName(), "startMethod");
 
         if (selectedMonthPosition == -1) {
             Toast.makeText(this, "Выберите месяц для удаления", Toast.LENGTH_SHORT).show();
@@ -306,7 +270,8 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         MonthlyExpensePlanningDto dto = monthDtoList.get(selectedMonthPosition);
 
-        Log.d(TAG, "Получен к удалению MonthlyExpensePlanningDto: ".concat(dto.toString()));
+        Log.d(TAG + getCurrentMethodName(),
+                "Получен к удалению MonthlyExpensePlanningDto: ".concat(dto.toString()));
 
         boolean success = monthService.removeMonth(dto);
 
@@ -319,28 +284,13 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
         }
 
 
-        /*
-        updateAdapter();
-        expenseAdapter.notifyDataSetChanged();
-        */
-
-        Log.d(TAG, "endMethod");
+        Log.d(TAG + getCurrentMethodName(), "endMethod");
     }
 
 
-    /*
-    public void updateAdapter() {
-
-        List<MonthlyExpensePlanningDto> monthList = monthService.getAllMonthlyExpensePlannyngDtos(monthType);
-
-        adapter = new MonthExpensePlanningAdapter(this, monthList);
-        listView.setAdapter(adapter);
-
-    }
-    */
-
-
-    public Expense getNewExpense(String expenseName, Double expense, String expenseDateTimeString, String expenseDescription) {
+    public Expense getNewExpense(String expenseName, Double expense,
+                                 String expenseDateTimeString, String expenseDescription) {
+        Log.d(TAG + getCurrentMethodName(), "startMethod");
 
         if(expenseName != null && !expenseName.isEmpty()) {
 
@@ -355,6 +305,8 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
             if(expenseDescription != null && !expenseDescription.isEmpty()) newExpense.setDescription(expenseDescription);
 
+            Log.d(TAG + getCurrentMethodName(),
+                    "endMethod к возврату newExpense: " + newExpense);
             return newExpense;
         }
 
@@ -372,6 +324,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
 
     public ZonedDateTime getZoneDateTime(String dateString) {
+        Log.d(TAG + getCurrentMethodName(), "startMethod");
 
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yy");
 
@@ -388,16 +341,20 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        Log.d(TAG + getCurrentMethodName(),
+                "endMethod, к возврату zonedDateTime: " + zonedDateTime);
         return zonedDateTime;
     }
 
 
     public void cleanUserInput(EditText expenseNameEditText, EditText expenseEditText, EditText expenseDateEditText) {
+        Log.d(TAG + getCurrentMethodName(), "startMethod");
 
         expenseNameEditText.setText("");
         expenseEditText.setText("");
         expenseDateEditText.setText("");
 
+        Log.d(TAG + getCurrentMethodName(), "endMethod");
     }
 
 
@@ -406,23 +363,98 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     }
 
 
+    private void showAddExpenseDialogForMonth(MonthlyExpensePlanningDto dto) {
+        Log.d(TAG + getCurrentMethodName(),"startMethod, MonthlyExpensePlanningDto: " + dto);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Добавить расход в " + dto.getMonth().getMonthYear());
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_expense, null);
+        EditText editTextName = view.findViewById(R.id.editTextExpenseName);
+        EditText editTextAmount = view.findViewById(R.id.editTextExpenseAmount);
+        EditText editTextDescription = view.findViewById(R.id.editTextExpenseDescription);
+
+        builder.setView(view);
+        builder.setPositiveButton("Добавить", (dialog, which) -> {
+
+            String name = editTextName.getText().toString().trim();
+            String amountStr = editTextAmount.getText().toString().trim();
+            String description = editTextDescription.getText().toString().trim();
+
+
+            /** Проверяем введённые в поля значения : */
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Введите название", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (amountStr.isEmpty()) {
+                Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            /***/
+
+
+            try {
+
+                double amount = Double.parseDouble(amountStr);
+                Expense expense = new Expense(name, TYPE_EXPENSE_MONTH_PLANNING);
+                expense.addPayment(amount);
+                if (!description.isEmpty()) expense.setDescription(description);
+
+                /** Устанавливает дату на первое число выбранного месяца */
+                ZonedDateTime firstDayOfMonth = getFirstDayOfMonth(dto.getMonth());
+                /*
+                ZonedDateTime firstDayOfMonth = ZonedDateTime.now()
+                        .withYear(dto.getMonth().getYear())
+                        .withMonth(dto.getMonth().getMonth())
+                        .withDayOfMonth(1)
+                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
+                */
+
+                expense.setDateTime(firstDayOfMonth);
+
+
+                expenseService.insertExpense(expense);
+                loadData();
+                Toast.makeText(this, "Расход добавлен", Toast.LENGTH_SHORT).show();
+
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Некорректная сумма", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+
+        Log.d(TAG + getCurrentMethodName(),"endMethod lkz MonthlyExpensePlanningDto: " + dto);
+    }
+
+
+    private ZonedDateTime getFirstDayOfMonth(Month month) {
+        Log.d(TAG + getCurrentMethodName(), getCurrentMethodName() + "startMethod, Month: " + month);
+
+        /** Дата на первое число полученного месяца */
+        ZonedDateTime firstDayOfMonth = ZonedDateTime.now()
+                .withYear(month.getYear())
+                .withMonth(month.getMonth())
+                .withDayOfMonth(1)
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        Log.d(TAG + getCurrentMethodName(),
+                "endMethod, firstDayOfMonth: " + firstDayOfMonth + " для Month: " + month);
+        return firstDayOfMonth;
+    }
+
+
+    public static String getCurrentMethodName() {
+        return new Throwable().getStackTrace()[1].getMethodName();
+    }
+
+
+    /*
     public void updateMonthExpensePlanning(View view) {
         Log.d(TAG, "startMethod");
-
-
-        /*
-        long selectedGroupId = expandableListView.getSelectedPosition();
-        if (selectedGroupId < 0 || selectedGroupId >= adapter.getGroupCount()) {
-            Toast.makeText(this, "Выберите месяц", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        MonthlyExpensePlanningDto selectedMonthDto = (MonthlyExpensePlanningDto) adapter.getGroup((int) selectedGroupId);
-        Intent intent = new Intent(this, ExpenseDetailActivity.class);
-        intent.putExtra("expense_id", selectedMonthDto.getMonth().getId());
-        startActivity(intent);
-        */
-
 
         if (selectedMonthPosition == -1) {
             Toast.makeText(this, "Выберите месяц для изменения", Toast.LENGTH_SHORT).show();
@@ -433,29 +465,16 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
         Toast.makeText(this, "Для изменения выбран месяц " + dto.getMonth().getMonthYear(), Toast.LENGTH_LONG).show();
 
 
-        // todo: изменить активити на правильную новую, для изменения строки с месяцем :
+        // изменить активити на правильную новую, для изменения строки с месяцем :
         Intent intent = new Intent(this, ExpenseDetailActivity.class);
         intent.putExtra("expense_id", dto.getMonth().getId());
         startActivity(intent);
-        // todo: !изменить активити на правильную новую, для изменения строки с месяцем
+        // !изменить активити на правильную новую, для изменения строки с месяцем
 
 
         Log.d(TAG, "endMethod");
     }
-//    public void updateMonthExpensePlanning(View view) {
-//
-//        if (selectedMonthDto == null) {
-//            Toast.makeText(this, "Выберите расход для изменения", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        Intent intent = new Intent(this, ExpenseDetailActivity.class);
-//        intent.putExtra("expense_id", selectedMonthDto.getMonth().getId());
-//        startActivity(intent);
-//
-//        /** Обновляет список, после изменения одног из элементов списка */
-//        loadData();
-//    }
+    */
 
 
 }

@@ -6,6 +6,7 @@
     <color name="selected_color">#FFE0E8F0</color>
     <color name="selected_color_2">#E0E0E0</color>                                                  <!-- Cерый -->
     <color name="pressed_color">#E0E0E0</color>                                                     <!-- Светло-серый -->
+    <color name="green">#4CAF50</color>
     <color name="purple">#9C27B0</color>
     <color name="light_purple">#FFE7E0FF</color>
     <color name="light_blue">#FFE8F0FE</color>

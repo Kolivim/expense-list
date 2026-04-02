@@ -6,20 +6,45 @@
     android:padding="12dp"
     android:background="?android:attr/selectableItemBackground">
 
-    <TextView
-        android:id="@+id/textViewMonthName"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="Март 2026"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/textViewExpenseStats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#F44336"
-        android:text="Расходы: 0.00 руб."/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textViewMonthName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="Март 2026"/>
+
+            <TextView
+                android:id="@+id/textViewExpenseStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#F44336"
+                android:text="Расходы: 0.00 руб."/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonAddExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:backgroundTint="@color/green"
+            android:minWidth="48dp"
+            android:layout_marginEnd="4dp"/>
+
+    </LinearLayout>
 
 </LinearLayout>

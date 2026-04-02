@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +27,32 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
     /** Для подсветки заголовка у выбранного месяца */
     private int selectedGroupPosition = -1;
+
+    private OnAddExpenseClickListener addExpenseListener;
+
+
+    public interface OnAddExpenseClickListener {
+        void onAddExpense(MonthlyExpensePlanningDto dto);
+    }
+
+
+    public void setOnAddExpenseClickListener(OnAddExpenseClickListener listener) {
+        this.addExpenseListener = listener;
+    }
+
+
+    private OnGroupClickListener groupClickListener;
+
+
+    public interface OnGroupClickListener {
+        void onGroupClick(int groupPosition);
+    }
+
+
+    public void setOnGroupClickListener(OnGroupClickListener listener) {
+        this.groupClickListener = listener;
+    }
+
 
     public MonthExpenseExpandableAdapter(Context context, List<MonthlyExpensePlanningDto> groups) {
         this.context = context;
@@ -112,6 +139,22 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
         } else {
             convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         }
+
+
+        /** Кнопка добавить Expense для месяца */
+        Button buttonAddExpense = convertView.findViewById(R.id.buttonAddExpense);
+        buttonAddExpense.setOnClickListener(v -> {
+            if (addExpenseListener != null) {
+                addExpenseListener.onAddExpense(groups.get(groupPosition));
+            }
+        });
+
+
+        convertView.setOnClickListener(v -> {
+            if (groupClickListener != null) {
+                groupClickListener.onGroupClick(groupPosition);
+            }
+        });
 
 
         Log.d("getGroupView", "endMethod");
