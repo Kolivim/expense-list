@@ -122,6 +122,8 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
         TextView textViewMonthName = convertView.findViewById(R.id.textViewMonthName);
         TextView textViewExpenseStats = convertView.findViewById(R.id.textViewExpenseStats);
+        TextView textViewDepositStats = convertView.findViewById(R.id.textViewDepositStats);
+        TextView textViewBalance = convertView.findViewById(R.id.textViewBalance);
 
         textViewMonthName.setText(dto.getMonth().getMonthYear());
 
@@ -130,6 +132,22 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
                 dto.getExpensesCount(),
                 dto.getPaymentsCount());
         textViewExpenseStats.setText(stats);
+        /***/
+
+
+        /** Устанавливаем статистику по взносам : */
+        String depositStats = String.format("Внесено: %.2f руб. (%d шт.)",
+                dto.getTotalDepositAmount(),
+                dto.getDepositsCount());
+//                dto.getDepositsPayments);                                                         /** Не реализован сбор статистики по Deposit Payments */
+        textViewDepositStats.setText(depositStats);
+        /***/
+
+
+        /** Устанавливаем balance : */
+        String balance = String.format("Итог: %.2f руб.", dto.getBalance());
+        textViewBalance.setText(balance);
+        /***/
 
 
         // Также можно установить цвет текста для баланса

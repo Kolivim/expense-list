@@ -34,6 +34,23 @@
                 android:textColor="#F44336"
                 android:text="Расходы: 0.00 руб."/>
 
+
+            <TextView
+                android:id="@+id/textViewDepositStats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/green"
+                android:text="Внесено: 0.00 руб."/>
+
+            <TextView
+                android:id="@+id/textViewBalance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/purple"
+                android:text="Итог: 0.00 руб."/>
+
         </LinearLayout>
 
         <Button
