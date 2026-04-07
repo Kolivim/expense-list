@@ -113,6 +113,24 @@ public class Expense implements Serializable {
         return String.valueOf(getExpenseListTotalAmount());
     }
 
+
+    public double getDepositListTotalAmount() {
+
+        double totalAmount = 0.0;
+
+        if(this.depositList == null) return totalAmount;
+
+        for (Deposit deposit : this.depositList) totalAmount = totalAmount + deposit.getTotalAmount();
+
+        return totalAmount;
+    }
+
+
+    public double getBalance() {
+        return getDepositListTotalAmount() - getExpenseListTotalAmount();
+    }
+
+
     public boolean isDeleted() {return isDeleted;}
     public void setDeleted(boolean deleted) {isDeleted = deleted;}
 

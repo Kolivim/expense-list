@@ -18,4 +18,15 @@
 <!--    "('Планируемый возврат ежемесячных трат')-->
 <!--    "('Ежемесячное планирование бюджета')-->
 
+
+    <!-- Для UI : -->
+    <string name="amount">Сумма: %.2f руб.</string>
+    <string name="payments_count">Платежей: %d</string>
+    <string name="total_deposit_amount">Общая сумма взносов: %.2f руб.</string>
+    <string name="total_month_expense_amount">Расходы: %.2f руб. (%d записей | %d платежей)</string>
+    <string name="total_month_deposit_amount">Внесено: %.2f руб.</string>
+    <string name="balance">Баланс: %.2f руб.</string>
+    <string name="balance_2">Итог: %.2f руб.</string>
+    <!-- !Для UI -->
+
 </resources>

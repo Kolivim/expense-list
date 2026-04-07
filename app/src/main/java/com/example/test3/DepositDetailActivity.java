@@ -196,8 +196,14 @@ public class DepositDetailActivity extends AppCompatActivity {
                 textViewMonth.setText("Месяц: " + month.getMonthYear());
                 textViewMonth.setVisibility(View.VISIBLE);
             } else {
+
+                // TODO выделить BaseActivity и разделить на 2 разные Activity
+                /** Для месяцев */
                 textViewMonth.setText("Месяц: ID=" + currentDeposit.getExpenseId() + " (не найден в БД)");
                 textViewMonth.setVisibility(View.VISIBLE);
+
+                /** Для планирования месячных расходов */
+                textViewMonth.setVisibility(View.GONE);
             }
 
         } else {

@@ -1,0 +1,17 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Когда кнопка нажата -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#1976D2" /> <!-- Темно-синий -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+
+    <!-- Когда кнопка не нажата (обычное состояние) -->
+    <item>
+        <shape>
+            <solid android:color="#2196F3" /> <!-- Синий -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</selector>

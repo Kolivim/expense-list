@@ -35,6 +35,27 @@ public class Deposit implements Serializable {
     }
 
 
+    public Deposit(String name, Long typeId, ZonedDateTime dateTime, Long parentId, double amount) {
+        this.name = name;
+        this.typeId = typeId;
+        this.dateTime = dateTime;
+        this.isDeleted = false;
+        this.expenseId = parentId;
+        addPayment(amount);
+    }
+
+
+    public Deposit(String name, String description, Long typeId, ZonedDateTime dateTime, Long parentId, double amount) {
+        this.name = name;
+        this.description = description;
+        this.typeId = typeId;
+        this.dateTime = dateTime;
+        this.isDeleted = false;
+        this.expenseId = parentId;
+        addPayment(amount);
+    }
+
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
