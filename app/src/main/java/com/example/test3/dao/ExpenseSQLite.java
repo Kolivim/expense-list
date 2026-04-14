@@ -313,7 +313,7 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         String sql = "INSERT INTO " + TABLE_MONTH_TYPE +
                 " (" + MONTH_TYPE_NAME + ") VALUES " +
                 "('Ежемесячные расходы'), " +                                                       /** typeId = 1 */
-                "('Передача показаний')";                                                           /** typeId = 2 */
+                "('Передача показаний')"; /** Коммунальные услуги - по факту, и передача показаний, и оплата КУ */     /** typeId = 2 */    //  TODO: Исправить имя
 
         sqLiteDatabase.execSQL(sql);
     }

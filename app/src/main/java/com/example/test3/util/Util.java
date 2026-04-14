@@ -13,11 +13,13 @@ public class Util {
     /** MonthType : */
     /* public static final Long TYPE_MONTHLY_EXPENSES = 1L;  */ // <string name="expense_monthly">Ежемесячные расходы</string>
     //    public static final Long TYPE_METER_READINGS = 2L;    /** Константа для типа "Передача показаний" */
-    public static final Long TYPE_MONTHLY_EXPENSE_PLANNYNG = 3L;                                    /** Константа для типа "Ежемесячное планирование расходов" */
+    public static final Long TYPE_MONTHLY_UTILITY_BILLS = 2L;                                       /** Константа для типа "Передача показаний", которая по факту является 'Коммунальные услуги' */
+    public static final Long TYPE_MONTHLY_EXPENSE_PLANNING = 3L;                                    /** Константа для типа "Ежемесячное планирование расходов" */
 
 
     /** ExpenseType : */
     public static final Long TYPE_EXPENSE_MONTH_PLANNING = 2L;                                      /** Ежемесячное планирование бюджета */
+    public static final Long TYPE_EXPENSE_UTILITY_BILLS = 5L;                                       /** Коммунальные платежи */
 
 
     /** DepositType : */

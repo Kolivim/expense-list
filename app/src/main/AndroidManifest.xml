@@ -67,6 +67,10 @@
 
         <activity android:name=".monthly.expense.planning.UniversalDepositsActivity" />
 
+        <activity android:name=".monthly.expense.utility.service.MonthUtilityServiceActivity" />
+
+        <activity android:name=".monthly.expense.utility.service.meter.reading.MeterDetailActivity" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />

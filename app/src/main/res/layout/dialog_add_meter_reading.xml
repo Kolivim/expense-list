@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!--
+    <EditText
+        android:id="@+id/editReadingDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Дата (дд.мм.гг)"
+        android:inputType="date"
+        android:layout_marginBottom="8dp" />
+    -->
+
+
+    <EditText
+        android:id="@+id/editName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Название" />
+
+
+    <EditText
+        android:id="@+id/editCurrentValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Текущее показание"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="8dp" />
+
+    <!--
+    <EditText
+        android:id="@+id/editPreviousValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Предыдущее показание (необязательно)"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/editConsumption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Потребление (если не рассчитано автоматически)"
+        android:inputType="numberDecimal"
+        android:layout_marginBottom="8dp" />
+    -->
+
+
+</LinearLayout>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".monthly.expense.planning.MonthExpensePlanningActivity">
+<!--    tools:context="./monthly/expense/planning/MonthExpensePlannyngActivity">-->
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/topGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="0dp" />
+
+        <!-- Контейнер для всех кнопок и полей внизу -->
+        <LinearLayout
+            android:id="@+id/bottomContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <Button
+                    android:id="@+id/buttonUpdate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Изменить"
+                    android:textSize="13sp"
+                    android:onClick="updateMonthExpensePlanning"
+                    android:layout_marginEnd="4dp"/>
+
+                <Button
+                    android:id="@+id/buttonDelete"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Удалить"
+                    android:textSize="13sp"
+                    android:onClick="remove"
+                    android:layout_marginEnd="4dp"/>
+
+                <Button
+                    android:id="@+id/buttonBack"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Назад"
+                    android:textSize="13sp"
+                    android:onClick="back"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/rounded_edittext_bg" >
+
+                <EditText
+                    android:id="@+id/editTextDate"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_weight="0.3"
+                    android:ems="10"
+                    android:hint="dd.MM.yy"
+                    android:inputType="date" />
+
+                <EditText
+                    android:id="@+id/editTextNameExpense"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:hint="Название"
+                    android:layout_marginEnd="4dp"/>
+
+                <EditText
+                    android:id="@+id/editTextNumberDecimal"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="0.3"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    android:hint="Сумма"
+                    android:layout_marginEnd="4dp"/>
+
+                <Button
+                    android:id="@+id/buttonSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textSize="12sp"
+                    android:text="Сохранить"
+                    android:onClick="add"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <!-- ExpandableListView занимает всё пространство, до контейнера с кнопками -->
+        <ExpandableListView
+            android:id="@+id/expandableListView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:dividerHeight="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottomContainer" />
+
+
+        <!-- ListView занимает всё пространство, до контейнера с кнопками -->
+<!--        <ListView-->
+<!--            android:id="@+id/monthList"-->
+<!--            android:choiceMode="singleChoice"-->
+<!--            android:listSelector="@drawable/list_item_selector"-->
+<!--            android:layout_width="370dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:dividerHeight="0dp"-->
+<!--            android:padding="0dp"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintBottom_toTopOf="@id/bottomContainer"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:layout_marginBottom="4dp" />-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
+
+
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:id="@+id/main"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:fitsSystemWindows="true"-->
+<!--    tools:context=".MainActivity">-->
+
+<!--&lt;!&ndash;    android:paddingTop="?attr/actionBarSize"&ndash;&gt;-->
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="34dp"-->
+<!--        android:background="@color/purple"-->
+<!--        app:title="Мои расходы"-->
+<!--        app:titleTextColor="@android:color/white"-->
+<!--        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        />-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonUpdate"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="145dp"-->
+<!--        android:layout_marginBottom="65dp"-->
+<!--        android:ems="8"-->
+<!--        android:text="Изменить"-->
+<!--        android:onClick="updateExpense"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonDelete"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="5dp"-->
+<!--        android:layout_marginBottom="65dp"-->
+<!--        android:ems="8"-->
+<!--        android:text="Удалить"-->
+<!--        android:onClick="remove"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonSave"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="5dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:paddingLeft="10dp"-->
+<!--        android:paddingRight="10dp"-->
+<!--        android:text="Сохранить"-->
+<!--        android:onClick="add"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonExportTxt"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="145dp"-->
+<!--        android:layout_marginBottom="115dp"-->
+<!--        android:ems="8"-->
+<!--        android:text="Экспорт"-->
+<!--        android:onClick="exportToTxt"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/buttonExportJson"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="5dp"-->
+<!--        android:layout_marginBottom="115dp"-->
+<!--        android:ems="8"-->
+<!--        android:text="Экспорт в JSON"-->
+<!--        android:onClick="exportToJson"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+
+<!--    &lt;!&ndash; Вынести на список вкладок : &ndash;&gt;-->
+<!--    <Button-->
+<!--        android:id="@+id/buttonMonthAdmin"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="145dp"-->
+<!--        android:layout_marginBottom="165dp"-->
+<!--        android:ems="8"-->
+<!--        android:text="Управление месяцами"-->
+<!--        android:onClick="openMonthAdmin"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+<!--    &lt;!&ndash; !Вынести на список вкладок &ndash;&gt;-->
+
+
+<!--    <EditText-->
+<!--        android:id="@+id/editTextNameExpense"-->
+<!--        android:layout_width="130dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_marginEnd="180dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="text"-->
+<!--        android:text=""-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/editTextNumberDecimal"-->
+<!--        android:layout_width="50dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_marginEnd="100dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="numberDecimal"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/editTextDate"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_marginStart="5dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="date"-->
+<!--        android:hint="dd.MM.yy"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"/>-->
+
+
+<!--    <ListView-->
+<!--        android:id="@+id/expenseList"-->
+<!--        android:choiceMode="singleChoice"-->
+<!--        android:listSelector="@drawable/list_item_selector"-->
+<!--        android:layout_width="370dp"-->
+<!--        android:layout_height="425dp"-->
+<!--        tools:layout_editor_absoluteX="1dp"-->
+<!--        tools:layout_editor_absoluteY="1dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/toolbar"-->
+<!--        />-->
+
+
+<!--&lt;!&ndash;    <ListView&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/expenseList"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:choiceMode="multipleChoice"&ndash;&gt;-->
+<!--&lt;!&ndash;    android:choiceMode="singleChoice"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="400dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="550dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        tools:layout_editor_absoluteX="1dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        tools:layout_editor_absoluteY="1dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginTop="30dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        />&ndash;&gt;-->
+
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->

@@ -27,6 +27,12 @@
         android:icon="@drawable/ic_calendar"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_month_utility_service"
+        android:title="Коммунальные услуги"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
+
 <!--    <item-->
 <!--        android:id="@+id/separator"-->
 <!--        android:title="───────────────────"-->

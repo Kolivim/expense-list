@@ -1,7 +1,8 @@
 package com.example.test3;
 
 import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
-import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNYNG;
+import static com.example.test3.util.Util.TYPE_EXPENSE_UTILITY_BILLS;
+import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNING;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.expenseList.ExpenseAdapter;
 import com.example.test3.monthly.expense.planning.MonthExpensePlanningActivity;
+import com.example.test3.monthly.expense.utility.service.MonthUtilityServiceActivity;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 import com.example.test3.util.FileExportUtil;
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
 //    ArrayAdapter<Expense> arrayAdapter;
 
@@ -122,11 +126,14 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_export_txt) {
             exportToTxt(null);
             return true;
-        }else if (id == R.id.action_export_json) {
+        } else if (id == R.id.action_export_json) {
             exportToJson(null);
             return true;
-        }else if (id == R.id.action_month_expense_plannyng) {
+        } else if (id == R.id.action_month_expense_plannyng) {
             openMonthExpensePlanning(null);
+            return true;
+        } else if (id == R.id.action_month_utility_service) {
+            openMonthUtilityService(null);
             return true;
         }
 
@@ -394,10 +401,22 @@ public class MainActivity extends AppCompatActivity {
 
 //        /*
         Intent intent = new Intent(this, MonthExpensePlanningActivity.class);
-        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_EXPENSE_PLANNYNG);
+        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_EXPENSE_PLANNING);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 //        */
+
+    }
+
+
+    /** Ежемесячное планирование расходов */
+    public void openMonthUtilityService(View view) {
+        Log.d(TAG, "openMonthUtilityService startMethod");
+
+        Intent intent = new Intent(this, MonthUtilityServiceActivity.class);
+//        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_EXPENSE_UTILITY_BILLS);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
 
     }
 

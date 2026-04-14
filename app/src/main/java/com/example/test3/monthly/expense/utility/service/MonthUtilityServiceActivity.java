@@ -1,11 +1,15 @@
-package com.example.test3.monthly.expense.planning;
+package com.example.test3.monthly.expense.utility.service;
 
 import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
 import static com.example.test3.util.Util.TYPE_EXPENSE_MONTH_PLANNING;
+import static com.example.test3.util.Util.TYPE_EXPENSE_UTILITY_BILLS;
+import static com.example.test3.util.Util.TYPE_MONTHLY_UTILITY_BILLS;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -13,65 +17,65 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.test3.ExpenseDetailActivity;
 import com.example.test3.R;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.month.Month;
-import com.example.test3.service.DepositService;
+import com.example.test3.monthly.expense.planning.MonthExpenseExpandableAdapter;
+import com.example.test3.monthly.expense.planning.MonthlyExpensePlanningDto;
 import com.example.test3.service.ExpenseService;
+import com.example.test3.service.MeterService;
 import com.example.test3.service.MonthService;
+import com.example.test3.util.UtilService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-public class MonthExpensePlanningActivity extends AppCompatActivity {
+public class MonthUtilityServiceActivity extends AppCompatActivity {
 
-    private static final String TAG = "MonthExpensePlanningActivity";
+    private static final String TAG = "MonthUtilityBillsActivity";
 
     private MonthService monthService;
 
     private ExpenseService expenseService;
 
-    private DepositService depositService;
+    private MeterService meterService;
 
-    private Long monthType;                                                                         /** == TYPE_MONTHLY_EXPENSE_PLANNYNG = 3L */
+//    private DepositService depositService;
+
+    private Long monthType = TYPE_MONTHLY_UTILITY_BILLS;
+    private Long expenseType = TYPE_EXPENSE_UTILITY_BILLS;
+    private Long depositType = -1L; /** Для КоммунальныхУслуг Deposit не предусмотрены */
 
 
-    private List<MonthlyExpensePlanningDto> monthDtoList;
+    private List<MonthUtilityServiceDto> monthDtoList;
+//    private List<MonthlyExpensePlanningDto> monthDtoList;
     private ExpandableListView expandableListView;
     /* private ListView listView; */
-    private /* MonthExpensePlanningAdapter */ MonthExpenseExpandableAdapter adapter;
+    private /* MonthExpensePlanningAdapter */ MonthUtilityServiceAdapter adapter;
 
 
     private MonthlyExpensePlanningDto selectedMonthDto = null;
     private int selectedMonthPosition = -1;
 
-//    private Button buttonBack /* , buttonSave, buttonUpdate, buttonDelete */ ;
-
-
-//    public static void start(Context context, long loanType, Long repaymentType, String title) {
-//        Intent intent = new Intent(context, LongLoansUniversalActivity.class);
-//        intent.putExtra(EXTRA_LOAN_TYPE, loanType);
-//        intent.putExtra(EXTRA_TITLE, title);
-//        intent.putExtra("repayment_type", repaymentType);
-//        context.startActivity(intent);
-//    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("loadExpenses" + getCurrentMethodName(), "startMethod");
+        Log.d("MonthUtilityServiceActivity " + getCurrentMethodName(), " startMethod");
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_month_expense_planning);
+        setContentView(R.layout.activity_month_utility_service);
 
-        monthType = getIntent().getLongExtra(EXTRA_EXPENSE_TYPE, 3L);
+//        monthType = getIntent().getLongExtra(EXTRA_EXPENSE_TYPE, 5L);
 
         monthService = new MonthService(this);
         expenseService = new ExpenseService(this);
-        depositService = new DepositService(this);
+        meterService = new MeterService(this);
+//        depositService = new DepositService(this);
 
         expandableListView = findViewById(R.id.expandableListView);
         expandableListView
@@ -101,14 +105,14 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     private void loadData() {
         Log.d(TAG, "loadData startMethod");
 
-        monthDtoList = monthService.getAllMonthlyExpensePlanningDtos(monthType);
+        monthDtoList = monthService.getAllMonthUtilityServiceDtos(monthType, expenseType, depositType);
 
         if (monthDtoList.isEmpty()) {
             Toast.makeText(this, "Нет ни одного месяца с данными", Toast.LENGTH_LONG).show();
         }
 
 
-        adapter = new MonthExpenseExpandableAdapter /* MonthExpensePlanningAdapter */ (this, monthDtoList);
+        adapter = new MonthUtilityServiceAdapter /* MonthExpensePlanningAdapter */ (this, monthDtoList);
 
         /*
         adapter.setOnItemClickListener((dto, position) -> {
@@ -163,6 +167,19 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
         });
 
 
+        /** Здесь пробрасывается из Адаптера из строки addMeterReadingListener.onAddMeterReading(dto); */
+        /** 13.04 Устанавливает слушателя для кнопки добавить (+) для ПередачиПоказаний */
+        adapter.setOnAddMeterReadingListener(this::showAddMeterReadingDialog);
+
+
+        //
+         /*
+        expandableListView.invalidateViews();
+        expandableListView.requestLayout();
+        */
+        //
+
+
 //        updateTotalStats();
 
         Log.d(TAG, "loadData endMethod");
@@ -178,7 +195,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
         */
 
 
-        for (MonthlyExpensePlanningDto dto : monthDtoList) {
+        for (MonthUtilityServiceDto dto : monthDtoList) {
             totalExpenses += dto.getTotalExpenseAmount();
 //            totalDeposits += dto.getTotalDepositAmount();
 //            totalBalance += dto.getBalance();
@@ -240,7 +257,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             expenseService.insertExpense(newExpense);
         }
 
-        if (newExpense != null) monthService.getOrCreatePlanningExpenseMonth(newExpense);
+        if (newExpense != null) monthService.getOrCreateExpenseMonth(newExpense, monthType);
 
         loadData();
         cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
@@ -256,7 +273,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             return;
         }
 
-        MonthlyExpensePlanningDto dto = monthDtoList.get(selectedMonthPosition);
+        MonthUtilityServiceDto dto = monthDtoList.get(selectedMonthPosition);
 
         Log.d(TAG + getCurrentMethodName(),
                 "Получен к удалению MonthlyExpensePlanningDto: ".concat(dto.toString()));
@@ -282,7 +299,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         if(expenseName != null && !expenseName.isEmpty()) {
 
-            Expense newExpense = new Expense(expenseName, TYPE_EXPENSE_MONTH_PLANNING);
+            Expense newExpense = new Expense(expenseName, expenseType);
 
             if(expense != null && !expense.isNaN()) newExpense.addPayment(expense);
 
@@ -351,8 +368,8 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     }
 
 
-    private void showAddExpenseDialogForMonth(MonthlyExpensePlanningDto dto) {
-        Log.d(TAG + getCurrentMethodName(),"startMethod, MonthlyExpensePlanningDto: " + dto);
+    private void showAddExpenseDialogForMonth(MonthUtilityServiceDto dto) {
+        Log.d(TAG + getCurrentMethodName(),"startMethod, MonthUtilityServiceDto: " + dto);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Добавить расход в " + dto.getMonth().getMonthYear());
@@ -385,7 +402,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             try {
 
                 double amount = Double.parseDouble(amountStr);
-                Expense expense = new Expense(name, TYPE_EXPENSE_MONTH_PLANNING);
+                Expense expense = new Expense(name, expenseType);
                 expense.addPayment(amount);
                 if (!description.isEmpty()) expense.setDescription(description);
 
@@ -440,7 +457,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     }
 
 
-    /*
+//    /*
     public void updateMonthExpensePlanning(View view) {
         Log.d(TAG, "startMethod");
 
@@ -449,20 +466,83 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             return;
         }
 
-        MonthlyExpensePlanningDto dto = monthDtoList.get(selectedMonthPosition);
+        MonthUtilityServiceDto dto = monthDtoList.get(selectedMonthPosition);
         Toast.makeText(this, "Для изменения выбран месяц " + dto.getMonth().getMonthYear(), Toast.LENGTH_LONG).show();
 
 
         // изменить активити на правильную новую, для изменения строки с месяцем :
+        /*
         Intent intent = new Intent(this, ExpenseDetailActivity.class);
         intent.putExtra("expense_id", dto.getMonth().getId());
         startActivity(intent);
+        */
         // !изменить активити на правильную новую, для изменения строки с месяцем
 
 
         Log.d(TAG, "endMethod");
     }
-    */
+//    */
+
+
+    /** Для передачи показаний : */
+    /** В т.ч. вызывается из Адаптера из строки addMeterReadingListener.onAddMeterReading(dto); */
+    private void showAddMeterReadingDialog(MonthUtilityServiceDto dto) {
+        Log.d(TAG + "showAddMeterReadingDialog() ", "startMethod, dto: " + dto);
+
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Добавить показания для " + dto.getMonth().getMonthYear());
+
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_meter_reading, null);
+        EditText editName = view.findViewById(R.id.editName);
+        EditText editCurrent = view.findViewById(R.id.editCurrentValue);
+
+        builder.setView(view);
+        builder.setPositiveButton("Сохранить", (dialog, which) -> {
+            Log.d(TAG + "showAddMeterReadingDialog() ", "push buttonSave start");
+
+            /** Валидация : */
+            if (!isValidMeter(editName, editCurrent)) return;
+
+            String nameStr = editName.getText().toString().trim();
+            double currentValue = Double.parseDouble(editCurrent.getText().toString().trim());
+
+            /** Cохранение : */
+            meterService.insertMeter(nameStr, currentValue, dto.getMonth().getId());
+
+            /** Обновляет отображение, после изменения */
+            loadData();
+
+            Log.d(TAG + "showAddMeterReadingDialog() ", "push buttonSave end");
+        });
+
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+
+        Log.d(TAG + "endMethod() ", "startMethod, dto: " + dto);
+    }
+
+
+    public boolean isValidMeter(EditText editName, EditText editCurrent) {
+        Log.d(TAG + "startMethod() ",
+                "startMethod, editName: " + editName + ", editCurrent: " + editCurrent);
+
+        boolean isValid = true;
+
+        if (editName.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Введите текущее показание", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        try {
+            double currentValue = Double.parseDouble(editCurrent.getText().toString().trim());
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Некорректное текущее показание", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
+        return isValid;
+    }
+    /** !Для передачи показаний */
 
 
 }
