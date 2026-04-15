@@ -3,10 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingStart="12dp"
+    android:paddingTop="0dp"
+    android:paddingEnd="0dp" >
+<!--
+android:paddingTop="8dp"
+android:paddingBottom="16dp"
+    -->
 
     <!-- Заголовок с кнопкой добавить -->
     <LinearLayout
@@ -20,20 +23,31 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Показания счётчиков"
+            android:text="Показания счётчиков:"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp" />
+            />
+<!--
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="4dp"
+-->
+
 
         <Button
             android:id="@+id/buttonAddMeterReading"
+            android:padding="4dp"
+            android:text="+"
+            android:backgroundTint="@color/blue"
+            android:layout_marginEnd="8dp"
+            android:layout_width="48dp"
+            android:layout_height="40dp"
+            />
+<!--
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+"
-            android:backgroundTint="#4CAF50"
-            android:minWidth="36dp"
-            android:padding="4dp"
-            android:layout_marginStart="8dp" />
+            android:minWidth="48dp"
+-->
+
     </LinearLayout>
 
 
@@ -41,7 +55,12 @@
         android:id="@+id/listMeterReadings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false" />
+        android:nestedScrollingEnabled="false"
+        android:paddingStart="18dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        />
 
     <!--
     <androidx.recyclerview.widget.RecyclerView

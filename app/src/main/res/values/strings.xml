@@ -27,6 +27,9 @@
     <string name="total_month_deposit_amount">Внесено: %.2f руб.</string>
     <string name="balance">Баланс: %.2f руб.</string>
     <string name="balance_2">Итог: %.2f руб.</string>
+
+    <string name="month_utility_service_meter">%s: %.2f</string>
+    <string name="month_utility_service_amount">Оплачено: %.2f руб. (%d записей | %d платежей)</string>
     <!-- !Для UI -->
 
 </resources>

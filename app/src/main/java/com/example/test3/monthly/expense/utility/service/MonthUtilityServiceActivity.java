@@ -138,10 +138,14 @@ public class MonthUtilityServiceActivity extends AppCompatActivity {
         /* listView.setAdapter(adapter); */
 
 
-        /** Раскрывает все группы (для наглядности) */
-        int groupCount = adapter.getGroupCount();
-        for (int i = 0; i < groupCount; i++) {
-            expandableListView.expandGroup(i);
+        if (monthDtoList != null && !monthDtoList.isEmpty()) {
+
+            /** Раскрывает все группы (для наглядности) */
+            int groupCount = adapter.getGroupCount();
+            for (int i = 0; i < groupCount; i++) {
+                expandableListView.expandGroup(i);
+            }
+
         }
 
 

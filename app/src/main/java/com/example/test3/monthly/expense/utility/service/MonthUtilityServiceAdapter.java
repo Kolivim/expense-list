@@ -40,8 +40,10 @@ import java.util.List;
 
 public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
+    private static final String TAG = "MonthUtilityServiceAdapter";
+
     private Context context;
-    private List< MonthUtilityServiceDto /* MonthlyExpensePlanningDto */ > groups;
+    private List< MonthUtilityServiceDto> groups;
     private LayoutInflater inflater;
 
     /** Для подсветки заголовка у выбранного месяца */
@@ -91,7 +93,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
     }
 
 
-    public MonthUtilityServiceAdapter(Context context, List< MonthUtilityServiceDto /* MonthlyExpensePlanningDto */ > groups) {
+    public MonthUtilityServiceAdapter(Context context, List<MonthUtilityServiceDto> groups) {
         this.context = context;
         this.groups = groups;
         this.inflater = LayoutInflater.from(context);
@@ -106,8 +108,11 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getGroupCount() {
+        Log.d(TAG, "getGroupCount() groups.size() = " + groups.size());
 //        return groups.size();
-        return 1;
+//        return 1;
+//        return groups.size() != 0 ? 1 : 0;
+        return groups.size();
     }
 
 
@@ -120,7 +125,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
 
         List<Expense> children = groups.get(groupPosition).getExpenseList();
-        return children == null ? 1 : children.size() + 1;
+        return children == null ? 0 : children.size() + 1;
 //        return groups.get(groupPosition).getExpenseList().size() + 1;
 
 
@@ -148,7 +153,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
         if (childPosition < expensesCount) {
             return dto.getExpenseList().get(childPosition);
         } else {
-            // возвращаем сам DTO для показаний
+            /** Возвращает сам DTO для показаний */
             return dto;
         }
 
@@ -157,6 +162,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getGroupId(int groupPosition) {
+        if (groupPosition >= groups.size()) return -1;
         return groups.get(groupPosition).getMonth().getId();
     }
 
@@ -173,7 +179,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
         if (childPosition < expensesCount) {
             return dto.getExpenseList().get(childPosition).getId();
         } else {
-            // уникальный отрицательный ID для показаний
+            /** Уникальный отрицательный ID для показаний */
             return -dto.getMonth().getId();
         }
 
@@ -191,27 +197,19 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
         Log.d("getGroupView", "startMethod");
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.list_group_month, parent, false);
+            convertView = inflater.inflate(R.layout.list_group_month_utility_service, parent, false);
         }
 
         MonthUtilityServiceDto dto = groups.get(groupPosition);
 
         TextView textViewMonthName = convertView.findViewById(R.id.textViewMonthName);
         TextView textViewExpenseStats = convertView.findViewById(R.id.textViewExpenseStats);
-        TextView textViewDepositStats = convertView.findViewById(R.id.textViewDepositStats);
-        TextView textViewBalance = convertView.findViewById(R.id.textViewBalance);
 
         textViewMonthName.setText(dto.getMonth().getMonthYear());
 
-        /*
-        String stats = String.format("Расходы: %.2f руб. (%d записей | %d платежей)",
-                dto.getTotalExpenseAmount(),
-                dto.getExpensesCount(),
-                dto.getPaymentsCount());
-        */
-        String expenseStats = context.getString(R.string.total_month_expense_amount,
+        String expenseStats = context.getString(R.string.month_utility_service_amount,
                 dto.getTotalExpenseAmount(), dto.getExpensesCount(), dto.getPaymentsCount());
-        textViewExpenseStats.setText( /* stats */ expenseStats);
+        textViewExpenseStats.setText(expenseStats);
         /***/
 
 
@@ -221,20 +219,10 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
                 dto.getTotalDepositAmount(),
                 dto.getDepositsCount());
         */
-//                dto.getDepositsPayments);                                                         /** Не реализован сбор статистики по Deposit Payments */
-        String depositStats = context.getString(R.string.total_month_deposit_amount, dto.getTotalDepositAmount());
-        textViewDepositStats.setText(depositStats);
         /***/
 
 
-//        /** Устанавливаем balance : */
-//        String balance = String.format("Итог: %.2f руб.", dto.getBalance());
-//        String balance = context.getString(R.string.balance_2, dto.getBalance());
-//        textViewBalance.setText(balance);
-        /***/
-
-
-        // Также можно установить цвет текста для баланса
+        /** Также можно установить цвет текста для баланса */
         /** Устанавливает фон для выделения */
         if (groupPosition == selectedGroupPosition) {
             convertView.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_color));
@@ -274,10 +262,10 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
         if (childPosition < expensesCount) {
 
-            /** ---------- ОТОБРАЖЕНИЕ РАСХОДА ---------- */
+            /** Отображение Expense : */
             Expense expense = (Expense) getChild(groupPosition, childPosition);
             if (convertView == null) {
-                convertView = inflater.inflate(R.layout.list_child_expense, parent, false);
+                convertView = inflater.inflate(R.layout.list_child_utility_service_expense /* list_child_expense */ , parent, false);
             }
 
             /** 1 : */
@@ -305,31 +293,22 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
             /** !Устанавливает цвет */
 
 
+            /*
             View depositContainer = convertView.findViewById(R.id.depositContainer);
             TextView textViewDepositAmount = convertView.findViewById(R.id.textViewDepositAmount);
-
             TextView textViewBalance = convertView.findViewById(R.id.textViewBalance);
-
-
-            /** Управляет видимостью контейнера с Deposit и поля Balance : */
             if (expense.getDepositList() == null || expense.getDepositList().isEmpty()) {
-
                 depositContainer.setVisibility(View.GONE);
                 textViewBalance.setVisibility(View.GONE);
-
             } else {
-
                 depositContainer.setVisibility(View.VISIBLE);
                 textViewBalance.setVisibility(View.VISIBLE);
-
                 double depositTotalAmount = expense.getDepositListTotalAmount();
                 textViewDepositAmount.setText(context.getString(R.string.total_deposit_amount, depositTotalAmount));
-
-                double balance = expense.getBalance();   /* expense.getExpenseListTotalAmount() - expense.getDepositListTotalAmount(); */
+                double balance = expense.getBalance();
                 textViewBalance.setText(context.getString(R.string.balance, balance));
-
             }
-            /***/
+            */
 
 
             /** Вызывает Activity для редактирования Expense */
@@ -343,32 +322,28 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
 
             /** Вызывает Activity для редактирования списка Deposit, относящихся к Expense */
+            /*
             Button depositButton = convertView.findViewById(R.id.deposit);
             depositButton.setOnClickListener(v -> {
                 Log.d("depositButton.setOnClickListener", "pushDepositButton");
-
-
-
-//            if (depositClickListener != null) {
-//                depositClickListener.onDepositClick(expense);
-
+//              if (depositClickListener != null) {
+//              depositClickListener.onDepositClick(expense);
                 Intent intent = new Intent(context, UniversalDepositsActivity.class);
                 intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_ID, expense.getId());
                 intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_TYPE, UniversalDepositsActivity.TYPE_EXPENSE);
                 intent.putExtra(UniversalDepositsActivity.EXTRA_TITLE, "Взносы: " + expense.getName());
                 intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, TYPE_DEPOSIT_MONTH_PLANNING);
                 context.startActivity(intent);
-
 //            }
 
             });
-            /** !1 */
+            */
 
             return convertView;
 
         } else {
 
-            // ---------- ОТОБРАЖЕНИЕ ПОКАЗАНИЙ СЧЁТЧИКОВ ----------
+            /** ОТОБРАЖЕНИЕ Meter : */
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.list_child_meter_readings, parent, false);
             }
@@ -380,15 +355,20 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
             List<Meter> meters = dto.getMeterList();
             if (meters != null && !meters.isEmpty()) {
 
-                ArrayAdapter<Meter> adapter = new ArrayAdapter<Meter>(context, android.R.layout.simple_list_item_1, meters) {
+                // todo: Вынести Адаптер в отдельный класс
+                ArrayAdapter<Meter> adapter = new ArrayAdapter<Meter>(context, R.layout.list_item_meter /* android.R.layout.simple_list_item_1 */ , meters) {
+
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parentView /*parent*/ ) {
+                    public View getView(int position, View convertView, ViewGroup parentView) {
                         if (convertView == null) {
-                            convertView = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, parentView /*parent*/, false);
+                            convertView = LayoutInflater.from(context).inflate( R.layout.list_item_meter /* android.R.layout.simple_list_item_1 */ , parentView, false);
                         }
                         TextView text = convertView.findViewById(android.R.id.text1);
                         Meter meter = getItem(position);
-                        text.setText(meter.getName() + ": " + meter.getValue() + " ед.");
+
+                        String meterText = context.getString(R.string.month_utility_service_meter,
+                                meter.getName(), meter.getValue());
+                        text.setText( meterText /* meter.getName() + ": " + meter.getValue() */ );
                         return convertView;
                     }
                 };
@@ -424,9 +404,15 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
 
 
             } else {
+
                 readingsList.setVisibility(View.GONE);
-                convertView.findViewById(R.id.readingsTitle).setVisibility(View.GONE);
+
+                convertView.findViewById(R.id.readingsTitle).setVisibility(View.VISIBLE);
+                TextView readingsTitle = convertView.findViewById(R.id.readingsTitle);
+                readingsTitle.setText("Показания отсутствуют");
+
             }
+
 
 //            if (dto.getMeterReadingList() != null && !dto.getMeterReadingList().isEmpty()) {
 //                MeterReadingAdapter adapter = new MeterReadingAdapter(context, dto.getMeterReadingList());
@@ -507,6 +493,7 @@ public class MonthUtilityServiceAdapter extends BaseExpandableListAdapter {
     }
 //
 //
+    @Deprecated
     public View getChildViewIsh(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
         Log.d("getChildView", "startMethod");
