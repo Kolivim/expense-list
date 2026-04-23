@@ -2,20 +2,29 @@ package com.example.test3.service;
 
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID;
+import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_EXPENSE_ID;
+import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_IS_DELETED;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DATETIME;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_DESCRIPTION;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_EXPENSE_TYPE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_IS_DELETED;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_NAME;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_REFUND_EXPENSE_ID;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_REFUND_MONTH_COUNT;
+import static com.example.test3.dao.ExpenseSQLite.EXPENSE_REFUND_START_DATE;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_ROW_COLOR;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_EXPENSE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_TYPE_ID;
+import static com.example.test3.dao.ExpenseSQLite.TABLE_DEPOSIT;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE_PAYMENT;
+import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE_REFUND;
 import static com.example.test3.service.DepositService.TYPE_CREDIT_LOAN_REPAYMENT;
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNED_REFUND_PLANNING;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,6 +35,7 @@ import android.util.Log;
 import com.example.test3.dao.ExpenseSQLite;
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.monthly.expense.refund.planning.ExpenseRefund;
 import com.example.test3.util.Util;
 
 import java.time.ZonedDateTime;
@@ -33,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExpenseService {
+
+    private static final String TAG = "ExpenseService";
 
     private Context context;
 
@@ -222,6 +234,139 @@ public class ExpenseService {
     }
 
 
+    /** Для ExpenseRefund : */
+    @Deprecated
+    public boolean insertExpense(ExpenseRefund expense) {
+        Log.d(TAG, "insertExpense() startMethod, ExpenseRefund: " + expense);
+        ExpenseRefund insertedExpense = insertExpenseRow(expense);
+        return insertedExpense.getId() != -1;
+    }
+
+
+    public ExpenseRefund insertExpenseRow(ExpenseRefund expense) {
+        Log.d(TAG, "insertExpenseRow() startMethod, ExpenseRefund: " + expense);
+
+        /** Поля из Expense : */
+        ContentValues cv = new ContentValues();
+
+
+        if (expense.getTypeId() == null) {throw new IllegalArgumentException("TypeId не установлен для Expense: " + expense.getName());}
+        if (expense.getTypeId() != Util.TYPE_EXPENSE_MONTH_REFUND_PLANNING) {throw new IllegalArgumentException("Получен некорректный TypeId: " + expense.getTypeId());}
+        cv.put(EXPENSE_EXPENSE_TYPE_ID, expense.getTypeId());
+
+        cv.put(EXPENSE_NAME, expense.getName());
+        if (expense.getDescription() != null) cv.put(EXPENSE_DESCRIPTION, expense.getDescription());
+        cv.put(EXPENSE_DATETIME, expense.getDateTime().format(Util.dateFormatterInsert));
+        cv.put(EXPENSE_IS_DELETED, 0);
+        cv.put(EXPENSE_ROW_COLOR, -1);
+
+        long result = dbWrite.insert(TABLE_EXPENSE, null, cv);                                      //    dbWrite.execSQL("INSERT OR IGNORE INTO TABLE_EXPENSE VALUES ('Coffee', 23);");            //  return false;
+
+        expense.setId(result);
+
+        if(expense.getExpenseList() != null) insertPaymentRow(expense);
+        /** !Поля из Expense */
+
+
+        /** Поля из ExpenseRefund : */
+        boolean isSuccess = insertExpenseRefundPropsRow(expense);
+
+        return expense;
+    }
+
+
+    public boolean insertExpenseRefundPropsRow(ExpenseRefund expense) {
+        Log.d(TAG, "insertExpenseRefundPropsRow() startMethod, ExpenseRefund: " + expense);
+
+        ContentValues expenseRefundProps = new ContentValues();
+        expenseRefundProps.put(EXPENSE_REFUND_EXPENSE_ID, expense.getId());
+        expenseRefundProps.put(EXPENSE_REFUND_START_DATE, expense.getStartDate().format(Util.dateFormatterInsert));
+        expenseRefundProps.put(EXPENSE_REFUND_MONTH_COUNT, expense.getMonthCount());
+        long result = dbWrite.insert(TABLE_EXPENSE_REFUND, null, expenseRefundProps);
+
+        return result != -1;
+    }
+
+
+    /** DS : */
+    // todo: переписать с вызовом getExpenseList(Long typeId)
+    /** Получает список ExpenseRefund (тип TYPE_EXPENSE_MONTH_REFUND_PLANNING) */
+    public List<ExpenseRefund> getExpenseRefundList() {
+        Log.d(TAG, "getExpenseRefundList() start");
+
+        List<ExpenseRefund> refunds = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+
+            cursor = dbRead.rawQuery(
+                    "SELECT * FROM " + TABLE_EXPENSE +
+                            " WHERE " + EXPENSE_EXPENSE_TYPE_ID + " = " + Util.TYPE_EXPENSE_MONTH_REFUND_PLANNING +
+                            " AND " + EXPENSE_IS_DELETED + " = 0" +
+                            " ORDER BY " + EXPENSE_DATETIME + " DESC", null);
+
+            while (cursor.moveToNext()) {
+
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(EXPENSE_ID));
+                long typeId = cursor.getLong(cursor.getColumnIndexOrThrow(EXPENSE_EXPENSE_TYPE_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(EXPENSE_NAME));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(EXPENSE_DESCRIPTION));
+                String dateTimeStr = cursor.getString(cursor.getColumnIndexOrThrow(EXPENSE_DATETIME));
+                boolean isDeleted = cursor.getInt(cursor.getColumnIndexOrThrow(EXPENSE_IS_DELETED)) == 1;
+                int rowColor = cursor.getInt(cursor.getColumnIndexOrThrow(EXPENSE_ROW_COLOR));
+                ZonedDateTime dateTime = ZonedDateTime.parse(dateTimeStr, Util.dateFormatterInsert);
+
+                ExpenseRefund expense = new ExpenseRefund(id, typeId, name, description, dateTime, isDeleted, rowColor);
+
+                // Загружаем детали из expense_refund
+                loadExpenseRefundDetails(expense);
+
+                // Загружаем платежи самого расхода (если есть)
+                setExpensePayments(expense);
+
+                refunds.add(expense);
+            }
+
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        Log.d(TAG, "getExpenseRefundList() end, size=" + refunds.size());
+        return refunds;
+    }
+
+    private void loadExpenseRefundDetails(ExpenseRefund expense) {
+        Log.d(TAG, "loadExpenseRefundDetails() start for expenseId=" + expense.getId());
+
+        Cursor cursor = null;
+
+        try {
+
+            cursor = dbRead.rawQuery(
+                    "SELECT " + EXPENSE_REFUND_START_DATE + ", " + EXPENSE_REFUND_MONTH_COUNT +
+                            " FROM " + TABLE_EXPENSE_REFUND +
+                            " WHERE " + EXPENSE_REFUND_EXPENSE_ID + " = " + expense.getId(), null);
+
+            if (cursor.moveToFirst()) {
+
+                String startDateStr = cursor.getString(0);
+                if (startDateStr != null && !startDateStr.isEmpty()) {
+                    expense.setStartDate(ZonedDateTime.parse(startDateStr, Util.dateFormatterInsert));
+                }
+
+                expense.setMonthCount(cursor.getInt(1));
+            }
+
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        Log.d(TAG, "loadExpenseRefundDetails() end");
+    }
+    /** !DS */
+    /** !Для ExpenseRefund */
+
+
     public boolean removeExpense(Expense expense) {
 
 
@@ -384,9 +529,9 @@ public class ExpenseService {
         Cursor cursor = dbRead.rawQuery(
                 "SELECT SUM(" + ExpenseSQLite.DEPOSIT_PAYMENT + ") " +
                         "FROM " + ExpenseSQLite.TABLE_DEPOSIT_PAYMENT + " dp " +
-                        "JOIN " + ExpenseSQLite.TABLE_DEPOSIT + " d ON dp." + ExpenseSQLite.DEPOSIT_PAYMENT_DEPOSIT_ID + " = d." + ExpenseSQLite.DEPOSIT_ID + " " +
-                        "WHERE d." + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_CREDIT_LOAN_REPAYMENT + " " +
-                        "AND d." + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expense.getId(),
+                        "JOIN " + TABLE_DEPOSIT + " d ON dp." + ExpenseSQLite.DEPOSIT_PAYMENT_DEPOSIT_ID + " = d." + ExpenseSQLite.DEPOSIT_ID + " " +
+                        "WHERE d." + DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_CREDIT_LOAN_REPAYMENT + " " +
+                        "AND d." + DEPOSIT_EXPENSE_ID + " = " + expense.getId(),
                 null);
 
         if (cursor.moveToFirst() && !cursor.isNull(0)) {

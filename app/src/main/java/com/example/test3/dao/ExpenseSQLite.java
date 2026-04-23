@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.time.ZonedDateTime;
+
 public class ExpenseSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 1;
 
     private static final String DATABASE_NAME = "ExpenseDB";
 
@@ -34,6 +36,16 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     public static final String EXPENSE_TYPE_ID = "id";
     public static final String EXPENSE_TYPE_NAME = "name";
     /** !Таблица типов расходов */
+
+
+    /** Таблица хранит сами записи ПлановогоВозвратаРасходов : */
+    public static final String TABLE_EXPENSE_REFUND = "expense_refund";
+    public static final String EXPENSE_REFUND_ID = "id";
+    public static final String EXPENSE_REFUND_EXPENSE_ID = "expense_id";                            /** id Expense, к которой относится запись в таблице */
+    public static final String EXPENSE_REFUND_START_DATE = "start_date";
+    public static final String EXPENSE_REFUND_MONTH_COUNT = "month_count";
+    public static final String EXPENSE_REFUND_IS_REFUNDED = "is_refunded";
+    /** !Таблица хранит сами записи ПлановогоВозвратаРасходов */
 
 
     /** Таблица хранит список взносов, как погашений, так и просто взносов */
@@ -132,6 +144,7 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         createExpensePaymentTable(sqLiteDatabase);
         createExpenseTypeTable(sqLiteDatabase);
         insertExpenseType(sqLiteDatabase);
+        createExpenseRefundTable(sqLiteDatabase);
         createAccountNumberTable(sqLiteDatabase);
 
         createDepositTable(sqLiteDatabase);
@@ -194,6 +207,22 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     }
 
 
+    public void createExpenseRefundTable(SQLiteDatabase sqLiteDatabase) {
+
+        String createExpenseTableSql = "CREATE TABLE " + TABLE_EXPENSE_REFUND + " ( " +
+                EXPENSE_REFUND_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                EXPENSE_REFUND_EXPENSE_ID + " INTEGER NOT NULL, " +
+                EXPENSE_REFUND_START_DATE + " TEXT, " +
+                EXPENSE_REFUND_MONTH_COUNT + " INTEGER, " +
+                EXPENSE_REFUND_IS_REFUNDED + " INTEGER DEFAULT 0, " +
+                "FOREIGN KEY (" + EXPENSE_REFUND_EXPENSE_ID + ") REFERENCES " + TABLE_EXPENSE + "(" + EXPENSE_ID + ") ON DELETE RESTRICT ," +
+                "CHECK (" + EXPENSE_REFUND_IS_REFUNDED + " IN (0, 1)) " +
+                " )";
+
+        sqLiteDatabase.execSQL(createExpenseTableSql);
+    }
+
+
     public void insertExpenseType(SQLiteDatabase sqLiteDatabase) {
 
         /** Вариант с ContentValues */
@@ -216,11 +245,11 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
                 " (" + EXPENSE_TYPE_NAME + ") VALUES " +
                 "('Ежемесячные расходы'), " +                                                       /** 1 */
                 "('Ежемесячное планирование бюджета'), " +                                          /** 2 */
-//                "('Ежемесячные взносы на кредитку'), " +                                            /** Коммуналка и etc. */
                 "('Длинные займы с кредитных средств'), " +                                         /** 3 */
                 "('Длинные займы с собственных средств'), " +                                       /** 4 */
-                "('Коммунальные платежи') ";                                                        /** 5 */
-
+                "('Коммунальные платежи'), " +                                                      /** 5 */
+                "('Ежемесячное планирование возвратов длинных займов'), " +                         /** 6 Планирование и реализация погашения пп.3 и 4*/
+                "('Ежемесячные затраты с взносов собственных средств на кредитку')";                /** 7 Коммуналка и etc. (соответствует Deposit с type == 2) */
         sqLiteDatabase.execSQL(sql);
 
 
@@ -243,7 +272,6 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         String sql = "INSERT INTO " + TABLE_DEPOSIT_TYPE +
                 " (" + DEPOSIT_TYPE_NAME + ") VALUES " +
                 "('Погашение ежемесячных затрат'), " +                                              /** 1. == "('Ежемесячные расходы'), " */
-//                "('Ежемесячное планирование бюджета'), " +                                        /** Отсутсвует в чистом виде, частично заменяется следующей строкой */
                 "('Ежемесячные взносы на кредитку'), " +                                            /** 2. Вперед, для трат их позднее, Коммуналка и etc. */
                 "('Погашение затрат по длинным займам с кредитных средств'), " +                    /** 3. */
                 "('Погашение затрат по длинным займам с собственных средств'), " +                  /** 4. */
@@ -270,8 +298,9 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO " + TABLE_DEPOSIT_TYPE +
                 " (" + DEPOSIT_TYPE_NAME + ") VALUES " +
-                "('Ежемесячное планирование бюджета') ";                                            /** 6 */
-//                "('Коммунальные платежи') ";
+                "('Ежемесячное планирование бюджета'), " +                                          /** 6 */
+                "('Взносы согласно ежемесячного планирования возвратов длинных займов'), " +        /** 7 Реально выполненные взносы согласно запланированных возвратов по длинным займам, соответствует п.6 Expense */
+                "('Планируемые взносы для ежемесячного планирования возвратов длинных займов') ";   /** 8 Запланированная сумма взноса для погашения запланированных возвратов по длинным займам, соответствует п.6 Expense */
 
         sqLiteDatabase.execSQL(sql);
 
@@ -324,8 +353,9 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO " + TABLE_MONTH_TYPE +
                 " (" + MONTH_TYPE_NAME + ") VALUES " +
-                "('Ежемесячное планирование расходов') ";                                           /** typeId = 3 */
-
+                "('Ежемесячное планирование расходов'), " +                                         /** typeId = 3 */
+                "('Ежемесячное планирование возвратов по длинным займам'), " +                      /** 4 */
+                "('Ежемесячные взносы на кредитку')";                                               /** 5 ДС, внемённые на кредитку вперёд */
         sqLiteDatabase.execSQL(sql);
     }
 
@@ -418,6 +448,8 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_TYPE);
 
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_REFUND);
+
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNT_NUMBER);
 
 
@@ -460,6 +492,8 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_PAYMENT);
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_TYPE);
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_REFUND);
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNT_NUMBER);
 

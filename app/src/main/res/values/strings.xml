@@ -10,6 +10,9 @@
     <string name="expense_long_credit_loans">Длинные займы с кредитных средств</string>
     <string name="expense_long_myself_loans">Длинные займы с собственных средств</string>
     <string name="expense_utility_bills">Коммунальные платежи</string>
+    <string name="expense_monthly_refund_planning">Ежемесячное планирование возвратов длинных займов</string>
+<!--    <string name="expense_monthly_refung_planning">Ежемесячные затраты с взносов собственных средств на кредитку</string>-->
+
 
 <!--    "('Погашение ежемесячных затрат')-->
 <!--    "('Ежемесячные взносы на кредитку')-->
@@ -17,6 +20,8 @@
 <!--    "('Погашение затрат по длинным займам с собственных средств')-->
 <!--    "('Планируемый возврат ежемесячных трат')-->
 <!--    "('Ежемесячное планирование бюджета')-->
+<!--    "('Взносы согласно ежемесячного планирования возвратов')"-->
+
 
 
     <!-- Для UI : -->
@@ -30,6 +35,12 @@
 
     <string name="month_utility_service_meter">%s: %.2f</string>
     <string name="month_utility_service_amount">Оплачено: %.2f руб. (%d записей | %d платежей)</string>
+
+    <string name="month_expense_refund_start_date">Дата начала выплат: %s</string>
+    <string name="month_expense_refund_month_count">Срок возврата: %d месяцев</string>
+    <string name="low_amount">%.2f руб.</string>
+<!--    <string name="month_expense_refund_sum">________</string>-->
+<!--    details.append("\nСумма к возврату: ").append(String.format("%.2f", totalExpense)).append(" руб.");-->
     <!-- !Для UI -->
 
 </resources>

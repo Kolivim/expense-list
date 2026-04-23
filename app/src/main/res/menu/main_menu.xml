@@ -33,6 +33,12 @@
         android:icon="@drawable/ic_calendar"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_month_refund_planning"
+        android:title="Ежемесячное планирование возвратов"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
+
 <!--    <item-->
 <!--        android:id="@+id/separator"-->
 <!--        android:title="───────────────────"-->

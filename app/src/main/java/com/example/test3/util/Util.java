@@ -6,6 +6,7 @@ public class Util {
 
     public static final DateTimeFormatter dateFormatterInsert = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm Z");                                  /** "MM/dd/yyyy - HH:mm:ss Z" */
     public static final DateTimeFormatter dateFormatterSee = DateTimeFormatter.ofPattern("dd.MM.yy");
+    public static final DateTimeFormatter dateFormatterMonthYearSee = DateTimeFormatter.ofPattern("MM.yy");
 
     public static final String EXTRA_EXPENSE_TYPE = "expense_type";
 
@@ -15,16 +16,25 @@ public class Util {
     //    public static final Long TYPE_METER_READINGS = 2L;    /** Константа для типа "Передача показаний" */
     public static final Long TYPE_MONTHLY_UTILITY_BILLS = 2L;                                       /** Константа для типа "Передача показаний", которая по факту является 'Коммунальные услуги' */
     public static final Long TYPE_MONTHLY_EXPENSE_PLANNING = 3L;                                    /** Константа для типа "Ежемесячное планирование расходов" */
+    public static final Long TYPE_MONTHLY_REFUND_PLANNING = 4L;                                     /** Константа для типа "Ежемесячное планирование возвратов по длинным займам" */
+//  ('Ежемесячные взносы на кредитку') - /** 5 ДС, внемённые на кредитку вперёд */
 
 
     /** ExpenseType : */
     public static final Long TYPE_EXPENSE_MONTH_PLANNING = 2L;                                      /** Ежемесячное планирование бюджета */
     public static final Long TYPE_EXPENSE_UTILITY_BILLS = 5L;                                       /** Коммунальные платежи */
+    public static final Long TYPE_EXPENSE_MONTH_REFUND_PLANNING = 6L;                               /** Ежемесячное планирование возвратов длинных займов */
+//  ('Ежемесячные затраты с взносов собственных средств на кредитку') - /** 7 Коммуналка и etc. (соответствует Deposit с type == 2) */
 
 
     /** DepositType : */
+//    public static final Long TYPE_DEPOSIT_________ = 2L; - /** 2. Ежемесячные взносы на кредитку, Вперед, для трат их позднее, Коммуналка и etc. */
     public static final Long TYPE_DEPOSIT_MONTH_PLANNING = 6L;                                      /** Ежемесячное планирование бюджета */
-/*
+    public static final Long TYPE_DEPOSIT_MONTH_REFUND_PLANNING = 7L;                               /** Взносы согласно ежемесячного планирования возвратов длинных займов, соответствует п.6 Expense -- Реально выполненные взносы согласно запланированных возвратов по длинным займам */
+    public static final Long TYPE_DEPOSIT_MONTH_PLANNED_REFUND_PLANNING = 8L;                       /** Планируемые взносы для ежемесячного планирования возвратов длинных займов, соответствует п.6 Expense -- Запланированная сумма взноса для погашения запланированных возвратов по длинным займам */
+
+
+    /*
 
 Expense's
     <string name="expense_monthly_planning">Ежемесячное планирование бюджета</string>

@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.expenseList.ExpenseAdapter;
 import com.example.test3.monthly.expense.planning.MonthExpensePlanningActivity;
+import com.example.test3.monthly.expense.refund.planning.MonthRefundPlannedServiceActivity;
 import com.example.test3.monthly.expense.utility.service.MonthUtilityServiceActivity;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
@@ -134,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_month_utility_service) {
             openMonthUtilityService(null);
+            return true;
+        } else if (id == R.id.action_month_refund_planning) {
+            openMonthRefundPlanning(null);
             return true;
         }
 
@@ -418,6 +422,17 @@ public class MainActivity extends AppCompatActivity {
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
+    }
+
+
+    /** Ежемесячное планирование возвратов длинных займов */
+    public void openMonthRefundPlanning(View view) {
+        Log.d(TAG, "openMonthRefundPlanning startMethod");
+
+        Intent intent = new Intent(this, MonthRefundPlannedServiceActivity.class);
+        startActivity(intent);
+
+        Log.d(TAG, "openMonthRefundPlanning endMethod");
     }
 
 

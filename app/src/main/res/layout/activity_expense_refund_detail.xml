@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="32dp"
+    android:paddingBottom="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp" >
+
+
+    <!-- Заголовок: Информация о Expense + кнопка удаления -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext_bg" >
+            <!--
+            android:layout_marginBottom="16dp"
+            android:background="@android:drawable/edit_text"
+            -->
+
+            <TextView
+                android:id="@+id/textViewExpenseName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewExpenseDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textViewExpenseDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textViewTotalAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <TextView
+                android:id="@+id/textViewStartDateRefund"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/textViewMonthCountRefund"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp" />
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonDeleteExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:layout_marginStart="4dp"
+            android:layout_gravity="center_vertical"
+            android:text="Удалить"
+            android:backgroundTint="#F44336"
+            />
+        <!--
+        android:background="@drawable/button_selector"
+
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        -->
+
+    </LinearLayout>
+
+
+    <!-- Список платежей -->
+    <ListView
+        android:id="@+id/listViewPayments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp" />
+
+    <!-- Панель добавления нового платежа -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/editTextNewPayment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Сумма платежа"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/buttonAddPayment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Добавить" />
+    </LinearLayout>
+
+    <!-- Нижняя панель - кнопки -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/buttonChooseTextColor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Цвет"
+            android:layout_marginEnd="4dp" />
+
+        <Button
+            android:id="@+id/buttonEditDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Описание" />
+
+        <Button
+            android:id="@+id/buttonBack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Назад"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+
+
+    <!--        <Button-->
+    <!--            android:id="@+id/buttonDeleteExpense"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="Удалить"-->
+    <!--            android:backgroundTint="#F44336"-->
+    <!--            android:layout_marginStart="12dp"-->
+    <!--            android:paddingLeft="16dp"-->
+    <!--            android:paddingRight="16dp"-->
+    <!--            android:paddingTop="8dp"-->
+    <!--            android:paddingBottom="8dp"-->
+    <!--            android:minWidth="80dp"-->
+    <!--            android:textAllCaps="false" />-->
+
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:orientation="vertical"-->
+<!--    android:padding="16dp">-->
+
+<!--    &lt;!&ndash; Существующие элементы из activity_expense_detail.xml &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExpenseName"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="20sp"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExpenseDescription"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewExpenseDate"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/textViewTotalAmount"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:textSize="16sp"-->
+<!--        android:textStyle="bold" />-->
+
+<!--    <ListView-->
+<!--        android:id="@+id/listViewPayments"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_weight="1"-->
+<!--        android:layout_marginTop="8dp" />-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="8dp">-->
+
+<!--        <EditText-->
+<!--            android:id="@+id/editTextNewPayment"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:hint="Сумма платежа"-->
+<!--            android:inputType="numberDecimal" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonAddPayment"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Добавить" />-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Панель с кнопками: Назад, Удалить, Цвет, Описание &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:gravity="center">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonBack"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Назад"-->
+<!--            android:layout_marginEnd="4dp" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonDeleteExpense"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Удалить"-->
+<!--            android:backgroundTint="#F44336"-->
+<!--            android:layout_marginEnd="4dp" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonChooseTextColor"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Цвет"-->
+<!--            android:layout_marginEnd="4dp" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/buttonEditDescription"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:text="Описание" />-->
+<!--    </LinearLayout>-->
+
+<!--</LinearLayout>-->

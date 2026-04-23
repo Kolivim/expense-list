@@ -71,6 +71,13 @@
 
         <activity android:name=".monthly.expense.utility.service.meter.reading.MeterDetailActivity" />
 
+
+        <activity android:name=".monthly.expense.refund.planning.MonthRefundPlannedServiceActivity" />
+
+        <activity android:name=".monthly.expense.refund.planning.ExpensePlannedRefundActivity" />
+
+        <activity android:name=".expenseList.ExpenseRefundDetailActivity" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />

@@ -10,7 +10,9 @@ import java.util.List;
 public class Deposit implements Serializable {
     private Long id;
 
-    /** Может быть как NULL, так monthlyId, так и expenseId */
+    /** Может быть как NULL, так monthlyId, так и expenseId
+     * (причём для Expense с Type == Ежемесячное планирование возвратов длинных займов) одновременно есть
+     * 2 списка Deposit - с Type: TYPE_DEPOSIT_MONTH_REFUND_PLANNING и TYPE_DEPOSIT_MONTH_PLANNED_REFUND_PLANNING */
     private Long expenseId;                                                                         /** ссылка на расход (может быть null), для типа взноса == 1 - погашение ежемесячных затрат - не смогу никакой поставить expenseId, т.к. нет итоговой записи, она суммируется */
     private Long typeId;                                                                            /** тип взноса == 1 - погашение ежемесячных затрат в проработке сейчас */
     private String name;

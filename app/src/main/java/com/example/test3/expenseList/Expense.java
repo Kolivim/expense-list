@@ -30,7 +30,7 @@ public class Expense implements Serializable {
     /** Необходимое для DTO : */
     /** Deposit может быть (при расходах, относящихся к планированию бюджета),
      * а может и отсутствовать (при текущих месячных расходах) */
-    private List<Deposit> depositList;
+    protected List<Deposit> depositList;
 
 
     public Expense() {}
