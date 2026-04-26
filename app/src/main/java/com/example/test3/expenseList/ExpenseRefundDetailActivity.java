@@ -1,5 +1,8 @@
 package com.example.test3.expenseList;
 
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_REFUND_PLANNING;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,28 +18,32 @@ import androidx.core.content.ContextCompat;
 
 import com.example.test3.ExpenseDetailActivity;
 import com.example.test3.R;
+import com.example.test3.monthly.expense.planning.UniversalDepositsActivity;
 import com.example.test3.monthly.expense.refund.planning.ExpenseRefund;
 import com.example.test3.payment.PaymentAdapter;
 import com.example.test3.service.ExpenseService;
+import com.example.test3.service.RefundService;
 import com.example.test3.util.Util;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
 public class ExpenseRefundDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "ExpenseRefundDetailActivity";
 
-    protected TextView textViewName, textViewDescription, textViewDate, textViewTotal;
+    protected TextView textViewName, textViewDescription, textViewDate, textViewTotal, textViewTotalRefunded;
     protected ListView listViewPayments;
     protected EditText editTextNewPayment;
     protected Button buttonAdd, buttonBack, buttonChooseTextColor, buttonEditDescription;
 
+    protected RefundService refundService;
     protected ExpenseService expenseService;
     protected ExpenseRefund currentExpense;
     protected PaymentAdapter paymentAdapter;
 
     private TextView textViewStartDateRefund, textViewMonthCountRefund;
-    private Button buttonDeleteExpense;
+    private Button buttonDeleteExpense, buttonDepositList;
 
 
     @Override
@@ -49,6 +56,7 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         currentExpense = (ExpenseRefund) getIntent().getSerializableExtra("expense_object");
         Log.d(TAG, "Получена ExpenseRefund: " + currentExpense);
 
+        refundService = new RefundService(this);
         expenseService = new ExpenseService(this);
 
         initViews();
@@ -63,6 +71,7 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         textViewDescription = findViewById(R.id.textViewExpenseDescription);
         textViewDate = findViewById(R.id.textViewExpenseDate);
         textViewTotal = findViewById(R.id.textViewTotalAmount);
+        textViewTotalRefunded = findViewById(R.id.textViewTotalRefunded);
         listViewPayments = findViewById(R.id.listViewPayments);
         editTextNewPayment = findViewById(R.id.editTextNewPayment);
         buttonAdd = findViewById(R.id.buttonAddPayment);
@@ -73,6 +82,7 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         textViewStartDateRefund = findViewById(R.id.textViewStartDateRefund);
         textViewMonthCountRefund = findViewById(R.id.textViewMonthCountRefund);
         buttonDeleteExpense = findViewById(R.id.buttonDeleteExpense);
+        buttonDepositList = findViewById(R.id.buttonDepositList);
     }
 
 
@@ -82,9 +92,36 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         buttonChooseTextColor.setOnClickListener(v -> showTextColorPickerDialog());
         buttonEditDescription.setOnClickListener(v -> showEditDescriptionDialog());
 
+
         if (buttonDeleteExpense != null) {
             buttonDeleteExpense.setOnClickListener(v -> showDeleteConfirmationDialog());
         }
+
+
+        if (buttonDepositList != null) {
+
+            buttonDepositList.setOnClickListener(v -> {
+                Log.d(TAG, "buttonDepositList startClick");
+
+                /** : */
+                Intent intent = new Intent(this, UniversalDepositsActivity.class);
+                intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_ID, currentExpense.getId());
+                intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_TYPE, UniversalDepositsActivity.TYPE_EXPENSE);
+                intent.putExtra(UniversalDepositsActivity.EXTRA_TITLE, "Внесённые взносы за: " + currentExpense.getName());
+                intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, TYPE_DEPOSIT_MONTH_REFUND_PLANNING);
+
+                /** Предзаполняет название и дату */
+                intent.putExtra(UniversalDepositsActivity.EXTRA_DEFAULT_NAME, "Внесёно в счёт ".concat(currentExpense.getName()));
+                intent.putExtra(UniversalDepositsActivity.EXTRA_DEFAULT_DATE, ZonedDateTime.now().format(Util.dateFormatterSee));
+
+                startActivity(intent);
+                /** ! */
+
+                Log.d(TAG, "buttonDepositList endClick");
+            });
+
+        }
+
     }
 
 
@@ -125,18 +162,7 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
     }
 
 
-    protected void loadExpense() {
-
-//        currentExpense = expenseService.getExpenseById(expenseId);
-//
-//        if (currentExpense == null) {
-//            Toast.makeText(this, "Расход не найден", Toast.LENGTH_SHORT).show();
-//            finish();
-//            return;
-//        }
-
-        updateDisplay();
-    }
+    protected void loadExpense() {updateDisplay();}
 
 
     protected void updateDisplay() {
@@ -151,17 +177,18 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         }
 
         textViewDate.setText("Дата: " + currentExpense.getDateTimeString());
-        textViewTotal.setText(String.format("Общая сумма: %.2f руб.",
-                currentExpense.getExpenseListTotalAmount()));
+
+        String textViewTotalString = this.getString(R.string.month_refund_planning_planned_amount, currentExpense.getExpenseListTotalAmount());
+        textViewTotal.setText(textViewTotalString);
 
         ArrayList<Double> payments = currentExpense.getExpenseList();
-        if (payments == null) {
-            payments = new ArrayList<>();
-            currentExpense.setExpenseList(payments);
-        }
+        if (payments == null) currentExpense.setExpenseList(new ArrayList<>());
 
-        paymentAdapter = new PaymentAdapter(this, payments, currentExpense, expenseService,
-                this::refreshData); // Перезагружаем данные при любом изменении
+        String textViewTotalRefundedString = this.getString(R.string.month_refund_planning_amount, currentExpense.getDepositListTotalAmount());
+        textViewTotalRefunded.setText(textViewTotalRefundedString);
+
+        paymentAdapter = new PaymentAdapter(this, payments, currentExpense, expenseService,  /** Перезагружает данные при любом изменении */
+                this::refreshData);
 
         listViewPayments.setAdapter(paymentAdapter);
 
@@ -172,36 +199,13 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         String monthCount = this.getString(R.string.month_expense_refund_month_count, currentExpense.getMonthCount());
         textViewMonthCountRefund.setText(monthCount);
 
-
-//        if (currentExpense.getDescription() != null && !currentExpense.getDescription().isEmpty()) {
-//            textViewDescription.setText("Описание: " + currentExpense.getDescription());
-//            textViewDescription.setVisibility(View.VISIBLE);
-//        } else {
-//            textViewDescription.setVisibility(View.GONE);
-//        }
-//
-//        textViewDate.setText("Дата: " + currentExpense.getDateTimeString());
-//        textViewTotal.setText(String.format("Общая сумма: %.2f руб.",
-//                currentExpense.getExpenseListTotalAmount()));
-//
-//        ArrayList<Double> payments = currentExpense.getExpenseList();
-//        if (payments == null) {
-//            payments = new ArrayList<>();
-//            currentExpense.setExpenseList(payments);
-//        }
-//
-//        paymentAdapter = new PaymentAdapter(this, payments, currentExpense, expenseService,
-//                this::refreshData); // Перезагружаем данные при любом изменении
-//
-//        listViewPayments.setAdapter(paymentAdapter)
     }
 
 
     protected void refreshData() {
         Log.d(TAG, "Обновление данных для currentExpense с id = ".concat(currentExpense.getId().toString()));
         /** Просто закрываем */
-        finish();
-//        loadExpense(currentExpense.getId());
+        finish();                                                                       //        loadExpense(currentExpense.getId());
     }
 
 
@@ -214,6 +218,7 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
         }
 
         try {
+
             double payment = Double.parseDouble(paymentStr);
 
             if (expenseService.addPaymentToExpense(currentExpense, payment)) {
@@ -224,9 +229,11 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();
             }
+
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Введите корректное число", Toast.LENGTH_SHORT).show();
         }
+
     }
 
 
@@ -293,7 +300,8 @@ public class ExpenseRefundDetailActivity extends AppCompatActivity {
                 .setMessage("Вы уверены, что хотите удалить расход \"" + currentExpense.getName() + "\" и все его платежи?")
                 .setPositiveButton("Удалить", (dialog, which) -> {
 
-                    boolean deleted = expenseService.removeExpense(currentExpense);
+                    boolean deleted = refundService.removeExpense(currentExpense);
+
                     if (deleted) {
                         Toast.makeText(this, "Расход удалён", Toast.LENGTH_SHORT).show();
                         setResult(RESULT_OK);

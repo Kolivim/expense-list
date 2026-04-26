@@ -103,4 +103,46 @@ public class RefundService {
     }
 
 
+    // todo: Обернуть в единую транзакцию
+    public boolean removeExpense(ExpenseRefund expense) {
+        Log.d(TAG, "removeExpense() startMethod, ExpenseRefund: " + expense);
+
+        /** Удаляет саму Expense : */
+        expenseService.removeExpenseRefundRow(expense);
+        boolean expenseDeleted = expenseService.removeExpense(expense);
+        Log.d(TAG, "removeExpense() expenseDeleted = " + expense + " для ExpenseRefund: " + expense);
+
+
+        /** Удаляет PlannedDeposit к ExpenseRefund : */
+        if(expenseDeleted && expense.getPlannedDepositList() != null) {
+
+            for (Deposit plannedDeposit : expense.getPlannedDepositList()) {
+                boolean plannedDepositDeleted = depositService.deleteDeposit(plannedDeposit.getId());
+                if(!plannedDepositDeleted) {
+                    expenseDeleted = plannedDepositDeleted;
+                    Log.d(TAG, "removeExpense() ошибка удаления PlannedDeposit: " + plannedDeposit + " для ExpenseRefund: " + expense);
+                }
+            }
+
+        }
+
+
+        /** Удаляет обычный Deposit к ExpenseRefund : */
+        if(expenseDeleted && expense.getDepositList() != null) {
+
+            for (Deposit deposit : expense.getDepositList()) {
+                boolean depositDeleted = depositService.deleteDeposit(deposit.getId());
+                if(!depositDeleted) {
+                    expenseDeleted = depositDeleted;
+                    Log.d(TAG, "removeExpense() ошибка удаления Deposit: " + deposit + " для ExpenseRefund: " + expense);
+                }
+            }
+
+        }
+
+        Log.d(TAG, "removeExpense() endMethod, к возврату expenseDeleted = " + expenseDeleted + " для ExpenseRefund: " + expense);
+        return expenseDeleted;
+    }
+
+
 }

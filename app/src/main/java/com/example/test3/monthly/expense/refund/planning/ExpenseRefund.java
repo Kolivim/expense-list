@@ -45,6 +45,7 @@ public class ExpenseRefund extends Expense implements Serializable {
     public void addPlannedDeposit(Deposit plannedDeposit) {
         if(this.plannedDepositList == null) this.plannedDepositList = new ArrayList<>();
         this.plannedDepositList.add(plannedDeposit);
+        refundedCalculate();
     }
 
     public double getPlannedDepositListTotalAmount() {
@@ -87,6 +88,34 @@ public class ExpenseRefund extends Expense implements Serializable {
 
     public boolean isRefunded() {return isRefunded;}
     public void setRefunded(boolean refunded) {isRefunded = refunded;}
+    public void refundedCalculate() {
+        isRefunded = getDepositListTotalAmount() >= getExpenseListTotalAmount();
+    }
+
+
+    @Override
+    public void setExpenseList(ArrayList<Double> expenseList) {
+        super.setExpenseList(expenseList);
+        refundedCalculate();
+    }
+
+    @Override
+    public void addPayment(double expense) {
+        super.addPayment(expense);
+        refundedCalculate();
+    }
+
+    @Override
+    public void setDepositList(List<Deposit> depositList) {
+        super.setDepositList(depositList);
+        refundedCalculate();
+    }
+
+    @Override
+    public void addDeposit(Deposit deposit) {
+        super.addDeposit(deposit);
+        refundedCalculate();
+    }
 
 
     @Override

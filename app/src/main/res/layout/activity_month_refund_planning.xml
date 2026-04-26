@@ -37,6 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginBottom="4dp">
 
                 <Button
@@ -49,7 +50,7 @@
                     android:textSize="13sp"
                     android:layout_marginEnd="4dp"/>
 
-
+                <!--
                 <Button
                     android:id="@+id/buttonDelete"
                     android:onClick="remove"
@@ -59,6 +60,7 @@
                     android:text="Удалить"
                     android:textSize="13sp"
                     android:layout_marginEnd="4dp"/>
+                -->
 
                 <Button
                     android:id="@+id/buttonBack"
@@ -72,6 +74,7 @@
 
             </LinearLayout>
 
+            <!--
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,6 +123,7 @@
                     android:text="Сохранить" />
 
             </LinearLayout>
+            -->
 
         </LinearLayout>
 
@@ -127,14 +131,34 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewRefunds"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottomContainer" />
-    <!--             android:layout_height="0dp" -->
+            <!--
+            android:id="@+id/recyclerViewRefunds"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottomContainer"
+
+            android:id="@+id/recyclerViewRefunds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/bottomContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            -->
 
 <!--
         <ExpandableListView

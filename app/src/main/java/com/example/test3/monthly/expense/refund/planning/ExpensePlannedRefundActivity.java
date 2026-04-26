@@ -180,7 +180,7 @@ public class ExpensePlannedRefundActivity extends AppCompatActivity {
 
         double addedPayment = 0.0;
         ZonedDateTime depositDateTime = startZonedDate;
-        for (int i = 0; i <= monthCount; i++) {
+        for (int i = 0; i < monthCount; i++) {
 
             //
             ZonedDateTime dateTime = startZonedDate.plusMonths(i);
@@ -193,17 +193,19 @@ public class ExpensePlannedRefundActivity extends AppCompatActivity {
             addedPayment += monthPayment;
             plannedDepositList.add(plannedDeposit);
         }
+        Log.d(TAG + getCurrentMethodName(), "итоговая сумма PlannedDeposit's addedPayment = " + addedPayment);
 
 
         /** Добавляем последний платёж : */
+        /*
         //
         ZonedDateTime lastDateTime = startZonedDate.plusMonths(monthCount);
         Double lastDepositPayment = expense - addedPayment;
         Deposit lastDeposit = new Deposit(expenseName, plannedDepositType, lastDateTime,
-                null /* parentId - на данном этапе нет ещё id записи Expense, после получения подсетить */ ,
-                lastDepositPayment);
+                null, lastDepositPayment);                                                          // parentId - на данном этапе нет ещё id записи Expense, после получения подсетить
         //
         plannedDepositList.add(lastDeposit);
+        */
 
 
         Log.d(TAG + getCurrentMethodName(),

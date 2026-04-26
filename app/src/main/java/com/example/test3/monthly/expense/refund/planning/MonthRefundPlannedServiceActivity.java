@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test3.R;
+import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
 import com.example.test3.expenseList.ExpenseDetailWithDeleteActivity;
 import com.example.test3.month.Month;
@@ -33,10 +34,13 @@ import com.example.test3.service.ExpenseService;
 import com.example.test3.service.MeterService;
 import com.example.test3.service.MonthService;
 import com.example.test3.service.RefundService;
+import com.example.test3.util.Util;
+import com.example.test3.util.UtilService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -119,6 +123,23 @@ public class MonthRefundPlannedServiceActivity extends AppCompatActivity {
 
 
     public void back(View view) {finish();}
+
+
+    /** Добавление Deposit для переданного PlannedDeposit */
+    private void showAddActualDepositDialog(Deposit plannedDeposit) {
+        Log.d(TAG, "showAddActualDepositDialog start, plannedDeposit: " + plannedDeposit);
+
+        /*
+        Intent intent = new Intent(context, UniversalDepositsActivity.class);
+        intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_ID, plannedDeposit.getExpenseId()); // ID ExpenseRefund
+        intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_TYPE, UniversalDepositsActivity.TYPE_EXPENSE);
+        intent.putExtra(UniversalDepositsActivity.EXTRA_TITLE, "Взносы по плану: " + plannedDeposit.getName());
+        intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, TYPE_DEPOSIT_MONTH_REFUND_PLANNING);
+        startActivity(intent);
+        */
+
+        Log.d(TAG, "showAddActualDepositDialog end, для plannedDeposit: " + plannedDeposit);
+    }
 
 
     public static String getCurrentMethodName() {return new Throwable().getStackTrace()[1].getMethodName();}

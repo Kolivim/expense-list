@@ -1,5 +1,7 @@
 package com.example.test3.monthly.expense.refund.planning;
 
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_REFUND_PLANNING;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -21,7 +23,11 @@ import com.example.test3.R;
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.ExpenseDetailWithDeleteActivity;
 import com.example.test3.expenseList.ExpenseRefundDetailActivity;
+import com.example.test3.monthly.expense.planning.UniversalDepositsActivity;
+import com.example.test3.util.Util;
 
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdapter.ViewHolder> {
@@ -29,7 +35,7 @@ public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdap
     private static final String TAG = "ExpenseRefundAdapter";
     private List<ExpenseRefund> refunds;
     private Context context;
-    private int spanCount = 2; // количество столбцов для взносов
+    private int spanCount = 2;                                                                      /** количество столбцов для взносов */
 
 
     public ExpenseRefundAdapter(Context context, List<ExpenseRefund> refunds) {
@@ -57,26 +63,23 @@ public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdap
         holder.textName.setText(refund.getDescription() == null ?
                 refund.getName() : refund.getName() + "(" + refund.getDescription() + ")");
 
-        /** Общая сумма запланированных взносов */
-        double totalPlanned = 0;
-        if (refund.getDepositList() != null) {
-            for (com.example.test3.deposit.Deposit deposit : refund.getDepositList()) {
-                totalPlanned += deposit.getTotalAmount();
-            }
-        }
-        holder.textTotalPlanned.setText(String.format("Запланировано взносов: %.2f руб.", totalPlanned));
+
+        /** Общая сумма запланированных | внесённых взносов */
+        String textAllTotalString = context.getString(R.string.month_refund_planning_all_amount,
+                refund.getPlannedDepositListTotalAmount(), refund.getDepositListTotalAmount());
+        holder.textTotalPlanned.setText(textAllTotalString);
 
 
         /** Детали расхода */
         StringBuilder details = new StringBuilder();
+        double totalExpense = refund.getExpenseListTotalAmount();
+        details.append("Сумма к возврату: ").append(String.format("%.2f", totalExpense)).append(" руб.");
         if (refund.getMonthCount() != null && refund.getMonthCount() > 0) {
-            details.append("Срок: ").append(refund.getMonthCount()).append(" мес. ");
+            details.append("\nСрок: ").append(refund.getMonthCount()).append(" мес. ");
         }
         if (refund.getStartDate() != null) {
             details.append("Начало: ").append(refund.getStartDate().format(com.example.test3.util.Util.dateFormatterSee));
         }
-        double totalExpense = refund.getExpenseListTotalAmount();
-        details.append("\nСумма к возврату: ").append(String.format("%.2f", totalExpense)).append(" руб.");
         holder.textDetails.setText(details.toString());
 
 
@@ -87,7 +90,13 @@ public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdap
             DrawableCompat.setTint(wrapped, ContextCompat.getColor(context, R.color.refunded_color));
             holder.itemView.setBackground(wrapped);
         } else {
-            holder.itemView.setBackground(originalBg);
+//            holder.itemView.setBackground(originalBg);
+
+//            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+            Drawable original = originalBg.getConstantState().newDrawable();
+            holder.itemView.setBackground(original);
+
         }
         /*
         if (refund.isRefunded()) {
@@ -113,11 +122,45 @@ public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdap
             depositsRecycler.setLayoutManager(layoutManager);
 //            */
 
-            PlannedDepositAdapter depositAdapter = new PlannedDepositAdapter(context, plannedDeposits);
+
+            /** Устанавливаем начало с текущего месяца : (Отложенный вызов прокрутки, чтобы RecyclerView успел измериться ) */
+            depositsRecycler.post(() -> {
+                Integer positionNow = getPosition(plannedDeposits);
+                if (positionNow != null) ((LinearLayoutManager) depositsRecycler.getLayoutManager()).scrollToPositionWithOffset(positionNow, 0);
+            });
+            /** !Устанавливаем начало с текущего месяца */
+
+
+            PlannedDepositAdapter depositAdapter = new PlannedDepositAdapter(context, plannedDeposits, refund.getDepositList());
+//            PlannedDepositAdapter depositAdapter = new PlannedDepositAdapter(context, plannedDeposits,
+//                    plannedDeposit -> {
+//
+//                        /** : */
+//                        /*
+//                        Intent intent = new Intent(context, UniversalDepositsActivity.class);
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_ID, plannedDeposit.getExpenseId());
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_TYPE, UniversalDepositsActivity.TYPE_EXPENSE);
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_TITLE, "Внесённые взносы: " + plannedDeposit.getName());
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, TYPE_DEPOSIT_MONTH_REFUND_PLANNING);
+//
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_DEFAULT_NAME, "Внесёно в счёт ".concat(plannedDeposit.getName()));
+//                        intent.putExtra(UniversalDepositsActivity.EXTRA_DEFAULT_DATE, plannedDeposit.getDateTime().format(Util.dateFormatterSee));
+//
+//                        context.startActivity(intent);
+//                        */
+//                        /** ! */
+//
+//                        /*
+//                        long expenseRefundId = plannedDeposit.getExpenseId();
+//                        showAddActualDepositDialog(expenseRefundId, plannedDeposit);
+//                        */
+//
+//                    });
             depositsRecycler.setAdapter(depositAdapter);
             depositsRecycler.setVisibility(View.VISIBLE);
 
             depositsRecycler.setNestedScrollingEnabled(false); /** 1 */
+
         } else {
             depositsRecycler.setVisibility(View.GONE);
         }
@@ -165,6 +208,27 @@ public class ExpenseRefundAdapter extends RecyclerView.Adapter<ExpenseRefundAdap
             recyclerDeposits = itemView.findViewById(R.id.recyclerPlannedDeposits);
         }
 
+    }
+
+
+    public Integer getPosition(List<Deposit> plannedDeposits) {
+        Log.d(TAG, "getPosition() startMethod");
+
+        Integer position = null;
+
+        if (plannedDeposits == null || plannedDeposits.isEmpty()) return position;
+
+        for (int i = 0; i < plannedDeposits.size(); i++) {
+
+            Deposit plannedDeposit = plannedDeposits.get(i);
+
+            boolean isThisPaid = YearMonth.from(plannedDeposit.getDateTime()).equals(YearMonth.from(ZonedDateTime.now()));
+            if(isThisPaid) position = i;
+
+        }
+
+        Log.d(TAG, "getPosition() endMethod, position = " + position);
+        return position;
     }
 
 

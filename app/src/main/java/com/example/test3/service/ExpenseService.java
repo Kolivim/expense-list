@@ -401,6 +401,27 @@ public class ExpenseService {
     }
 
 
+    public boolean removeExpenseRefundRow(ExpenseRefund expense) {
+        Log.d(TAG, "removeExpenseRefundRow() startMethod, ExpenseRefund: " + expense);
+
+        long result = 0;
+
+        try {
+
+            /** Удаляет все связанные платежи из expense_payment для переданной expense */
+            dbWrite.delete(TABLE_EXPENSE_REFUND, EXPENSE_REFUND_EXPENSE_ID + " = ?",
+                    new String[]{String.valueOf(expense.getId().toString())});
+
+            Log.d(TAG, "removeExpenseRefundRow() удалено записей: " + result);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка при удалении расхода ExpenseRefund: ".concat(expense.toString()), e);
+        }
+
+        return result != -1;
+    }
+
+
     public boolean addPaymentToExpense(Expense expense, double payment) {
 
         if (expense.getId() == null) {

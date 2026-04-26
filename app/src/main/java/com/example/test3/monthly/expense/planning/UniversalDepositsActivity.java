@@ -45,6 +45,10 @@ public class UniversalDepositsActivity extends AppCompatActivity {
     public static final String EXTRA_PARENT_TYPE = "parent_type";
     public static final String EXTRA_TITLE = "title";
 
+    /** Для PlanningDeposit */
+    public static final String EXTRA_DEFAULT_NAME = "default_name";
+    public static final String EXTRA_DEFAULT_DATE = "default_date";
+
     public static final int TYPE_MONTH = 1;
     public static final int TYPE_EXPENSE = 2;
 
@@ -125,6 +129,15 @@ public class UniversalDepositsActivity extends AppCompatActivity {
         } else {
             textViewTitle.setText("Взносы");
         }
+
+
+        /** Для планирования возвратов : */
+        String defaultName = getIntent().getStringExtra(EXTRA_DEFAULT_NAME);
+        if (defaultName != null && !defaultName.isEmpty()) textViewDepositName.setText(defaultName);
+
+        String defaultDate = getIntent().getStringExtra(EXTRA_DEFAULT_DATE);
+        if (defaultDate != null && !defaultDate.isEmpty()) textViewDepositDate.setText(defaultDate);
+        /** !Для планирования возвратов */
 
         Log.d(TAG, "initViews endMethod");
     }
@@ -356,7 +369,7 @@ public class UniversalDepositsActivity extends AppCompatActivity {
                 return;
             }
 
-            // Создаём Deposit
+            /** Создаёт Deposit */
             Deposit deposit = new Deposit(name, depositTypeId);
             if (!description.isEmpty()) deposit.setDescription(description);
             deposit.setDateTime(dateTime);
@@ -366,13 +379,16 @@ public class UniversalDepositsActivity extends AppCompatActivity {
             long id = depositService.insertDeposit(deposit);
             if (id != -1) {
                 Toast.makeText(this, "Взнос добавлен", Toast.LENGTH_SHORT).show();
-                // Обновляем список
+
+                /** Обновляет список */
                 loadDeposits();
-                // Если родитель — расход, можно также обновить общую сумму расхода (опционально)
-                if (parentType == TYPE_EXPENSE) {
-                    // Например, вызвать сервис для пересчёта суммы расхода
-                    // expenseService.updateExpenseTotalAmount(parentId);
-                }
+
+//                /** Если родитель — Expense, можно также обновить общую сумму расхода */
+//                if (parentType == TYPE_EXPENSE) {
+//                    /** вызвать сервис для пересчёта суммы расхода */
+//                    // expenseService.updateExpenseTotalAmount(parentId);
+//                }
+
             } else {
                 Toast.makeText(this, "Ошибка при добавлении", Toast.LENGTH_SHORT).show();
             }

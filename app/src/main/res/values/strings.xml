@@ -36,6 +36,9 @@
     <string name="month_utility_service_meter">%s: %.2f</string>
     <string name="month_utility_service_amount">Оплачено: %.2f руб. (%d записей | %d платежей)</string>
 
+    <string name="month_refund_planning_planned_amount">Сумма к возврату: %.2f руб.</string>
+    <string name="month_refund_planning_amount">Возвращённая сумма: %.2f руб.</string>
+    <string name="month_refund_planning_all_amount">Запланировано: %.2f р. | Выплачено: %.2f р.</string>
     <string name="month_expense_refund_start_date">Дата начала выплат: %s</string>
     <string name="month_expense_refund_month_count">Срок возврата: %d месяцев</string>
     <string name="low_amount">%.2f руб.</string>
