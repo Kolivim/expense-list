@@ -566,17 +566,13 @@ public class MonthService {
 /** Реализация для MonthlyExpensePlanning : */
     /** Получает все имеющиеся MonthlyExpensePlanningDto, для всех месяцев,
      * для последующего вывода в интерфейсе Активити */
-    public List<MonthlyExpensePlanningDto> getAllMonthlyExpensePlanningDtos(Long typeId) {
-        Log.d("getAllMonthlyExpensePlannyngDtos", "startMethod, typeId = " + typeId);
+    public List<MonthlyExpensePlanningDto> getAllMonthlyExpensePlanningDtos(Long typeId, Long expenseType, Long depositType) {
+        Log.d("getAllMonthlyExpensePlannyngDtos", "startMethod, typeId = " + typeId +
+                ", expenseType = " + expenseType + ", depositType = " + depositType);
 
         List<Month> monthList = getMonthList(typeId);
 
-        /*
-        List<MonthlyExpensePlannyngDto> dtos = new ArrayList<>();
-        for (Month month : months) dtos.add(getMonthlyExpensePlannyngDto(month));
-        */
-
-        return getMonthlyExpensePlanningDtoList(monthList) ;
+        return getMonthlyExpensePlanningDtoList(monthList, expenseType, depositType) ;
     }
 
 
@@ -608,11 +604,13 @@ public class MonthService {
 
 
     // todo: переделать на вызов getMonthlyExpensePlanningDtoList(List<Month> monthList, Long expenseType, Long depositType)
-    public List<MonthlyExpensePlanningDto> getMonthlyExpensePlanningDtoList(List<Month> monthList) {
-        Log.d("getMonthlyExpensePlanningDtoList", "startMethod, monthList: " + monthList);
+    public List<MonthlyExpensePlanningDto> getMonthlyExpensePlanningDtoList(
+            List<Month> monthList, Long expenseType, Long depositType) {
+        Log.d("getMonthlyExpensePlanningDtoList", "startMethod, monthList: " + monthList +
+                ", expenseType = " + expenseType + ", depositType = " + depositType);
 
         List<MonthlyExpensePlanningDto> dtos = new ArrayList<>();
-        for (Month month : monthList) dtos.add(getMonthlyExpensePlanningDto(month));
+        for (Month month : monthList) dtos.add(getMonthlyExpensePlanningDto(month, expenseType, depositType));
 
         return dtos;
     }
@@ -716,14 +714,17 @@ public class MonthService {
     // todo: Переделать на вызов getMonthlyExpensePlanningDto(Month month, Long expenseType, Long depositType)
     /** Получает MonthlyExpensePlannyngDto для переданного в month месяца
      * @param month Месяц, для которого собираются его запланированные расходы */
-    public MonthlyExpensePlanningDto getMonthlyExpensePlanningDto(Month month) {
-        Log.d("getMonthlyExpensePlannyngDto", "startMethod, month: " + month);
+    public MonthlyExpensePlanningDto getMonthlyExpensePlanningDto(
+            Month month, Long expenseType, Long depositType) {
+        Log.d("getMonthlyExpensePlannyngDto", "startMethod, month: " + month +
+                ", expenseType = " + expenseType + ", depositType = " + depositType);
+
 
         MonthlyExpensePlanningDto dto = new MonthlyExpensePlanningDto(month);
 
 
         /** Получает расходы за месяц */
-        List<Expense> expenses = getExpensesForMonth(month, TYPE_EXPENSE_MONTH_PLANNING);
+        List<Expense> expenses = getExpensesForMonth(month, expenseType);
         dto.setExpenseList(expenses);
 
 
@@ -738,7 +739,7 @@ public class MonthService {
 
             /** Получает внесённые к каждой из имеющихся Expense взносы (typeId == 6) */
             List<Deposit> deposits = depositService.getExpenseDeposits(
-                    expense.getId(), TYPE_DEPOSIT_MONTH_PLANNING);
+                    expense.getId(), depositType);
 
             expense.setDepositList(deposits);
 
@@ -807,7 +808,8 @@ public class MonthService {
     }
 
 
-    public Month getOrCreatePlanningExpenseMonth(Expense expense) {
+    @Deprecated
+    public Month getOrCreatePlanningExpenseMonth(Expense expense) {                                 /***/
         Log.d(TAG, "getOrCreatePlanningExpenseMonth: Expense name = " + expense.getName() +
                 ", typeId =" + expense.getTypeId() + ", expenseId =" + expense.getId());
 
@@ -900,6 +902,7 @@ public class MonthService {
 
 
     // TODO: перенести вызов на новый метод getOrCreatePlanningExpenseMonth(ZonedDateTime createDate, Long monthTypeId)
+    @Deprecated
     public Month getOrCreatePlanningExpenseMonth(ZonedDateTime createDate) {
         Log.d(TAG, "getOrCreatePlanningExpenseMonth: createDate = " + createDate);
 
@@ -1060,8 +1063,8 @@ public class MonthService {
             return false;
         }
 
-        /** Проверяем тип месяца — удаляем только для планирования (typeId == 3) */
-        if (month.getTypeId() != null && month.getTypeId() != 3L) {
+        /** Проверяем тип месяца — удаляем только для планирования (typeId == 3) или TYPE_MONTHLY_CONTRIBUTIONS */
+        if (month.getTypeId() != null && !(month.getTypeId() == Util.TYPE_MONTHLY_EXPENSE_PLANNING || month.getTypeId() == Util.TYPE_MONTHLY_CONTRIBUTIONS)) {
             Log.w(TAG, "removeMonth: Месяц имеет тип " + month.getTypeId() +
                     ", не поддерживаемый для удаления через этот метод");
             return false;

@@ -40,6 +40,7 @@ public class ExpenseDetailWithDeleteActivity extends ExpenseDetailActivity {
                 .setMessage("Вы уверены, что хотите удалить расход \"" + currentExpense.getName() + "\" и все его платежи?")
                 .setPositiveButton("Удалить", (dialog, which) -> {
 
+                    // todo: по типу Expense подтянуть относящмеся к ней Deposit и, если они не удаляются в вызывающем сервмсе - удалить здесь
                     boolean deleted = expenseService.removeExpense(currentExpense);
                     if (deleted) {
                         Toast.makeText(this, "Расход удалён", Toast.LENGTH_SHORT).show();

@@ -2,6 +2,7 @@ package com.example.test3;
 
 import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
 import static com.example.test3.util.Util.TYPE_EXPENSE_UTILITY_BILLS;
+import static com.example.test3.util.Util.TYPE_MONTHLY_CONTRIBUTIONS;
 import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNING;
 
 import android.content.Intent;
@@ -138,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_month_refund_planning) {
             openMonthRefundPlanning(null);
+            return true;
+        } else if (id == R.id.action_month_contributions) {
+            openMonthContributions(null);
             return true;
         }
 
@@ -404,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
 //        MonthExpensePlannyngActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
 
 //        /*
-        Intent intent = new Intent(this, MonthExpensePlanningActivity.class);
+        Intent intent = new Intent(this, MonthExpensePlanningActivity.class);          /** Универсальная Активити */
         intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_EXPENSE_PLANNING);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -433,6 +437,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
 
         Log.d(TAG, "openMonthRefundPlanning endMethod");
+    }
+
+
+    /** Ежемесячное планирование возвратов длинных займов */
+    public void openMonthContributions(View view) {
+        Log.d(TAG, "openMonthContributions startMethod");
+
+        Intent intent = new Intent(this, MonthExpensePlanningActivity.class);
+        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_CONTRIBUTIONS);
+        startActivity(intent);
+
+        Log.d(TAG, "openMonthContributions endMethod");
     }
 
 

@@ -1,7 +1,12 @@
 package com.example.test3.monthly.expense.planning;
 
 import static com.example.test3.util.Util.EXTRA_EXPENSE_TYPE;
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_CONTRIBUTION;
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNING;
+import static com.example.test3.util.Util.TYPE_EXPENSE_MONTH_CONTRIBUTION;
 import static com.example.test3.util.Util.TYPE_EXPENSE_MONTH_PLANNING;
+import static com.example.test3.util.Util.TYPE_MONTHLY_CONTRIBUTIONS;
+import static com.example.test3.util.Util.TYPE_MONTHLY_EXPENSE_PLANNING;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -9,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,12 +43,14 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     private DepositService depositService;
 
     private Long monthType;                                                                         /** == TYPE_MONTHLY_EXPENSE_PLANNYNG = 3L */
+    private Long expenseType;                                                                       /** Рассчитывается по monthType */
+    private Long depositType;                                                                       /** Рассчитывается по monthType */
 
 
     private List<MonthlyExpensePlanningDto> monthDtoList;
     private ExpandableListView expandableListView;
-    /* private ListView listView; */
-    private /* MonthExpensePlanningAdapter */ MonthExpenseExpandableAdapter adapter;
+    private MonthExpenseExpandableAdapter adapter;
+    private TextView titleTextView;
 
 
     private MonthlyExpensePlanningDto selectedMonthDto = null;
@@ -66,8 +74,18 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_month_expense_planning);
+        titleTextView = findViewById(R.id.titleTextView);
 
         monthType = getIntent().getLongExtra(EXTRA_EXPENSE_TYPE, 3L);
+        if(monthType.equals(TYPE_MONTHLY_EXPENSE_PLANNING)){
+            expenseType = TYPE_EXPENSE_MONTH_PLANNING;
+            depositType = TYPE_DEPOSIT_MONTH_PLANNING;
+            titleTextView.setText("Планирование расходов");
+        } else if(monthType.equals(TYPE_MONTHLY_CONTRIBUTIONS)) {
+            expenseType = TYPE_EXPENSE_MONTH_CONTRIBUTION;
+            depositType = TYPE_DEPOSIT_MONTH_CONTRIBUTION;
+            titleTextView.setText("Внесённые на кредитку средства");
+        }
 
         monthService = new MonthService(this);
         expenseService = new ExpenseService(this);
@@ -101,14 +119,14 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
     private void loadData() {
         Log.d(TAG, "loadData startMethod");
 
-        monthDtoList = monthService.getAllMonthlyExpensePlanningDtos(monthType);
+        monthDtoList = monthService.getAllMonthlyExpensePlanningDtos(monthType, expenseType, depositType);
 
         if (monthDtoList.isEmpty()) {
             Toast.makeText(this, "Нет ни одного месяца с данными", Toast.LENGTH_LONG).show();
         }
 
 
-        adapter = new MonthExpenseExpandableAdapter /* MonthExpensePlanningAdapter */ (this, monthDtoList);
+        adapter = new MonthExpenseExpandableAdapter(this, monthDtoList, depositType);
 
         /*
         adapter.setOnItemClickListener((dto, position) -> {
@@ -240,7 +258,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             expenseService.insertExpense(newExpense);
         }
 
-        if (newExpense != null) monthService.getOrCreatePlanningExpenseMonth(newExpense);
+        if (newExpense != null) monthService.getOrCreateExpenseMonth(newExpense, monthType) ; /* getOrCreatePlanningExpenseMonth(newExpense); */
 
         loadData();
         cleanUserInput(expenseNameEditText, expenseEditText, expenseDateEditText);
@@ -282,7 +300,7 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
 
         if(expenseName != null && !expenseName.isEmpty()) {
 
-            Expense newExpense = new Expense(expenseName, TYPE_EXPENSE_MONTH_PLANNING);
+            Expense newExpense = new Expense(expenseName, expenseType);
 
             if(expense != null && !expense.isNaN()) newExpense.addPayment(expense);
 
@@ -385,20 +403,12 @@ public class MonthExpensePlanningActivity extends AppCompatActivity {
             try {
 
                 double amount = Double.parseDouble(amountStr);
-                Expense expense = new Expense(name, TYPE_EXPENSE_MONTH_PLANNING);
+                Expense expense = new Expense(name, expenseType);
                 expense.addPayment(amount);
                 if (!description.isEmpty()) expense.setDescription(description);
 
                 /** Устанавливает дату на первое число выбранного месяца */
                 ZonedDateTime firstDayOfMonth = getFirstDayOfMonth(dto.getMonth());
-                /*
-                ZonedDateTime firstDayOfMonth = ZonedDateTime.now()
-                        .withYear(dto.getMonth().getYear())
-                        .withMonth(dto.getMonth().getMonth())
-                        .withDayOfMonth(1)
-                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
-                */
-
                 expense.setDateTime(firstDayOfMonth);
 
 

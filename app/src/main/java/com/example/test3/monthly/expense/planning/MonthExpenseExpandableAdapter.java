@@ -1,5 +1,6 @@
 package com.example.test3.monthly.expense.planning;
 
+import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_CONTRIBUTION;
 import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNING;
 import android.content.Context;
 import android.content.Intent;
@@ -22,12 +23,12 @@ import java.util.List;
 
 public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
-    private Context context;
     private List<MonthlyExpensePlanningDto> groups;
-    private LayoutInflater inflater;
+    private Long depositType;
 
-    /** Для подсветки заголовка у выбранного месяца */
-    private int selectedGroupPosition = -1;
+    private Context context;
+    private LayoutInflater inflater;
+    private int selectedGroupPosition = -1;                                                         /** Для подсветки заголовка у выбранного месяца */
 
     private OnAddExpenseClickListener addExpenseListener;
 
@@ -55,9 +56,10 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
     }
 
 
-    public MonthExpenseExpandableAdapter(Context context, List<MonthlyExpensePlanningDto> groups) {
+    public MonthExpenseExpandableAdapter(Context context, List<MonthlyExpensePlanningDto> groups, Long depositType) {
         this.context = context;
         this.groups = groups;
+        this.depositType = depositType;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -128,32 +130,19 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
         textViewMonthName.setText(dto.getMonth().getMonthYear());
 
-        /*
-        String stats = String.format("Расходы: %.2f руб. (%d записей | %d платежей)",
-                dto.getTotalExpenseAmount(),
-                dto.getExpensesCount(),
-                dto.getPaymentsCount());
-        */
         String expenseStats = context.getString(R.string.total_month_expense_amount,
                 dto.getTotalExpenseAmount(), dto.getExpensesCount(), dto.getPaymentsCount());
         textViewExpenseStats.setText( /* stats */ expenseStats);
         /***/
 
 
-        /** Устанавливаем статистику по взносам : */
-        /*
-        String depositStats = String.format("Внесено: %.2f руб. (%d шт.)",
-                dto.getTotalDepositAmount(),
-                dto.getDepositsCount());
-        */
-//                dto.getDepositsPayments);                                                         /** Не реализован сбор статистики по Deposit Payments */
+        /** Устанавливаем статистику по взносам : (Не реализован сбор статистики по Deposit Payments) */
         String depositStats = context.getString(R.string.total_month_deposit_amount, dto.getTotalDepositAmount());
         textViewDepositStats.setText(depositStats);
         /***/
 
 
         /** Устанавливаем balance : */
-//        String balance = String.format("Итог: %.2f руб.", dto.getBalance());
         String balance = context.getString(R.string.balance_2, dto.getBalance());
         textViewBalance.setText(balance);
         /***/
@@ -208,15 +197,6 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
         if (expense.getDescription() != null && !expense.getDescription().isEmpty()) {
             expenseText += " (" + expense.getDescription() + ")";
         }
-        /*
-        if (expense.getExpenseList() != null && !expense.getExpenseList().isEmpty()) {
-            expenseText += "\nСумма: " + String.format("%.2f", expense.getExpenseListTotalAmount()) +
-                    " руб. | Платежей: " + expense.getExpenseList().size();
-        } else {
-            expenseText += "\nНет платежей";
-        }
-        */
-
 
         textViewInfo.setText(expenseText);
         textViewDate.setText(expense.getDateTimeString());
@@ -233,8 +213,6 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
 
         View depositContainer = convertView.findViewById(R.id.depositContainer);
-//        TextView textViewDepositName = convertView.findViewById(R.id.textViewDepositName);
-//        TextView textViewDepositDate = convertView.findViewById(R.id.textViewDepositDate);
         TextView textViewDepositAmount = convertView.findViewById(R.id.textViewDepositAmount);
 
         TextView textViewBalance = convertView.findViewById(R.id.textViewBalance);
@@ -254,26 +232,8 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
             double depositTotalAmount = expense.getDepositListTotalAmount();
             textViewDepositAmount.setText(context.getString(R.string.total_deposit_amount, depositTotalAmount));
 
-            double balance = expense.getBalance();   /* expense.getExpenseListTotalAmount() - expense.getDepositListTotalAmount(); */
+            double balance = expense.getBalance();
             textViewBalance.setText(context.getString(R.string.balance, balance));
-
-
-            /*
-            textViewDepositInfo
-            textViewDepositAmount
-            textViewDepositDate
-            textViewBalance
-
-                    double amount = deposit.getTotalAmount();                                                   //  String amountStr = String.format("%.2f руб.", deposit.getTotalAmount());
-                    String dateStr = deposit.getDateTime() != null ? deposit.getDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy")) : "без даты";
-                    String desc = deposit.getDescription() != null && !deposit.getDescription().isEmpty() ? " (" + deposit.getDescription() + ")" : "";
-                    int paymentsCount = deposit.getPayments() == null ? 0 : deposit.getPayments().size();
-
-                    textViewDepositName.setText(deposit.getName() + desc);
-                    textViewDepositDate.setText(dateStr);
-                    textViewDepositAmount.setText(context.getString(R.string.amount, amount));                  //  textViewDepositAmount.setText(amountStr);
-                    textViewPaymentsCount.setText(context.getString(R.string.payments_count, paymentsCount));   //  textViewPaymentsCount.setText(deposit.getPayments() == null ? "0" : String.valueOf(deposit.getPayments().size()));
-            */
 
         }
         /***/
@@ -291,6 +251,7 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
 
         /** Вызывает Activity для редактирования списка Deposit, относящихся к Expense */
         Button depositButton = convertView.findViewById(R.id.deposit);
+        if(depositType == TYPE_DEPOSIT_MONTH_CONTRIBUTION) depositButton.setText("Потрачено");
         depositButton.setOnClickListener(v -> {
             Log.d("depositButton.setOnClickListener", "pushDepositButton");
 
@@ -303,7 +264,7 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
                 intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_ID, expense.getId());
                 intent.putExtra(UniversalDepositsActivity.EXTRA_PARENT_TYPE, UniversalDepositsActivity.TYPE_EXPENSE);
                 intent.putExtra(UniversalDepositsActivity.EXTRA_TITLE, "Взносы: " + expense.getName());
-                intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, TYPE_DEPOSIT_MONTH_PLANNING);
+                intent.putExtra(UniversalDepositsActivity.EXTRA_DEPOSIT_TYPE_ID, depositType);      /** TYPE_DEPOSIT_MONTH_PLANNING */
                 context.startActivity(intent);
 
 //            }

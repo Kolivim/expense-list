@@ -28,6 +28,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_month_contributions"
+        android:title="Внесённые на кредитку средства"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_month_utility_service"
         android:title="Коммунальные услуги"
         android:icon="@drawable/ic_calendar"
