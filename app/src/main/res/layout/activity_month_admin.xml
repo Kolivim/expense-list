@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="@android:drawable/edit_text"
+        android:background="@drawable/rounded_edittext_bg"
         android:padding="12dp"
         android:layout_marginBottom="16dp">
 
@@ -54,6 +54,7 @@
             android:textStyle="bold"
             android:text="Баланс: 0.00 руб."
             android:gravity="center"/>
+
     </LinearLayout>
 
     <!-- Кнопки действий -->
@@ -97,14 +98,15 @@
         android:text="Месяцы с данными:"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <ListView
         android:id="@+id/listViewMonths"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_edittext_bg" />
 
     <!-- Кнопка возврата -->
     <Button

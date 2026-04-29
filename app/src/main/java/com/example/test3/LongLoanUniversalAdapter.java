@@ -15,28 +15,29 @@ import androidx.core.content.ContextCompat;
 
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.longs.loans.ExpenseLongLoans;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class LongLoanUniversalAdapter extends ArrayAdapter<Expense> {
+public class LongLoanUniversalAdapter extends ArrayAdapter<ExpenseLongLoans> {
 
     private Context context;
-    private ArrayList<Expense> loansList;
+    private ArrayList<ExpenseLongLoans> loansList;
     private ExpenseService expenseService;
     private DepositService depositService;
     private Long repaymentType;                                                                     /** Тип погашения */
 
-    private LongLoanAdapter.OnItemClickListener listener;
-    private LongLoanAdapter.OnRepayClickListener repayListener;
+    private OnItemClickListener listener;
+    private OnRepayClickListener repayListener;
 
     /** Выделение выбранной строки */
     private int selectedPosition = -1;
 
 
-    public LongLoanUniversalAdapter(Context context, ArrayList<Expense> loansList,
+    public LongLoanUniversalAdapter(Context context, ArrayList<ExpenseLongLoans> loansList,
                                     ExpenseService expenseService, DepositService depositService,
                                     Long repaymentType) {
         super(context, R.layout.list_item_long_loan, loansList);
@@ -54,11 +55,11 @@ public class LongLoanUniversalAdapter extends ArrayAdapter<Expense> {
     }
 
 
-    public interface OnItemClickListener { void onItemClick(Expense expense, int position);}
-    public interface OnRepayClickListener { void onRepayClick(Expense expense);}
+    public interface OnItemClickListener { void onItemClick(ExpenseLongLoans expense, int position);}
+    public interface OnRepayClickListener { void onRepayClick(ExpenseLongLoans expense);}
 
-    public void setOnItemClickListener(LongLoanAdapter.OnItemClickListener listener) {this.listener = listener;}
-    public void setOnRepayClickListener(LongLoanAdapter.OnRepayClickListener listener) {this.repayListener = listener;}
+    public void setOnItemClickListener(OnItemClickListener listener) {this.listener = listener;}
+    public void setOnRepayClickListener(OnRepayClickListener listener) {this.repayListener = listener;}
 
 
     @Override
@@ -69,7 +70,7 @@ public class LongLoanUniversalAdapter extends ArrayAdapter<Expense> {
             convertView = inflater.inflate(R.layout.list_item_long_loan, parent, false);
         }
 
-        Expense loan = loansList.get(position);
+        ExpenseLongLoans loan = loansList.get(position);
 
         TextView textViewInfo = convertView.findViewById(R.id.textViewExpenseInfo);
         TextView textViewTotalRepaid = convertView.findViewById(R.id.textViewTotalRepaid);
@@ -179,7 +180,7 @@ public class LongLoanUniversalAdapter extends ArrayAdapter<Expense> {
     }
 
 
-    private void showAddPaymentDialog(int position, Expense loan) {
+    private void showAddPaymentDialog(int position, ExpenseLongLoans loan) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Добавить платёж");

@@ -127,7 +127,9 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
     /** expenseId либо depositId, в зависимости от типа */
     public static final String ACCOUNT_NUMBER_NUMBER_PARENT_ID = "parent_id";
     /** 0 либо 1 - 0 это expense, 1 это deposit */
-    public static final String ACCOUNT_NUMBER_TYPE = "name";
+    public static final String ACCOUNT_NUMBER_TYPE = "type";
+    /** Может быть как наименование счёта, так и наименование банка-эмитента карты */
+    public static final String ACCOUNT_NUMBER_NAME = "name";
     public static final String ACCOUNT_NUMBER_NUMBER = "number";
     /** !Таблица номеров счетов */
 
@@ -427,6 +429,7 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
                 ACCOUNT_NUMBER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 ACCOUNT_NUMBER_NUMBER_PARENT_ID + " INTEGER NOT NULL, " +
                 ACCOUNT_NUMBER_TYPE + " INTEGER NOT NULL, " +
+                ACCOUNT_NUMBER_NAME + " TEXT, " +
                 ACCOUNT_NUMBER_NUMBER + " TEXT NOT NULL, " +
                 "CHECK (" + ACCOUNT_NUMBER_TYPE + " IN (0, 1)) " +
                 ")";

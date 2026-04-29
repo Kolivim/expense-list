@@ -2,6 +2,11 @@ package com.example.test3.service;
 
 
 import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+import static com.example.test3.dao.ExpenseSQLite.ACCOUNT_NUMBER_ID;
+import static com.example.test3.dao.ExpenseSQLite.ACCOUNT_NUMBER_NAME;
+import static com.example.test3.dao.ExpenseSQLite.ACCOUNT_NUMBER_NUMBER;
+import static com.example.test3.dao.ExpenseSQLite.ACCOUNT_NUMBER_NUMBER_PARENT_ID;
+import static com.example.test3.dao.ExpenseSQLite.ACCOUNT_NUMBER_TYPE;
 import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID;
 import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_EXPENSE_ID;
 import static com.example.test3.dao.ExpenseSQLite.DEPOSIT_IS_DELETED;
@@ -19,6 +24,7 @@ import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_EXPENSE_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_PAYMENT_ID;
 import static com.example.test3.dao.ExpenseSQLite.EXPENSE_TYPE_ID;
+import static com.example.test3.dao.ExpenseSQLite.TABLE_ACCOUNT_NUMBER;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_DEPOSIT;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE;
 import static com.example.test3.dao.ExpenseSQLite.TABLE_EXPENSE_PAYMENT;
@@ -32,9 +38,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.test3.account.Account;
 import com.example.test3.dao.ExpenseSQLite;
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.longs.loans.ExpenseLongLoans;
 import com.example.test3.monthly.expense.refund.planning.ExpenseRefund;
 import com.example.test3.util.Util;
 
@@ -174,6 +182,182 @@ public class ExpenseService {
 
         query.close();
     }
+
+
+    /** Реализации для ExpenseLongLoans : */
+    public boolean insertExpense(ExpenseLongLoans expense) {
+
+        Expense insertedExpense = insertExpenseRow(expense);
+
+        if(expense.getAccount() != null) insertAccountNumber(expense.getId(), expense.getAccount());
+
+        return insertedExpense.getId() != -1;
+    }
+
+
+    public ArrayList<ExpenseLongLoans> getExpenseLongLoanList(Long typeId) {
+        Log.d(TAG, "getExpenseLongLoanList() startMethod, typeId = " + typeId);
+
+        ArrayList<ExpenseLongLoans> expenseLongLoansList = new ArrayList<>();
+
+        ArrayList<Expense> expenseList = getExpenseRowList(typeId);
+        for (Expense expense : expenseList) {
+            ExpenseLongLoans expenseLongLoans = new ExpenseLongLoans(expense);
+            expenseLongLoansList.add(expenseLongLoans);
+        }
+
+        setExpenseLongLoansListPayments(expenseLongLoansList);
+
+        setExpenseListAccounts(expenseLongLoansList);
+
+        return expenseLongLoansList;
+    }
+
+
+    public void setExpenseLongLoansListPayments(ArrayList<ExpenseLongLoans> expenseList) {
+        for (ExpenseLongLoans expense : expenseList) setExpensePayments(expense);
+    }
+
+
+    public void setExpenseListAccounts(ArrayList<ExpenseLongLoans> expenseList) {
+        for (ExpenseLongLoans expense : expenseList) setExpenseAccount(expense);
+    }
+
+
+    // todo: Переписать на вызов getExpenseAccount(Long expenseId)
+    public void setExpenseAccount(ExpenseLongLoans expense) {
+        Log.d(TAG, "setExpenseAccount() startMethod, expense = " + expense);
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + TABLE_ACCOUNT_NUMBER +
+                        " where " + ACCOUNT_NUMBER_NUMBER_PARENT_ID + " = " + expense.getId() +
+                        " and " + ACCOUNT_NUMBER_TYPE + " = 0;" ,
+                null);
+
+        while(cursor.moveToNext()){
+
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_NAME));
+            String number = cursor.getString(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_NUMBER));
+
+            Account account = new Account(id, expense.getId(), 0L, name, number);
+            expense.setAccount(account);
+
+        }
+
+        cursor.close();
+
+        Log.d(TAG, "setExpenseAccount() endMethod, expense = " + expense);
+    }
+
+
+    /**
+     * Вставляет новую запись номера счёта для указанного расхода.
+     * @param expenseId ID расхода (parent_id)
+     * @param account объект Account с полями number и name (name может быть null)
+     * @return true если вставка успешна, иначе false
+     */
+    public boolean insertAccountNumber(long expenseId, Account account) {
+        Log.d(TAG, "insertAccountNumber() startMethod, expenseId = " + expenseId + ", account: " + account);
+
+        if (!((account.getNumber() != null && !account.getNumber().isEmpty()) ||
+                (account.getName() != null && !account.getName().isEmpty()))) {
+            return true;
+        }
+
+        SQLiteDatabase db = dbWrite;
+
+        ContentValues values = new ContentValues();
+        values.put(ExpenseSQLite.ACCOUNT_NUMBER_NUMBER_PARENT_ID, expenseId);
+        values.put(ExpenseSQLite.ACCOUNT_NUMBER_TYPE, 0);                                           /** 0 = Expense */
+        values.put(ExpenseSQLite.ACCOUNT_NUMBER_NUMBER, account.getNumber());
+        if (account.getName() != null && !account.getName().isEmpty()) {
+            values.put(ExpenseSQLite.ACCOUNT_NUMBER_NAME, account.getName());
+        }
+
+        long result = db.insert(ExpenseSQLite.TABLE_ACCOUNT_NUMBER, null, values);
+
+        if (result != -1) {
+            account.setId(result);
+            return true;
+        }
+
+        Log.d(TAG, "insertAccountNumber() endMethod, expenseId = " + expenseId + ", account: " + account);
+        return false;
+    }
+
+
+    /**
+     * Обновляет существующую запись номера счёта.
+     * @param account объект Account с заполненным id и новыми значениями
+     * @return true если обновление успешно, иначе false
+     */
+    public boolean updateAccountNumber(Account account) {
+
+        SQLiteDatabase db = dbWrite;
+
+        ContentValues values = new ContentValues();
+        values.put(ExpenseSQLite.ACCOUNT_NUMBER_NUMBER, account.getNumber());
+        if (account.getName() != null && !account.getName().isEmpty()) {
+            values.put(ExpenseSQLite.ACCOUNT_NUMBER_NAME, account.getName());
+        } else {
+            values.putNull(ExpenseSQLite.ACCOUNT_NUMBER_NAME);
+        }
+
+        int rows = db.update(ExpenseSQLite.TABLE_ACCOUNT_NUMBER, values,
+                ExpenseSQLite.ACCOUNT_NUMBER_ID + " = ?",
+                new String[]{String.valueOf(account.getId())});
+
+        return rows > 0;
+    }
+
+
+    /**
+     * Удаляет запись номера счёта для указанного расхода.
+     * @param expenseId ID расхода
+     * @return true если удаление успешно (или записи не существовало)
+     */
+    public boolean deleteAccountNumber(long expenseId) {
+
+        SQLiteDatabase db = dbWrite;
+
+        int rows = db.delete(ExpenseSQLite.TABLE_ACCOUNT_NUMBER,
+                ExpenseSQLite.ACCOUNT_NUMBER_NUMBER_PARENT_ID + " = ? AND " +
+                        ExpenseSQLite.ACCOUNT_NUMBER_TYPE + " = ?",
+                new String[]{String.valueOf(expenseId), "0"});
+
+        return rows >= 0;
+    }
+
+
+    public Account getExpenseAccount(Long expenseId) {
+        Log.d(TAG, "setExpenseAccount() startMethod, expenseId = " + expenseId);
+
+        Account account = null;
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + TABLE_ACCOUNT_NUMBER +
+                        " where " + ACCOUNT_NUMBER_NUMBER_PARENT_ID + " = " + expenseId +
+                        " and " + ACCOUNT_NUMBER_TYPE + " = 0;" ,
+                null);
+
+        while(cursor.moveToNext()){
+
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_NAME));
+            String number = cursor.getString(cursor.getColumnIndexOrThrow(ACCOUNT_NUMBER_NUMBER));
+
+            account = new Account(id, expenseId, 0L, name, number);
+        }
+
+        cursor.close();
+
+
+        Log.d(TAG, "setExpenseAccount() endMethod, к возврату account: " + account +
+                " для expenseId = " + expenseId);
+        return account;
+    }
+    /** !Реализации для ExpenseLongLoans */
 
 
     /** Переписать реализацию на ручной commit и дополнить структуру таблицы Payment foreign key */

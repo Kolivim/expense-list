@@ -6,14 +6,17 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+
     <!-- Информация о расходе -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@android:drawable/edit_text"
         android:padding="12dp"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_edittext_bg" >
+
 
         <TextView
             android:id="@+id/textViewExpenseName"
@@ -21,7 +24,8 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Название расхода"/>
+            android:text="Название расхода" />
+
 
         <TextView
             android:id="@+id/textViewExpenseDescription"
@@ -29,7 +33,8 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:text="Описание"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="4dp" />
+
 
         <TextView
             android:id="@+id/textViewExpenseDate"
@@ -37,7 +42,36 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:text="Дата"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="4dp" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/accountInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textViewAccountNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textViewExpenseDate"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewAccountName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#666666"
+                android:maxWidth="70dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="8dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/textViewTotalAmount"
@@ -47,8 +81,11 @@
             android:textStyle="bold"
             android:text="Общая сумма: 0.00 руб."
             android:layout_marginTop="8dp"
-            android:textColor="#4CAF50"/>
+            android:textColor="#4CAF50" />
+
+
     </LinearLayout>
+
 
     <!-- Заголовок списка платежей -->
     <TextView
@@ -57,24 +94,29 @@
         android:text="Платежи:"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
+        <!-- android:background="@android:drawable/edit_text" -->
 
     <!-- Список платежей -->
+
+    <!-- Кнопка добавления нового платежа -->
+
     <ListView
         android:id="@+id/listViewPayments"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp"/>
+        android:background="@drawable/rounded_edittext_bg" />
 
-    <!-- Кнопка добавления нового платежа -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@android:drawable/edit_text"
-        android:padding="8dp">
+        android:background="@drawable/rounded_edittext_bg"
+        android:padding="8dp" >
+        <!-- android:background="@android:drawable/edit_text" -->
 
         <EditText
             android:id="@+id/editTextNewPayment"
@@ -83,7 +125,7 @@
             android:layout_weight="1"
             android:hint="Введите сумму"
             android:inputType="numberDecimal|numberSigned"
-            android:padding="8dp"/>
+            android:padding="8dp" />
 
         <Button
             android:id="@+id/buttonAddPayment"
@@ -91,43 +133,89 @@
             android:layout_height="wrap_content"
             android:text="Добавить"
             android:backgroundTint="#4CAF50"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp" />
 
     </LinearLayout>
 
 
-    <!-- Кнопка погашения -->
-    <Button
-        android:id="@+id/buttonRepay"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:text="Погасить"
-        android:textSize="10sp"
-        android:backgroundTint="#FF9800"
         android:layout_height="wrap_content"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:layout_marginTop="2dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="0dp" >
+
+
+        <!-- Кнопка погашения -->
+        <Button
+            android:id="@+id/buttonRepay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Погасить"
+            android:textSize="12sp"
+            android:backgroundTint="@color/dark_orange"
+            android:layout_marginTop="2dp" />
+            <!--
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:layout_marginTop="4dp"
+            -->
+
+
+        <Button
+            android:id="@+id/buttonUpdateAccount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Редактировать счёт"
+            android:textSize="12sp"
+            android:backgroundTint="@color/blue"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="4dp"/>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="0dp" >
+
+
+        <Button
+            android:id="@+id/buttonChooseTextColor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Выбрать цвет текста"
+            android:textSize="12sp"
+            android:minHeight="48dp"
+            android:layout_marginTop="0dp" />
+
+        <Button
+            android:id="@+id/buttonEditDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Редактировать описание"
+            android:textSize="12sp"
+            android:minHeight="48dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
+
 
     <!-- Кнопка возврата -->
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Назад"
-        android:layout_marginTop="16dp"/>
+        android:text="Назад" />
 
-    <Button
-        android:id="@+id/buttonChooseTextColor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Выбрать цвет текста"
-        android:layout_marginTop="8dp"/>
-
-    <Button
-        android:id="@+id/buttonEditDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Редактировать описание"
-        android:layout_marginTop="8dp"/>
 
 </LinearLayout>

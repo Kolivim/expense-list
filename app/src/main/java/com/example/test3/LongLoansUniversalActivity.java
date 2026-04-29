@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.Expense;
+import com.example.test3.longs.loans.ExpenseLongLoans;
 import com.example.test3.service.DepositService;
 import com.example.test3.service.ExpenseService;
 
@@ -31,7 +32,6 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
     private static final String TAG = "LongLoansUniversalActivity";
     private static final String EXTRA_LOAN_TYPE = "loan_type";
     private static final String EXTRA_TITLE = "title";
-
     private static final String EXTRA_REPAYMENT_TYPE = "repayment_type";
 
     private ListView listViewLoans;
@@ -42,25 +42,26 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
     private ExpenseService expenseService;
     private DepositService depositService;
     private LongLoanUniversalAdapter loanAdapter;
-    private ArrayList<Expense> loansList;
-    private Expense selectedLoan = null;
+    private ArrayList<ExpenseLongLoans> loansList;
+    private ExpenseLongLoans selectedLoan = null;
 
-    private Long loanType;
+    private Long loanType;                                                                          /** expenseType */
     private String activityTitle;
-    private Long repaymentType;
+    private Long repaymentType;                                                                     /** depositType */
 
 
     public static void start(Context context, long loanType, Long repaymentType, String title) {
         Intent intent = new Intent(context, LongLoansUniversalActivity.class);
         intent.putExtra(EXTRA_LOAN_TYPE, loanType);
         intent.putExtra(EXTRA_TITLE, title);
-        intent.putExtra("repayment_type", repaymentType);
+        intent.putExtra(EXTRA_REPAYMENT_TYPE, repaymentType);
         context.startActivity(intent);
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate() startMethod");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_long_loans_own_funds); //  activity_long_loans
@@ -68,13 +69,6 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
         loanType = getIntent().getLongExtra(EXTRA_LOAN_TYPE, 3L);
         activityTitle = getIntent().getStringExtra(EXTRA_TITLE);
         repaymentType = getIntent().getLongExtra(EXTRA_REPAYMENT_TYPE, DepositService.TYPE_CREDIT_LOAN_REPAYMENT);
-
-//        if (activityTitle == null) {
-//            activityTitle = loanType == 3L ?
-//                    "Длинные займы (кредитные средства)" : "Длинные займы (собственные средства)";
-//        }
-//
-//        setTitle(activityTitle);
 
 
         /** Устанавливает заголовок */
@@ -96,10 +90,14 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
         initViews();
         setupListeners();
         loadLoans();
+
+        Log.d(TAG, "onCreate() endMethod");
     }
 
 
     private void initViews() {
+        Log.d(TAG, "initViews() startMethod");
+
         listViewLoans = findViewById(R.id.listViewLongLoans);
         textViewTotalAmount = findViewById(R.id.textViewLongLoansTotal);
 
@@ -111,6 +109,8 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
         editTextDate = findViewById(R.id.editTextLoanDate);
         editTextName = findViewById(R.id.editTextLoanName);
         editTextAmount = findViewById(R.id.editTextLoanAmount);
+
+        Log.d(TAG, "initViews() endMethod");
     }
 
 
@@ -139,8 +139,9 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
 
 
     private void loadLoans() {
+        Log.d(TAG, "loadLoans() startMethod");
 
-        loansList = expenseService.getExpenseList(loanType);
+        loansList = expenseService.getExpenseLongLoanList(loanType);
 
         if (loansList.isEmpty()) {
             textViewTotalAmount.setText("Общая сумма: 0.00 руб.");
@@ -164,15 +165,20 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
         loanAdapter.setOnRepayClickListener(loan -> showRepayDialog(loan));
 
         listViewLoans.setAdapter(loanAdapter);
+
+        Log.d(TAG, "loadLoans() endMethod");
     }
 
 
     private void addNewLoan() {
+        Log.d(TAG, "addNewLoan() startMethod");
 
         String name = editTextName.getText().toString().trim();
         String amountStr = editTextAmount.getText().toString().trim();
         String dateStr = editTextDate.getText().toString().trim();
 
+
+        /** Проверка внесённых пользователем параметров : */
         if (name.isEmpty()) {
             Toast.makeText(this, "Введите название займа", Toast.LENGTH_SHORT).show();
             return;
@@ -182,13 +188,14 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
             return;
         }
+        /** !Проверка внесённых пользователем параметров */
 
 
         try {
 
             double amount = Double.parseDouble(amountStr);
 
-            Expense newLoan = new Expense(name, loanType);
+            ExpenseLongLoans newLoan = new ExpenseLongLoans(name, loanType);
             newLoan.addPayment(amount);
 
             if (!dateStr.isEmpty()) {
@@ -210,6 +217,8 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
             Toast.makeText(this, "Введите корректную сумму", Toast.LENGTH_SHORT).show();
         }
 
+
+        Log.d(TAG, "addNewLoan() endMethod");
     }
 
 
@@ -227,6 +236,7 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
     }
 
 
+    // todo: Вынести в отдельную Activity
     private void showRepayDialog(Expense loan) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -377,6 +387,8 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
     private void openLoanDetail(Expense loan) {
         Intent intent = new Intent(this, LongLoanDetailActivity.class);
         intent.putExtra("expense_id", loan.getId());
+        intent.putExtra(LongLoanDetailActivity.EXTRA_LOAN_EXPENSE_TYPE, loanType);
+        intent.putExtra(LongLoanDetailActivity.EXTRA_LOAN_DEPOSIT_TYPE, repaymentType);
         startActivity(intent);
     }
 

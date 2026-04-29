@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
+                android:layout_marginBottom="4dp" >
 
                 <Button
                     android:id="@+id/buttonMonthAdmin"
@@ -98,7 +98,8 @@
                     android:layout_weight="1"
                     android:text="Месяцы"
                     android:textSize="13sp"
-                    android:onClick="openMonthAdmin"/>
+                    android:onClick="openMonthAdmin"
+                    android:layout_marginEnd="4dp" />
 
                 <Button
                     android:id="@+id/buttonUpdate"
@@ -129,7 +130,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:background="@drawable/rounded_edittext_bg" >
 
                 <EditText
                     android:id="@+id/editTextDate"
@@ -170,7 +172,9 @@
                     android:textSize="12sp"
                     android:text="Сохранить"
                     android:onClick="add"/>
+
             </LinearLayout>
+
         </LinearLayout>
 
 
@@ -188,7 +192,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottomContainer"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp" />
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/rounded_edittext_bg" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
