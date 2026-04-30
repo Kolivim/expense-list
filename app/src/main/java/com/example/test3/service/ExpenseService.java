@@ -224,10 +224,12 @@ public class ExpenseService {
     }
 
 
-    // todo: Переписать на вызов getExpenseAccount(Long expenseId)
     public void setExpenseAccount(ExpenseLongLoans expense) {
         Log.d(TAG, "setExpenseAccount() startMethod, expense = " + expense);
 
+        expense.setAccount(getExpenseAccount(expense.getId()));
+
+        /*
         Cursor cursor = dbRead.rawQuery(
                 "SELECT * FROM " + TABLE_ACCOUNT_NUMBER +
                         " where " + ACCOUNT_NUMBER_NUMBER_PARENT_ID + " = " + expense.getId() +
@@ -246,6 +248,7 @@ public class ExpenseService {
         }
 
         cursor.close();
+        */
 
         Log.d(TAG, "setExpenseAccount() endMethod, expense = " + expense);
     }
@@ -293,6 +296,7 @@ public class ExpenseService {
      * @return true если обновление успешно, иначе false
      */
     public boolean updateAccountNumber(Account account) {
+        Log.d(TAG, "updateAccountNumber() startMethod, account: " + account);
 
         SQLiteDatabase db = dbWrite;
 
@@ -308,6 +312,7 @@ public class ExpenseService {
                 ExpenseSQLite.ACCOUNT_NUMBER_ID + " = ?",
                 new String[]{String.valueOf(account.getId())});
 
+        Log.d(TAG, "updateAccountNumber() endMethod, account: " + account + ", rows = " + rows);
         return rows > 0;
     }
 
@@ -318,6 +323,7 @@ public class ExpenseService {
      * @return true если удаление успешно (или записи не существовало)
      */
     public boolean deleteAccountNumber(long expenseId) {
+        Log.d(TAG, "deleteAccountNumber() startMethod, expenseId: " + expenseId);
 
         SQLiteDatabase db = dbWrite;
 
@@ -326,6 +332,7 @@ public class ExpenseService {
                         ExpenseSQLite.ACCOUNT_NUMBER_TYPE + " = ?",
                 new String[]{String.valueOf(expenseId), "0"});
 
+        Log.d(TAG, "deleteAccountNumber() endMethod, expenseId: " + expenseId + ", rows = " + rows);
         return rows >= 0;
     }
 

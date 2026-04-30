@@ -119,8 +119,14 @@ public class LongLoanDetailActivity extends ExpenseDetailActivity {
         if(currentExpenseAccount != null) {
 
             accountInfo.setVisibility(View.VISIBLE);
+
             textViewAccountNumber.setText("Номер счёта: ".concat(currentExpenseAccount.getNumber()));
-            if(currentExpenseAccount.getName() != null) textViewAccountName.setText(currentExpenseAccount.getName());
+
+            if(currentExpenseAccount.getName() != null) {
+                textViewAccountName.setText("| ".concat(currentExpenseAccount.getName()));
+            } else {
+                textViewAccountName.setText("");
+            }
 
         } else {
             accountInfo.setVisibility(View.GONE);
