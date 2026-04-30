@@ -373,7 +373,7 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
                 DEPOSIT_DATETIME + " TEXT, " +
                 DEPOSIT_IS_DELETED + " INTEGER DEFAULT 0, " +
                 DEPOSIT_ROW_COLOR + " INTEGER, " +
-                "FOREIGN KEY (" + DEPOSIT_EXPENSE_ID + ") REFERENCES " + TABLE_EXPENSE + "(" + EXPENSE_ID + ") ON DELETE SET NULL, " +
+//                "FOREIGN KEY (" + DEPOSIT_EXPENSE_ID + ") REFERENCES " + TABLE_EXPENSE + "(" + EXPENSE_ID + ") ON DELETE SET NULL, " +
                 "FOREIGN KEY (" + DEPOSIT_DEPOSIT_TYPE_ID + ") REFERENCES " + TABLE_DEPOSIT_TYPE + "(" + DEPOSIT_TYPE_ID + ") ON DELETE RESTRICT, " +
                 "CHECK (" + DEPOSIT_IS_DELETED + " IN (0, 1)) " +
                 ")";
