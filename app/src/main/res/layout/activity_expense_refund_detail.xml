@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="32dp"
+    android:paddingTop="36dp"
     android:paddingBottom="16dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp" >
@@ -142,7 +142,8 @@
             android:id="@+id/buttonAddPayment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Добавить" />
+            android:text="Добавить"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <!-- Нижняя панель - кнопки -->
@@ -159,6 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Цвет"
+            android:textSize="12sp"
             android:layout_marginEnd="4dp" />
 
         <Button
@@ -166,7 +168,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Описание" />
+            android:text="Описание"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/buttonBack"
@@ -174,6 +177,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Назад"
+            android:textSize="12sp"
             android:layout_marginStart="4dp" />
 
     </LinearLayout>

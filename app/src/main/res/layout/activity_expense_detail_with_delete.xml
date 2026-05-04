@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="32dp"
+    android:paddingTop="36dp"
     android:paddingBottom="16dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp" >
@@ -114,7 +114,8 @@
             android:id="@+id/buttonAddPayment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Добавить" />
+            android:text="Добавить"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <!-- Нижняя панель - кнопки -->
@@ -127,6 +128,7 @@
 
         <Button
             android:id="@+id/buttonChooseTextColor"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -135,6 +137,7 @@
 
         <Button
             android:id="@+id/buttonEditDescription"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -142,6 +145,7 @@
 
         <Button
             android:id="@+id/buttonBack"
+            android:textSize="12sp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

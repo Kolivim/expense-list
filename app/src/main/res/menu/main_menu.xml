@@ -21,11 +21,6 @@
         android:icon="@drawable/ic_loan"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_month_expense_plannyng"
-        android:title="Ежемесячное планирование"
-        android:icon="@drawable/ic_calendar"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_month_contributions"
@@ -34,10 +29,11 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_month_utility_service"
-        android:title="Коммунальные услуги"
+        android:id="@+id/action_month_expense_plannyng"
+        android:title="Ежемесячное планирование"
         android:icon="@drawable/ic_calendar"
         app:showAsAction="never" />
+
 
     <item
         android:id="@+id/action_month_refund_planning"
@@ -50,6 +46,11 @@
 <!--        android:title="───────────────────"-->
 <!--        android:enabled="false" />-->
 
+    <item
+        android:id="@+id/action_month_utility_service"
+        android:title="Коммунальные услуги"
+        android:icon="@drawable/ic_calendar"
+        app:showAsAction="never" />
 
     <!-- Экспорт (с подменю) -->
     <item

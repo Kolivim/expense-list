@@ -32,12 +32,14 @@
             app:titleTextAppearance="@style/ToolbarTitleStyle"
             app:title="Мои расходы"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/topGuideline"
@@ -52,54 +54,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp"
+            android:padding="10dp"
+            android:layout_marginBottom="14dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Кнопки экспорта (раскомментированы) -->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal"-->
-<!--                android:layout_marginBottom="4dp">-->
 
-<!--                <Button-->
-<!--                    android:id="@+id/buttonExportTxt"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="Экспорт"-->
-<!--                    android:onClick="exportToTxt"-->
-<!--                    android:layout_marginEnd="4dp"/>-->
-
-<!--                <Button-->
-<!--                    android:id="@+id/buttonExportJson"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:text="Экспорт в JSON"-->
-<!--                    android:onClick="exportToJson"-->
-<!--                    android:layout_marginEnd="4dp"/>-->
-<!--                -->
-<!--            </LinearLayout>-->
-
-            <!-- Кнопки изменения и удаления -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="4dp" >
 
+                <!--
                 <Button
                     android:id="@+id/buttonMonthAdmin"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Месяцы"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:onClick="openMonthAdmin"
                     android:layout_marginEnd="4dp" />
+                -->
 
                 <Button
                     android:id="@+id/buttonUpdate"
@@ -107,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Изменить"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:onClick="updateExpense"
                     android:layout_marginEnd="4dp"/>
 
@@ -117,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Удалить"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     android:onClick="remove"/>
 <!--                style="@style/MainButtonStyle"-->
 
@@ -125,7 +103,6 @@
             </LinearLayout>
 
 
-            <!-- Поля ввода и кнопка сохранения -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -178,19 +155,19 @@
         </LinearLayout>
 
 
-        <!-- ListView занимает всё пространство между тулбаром и контейнером кнопок -->
         <ListView
             android:id="@+id/expenseList"
             android:choiceMode="singleChoice"
             android:listSelector="@drawable/list_item_selector"
-            android:layout_width="370dp"
             android:layout_height="0dp"
             android:dividerHeight="0dp"
-            android:padding="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottomContainer"
+            android:layout_width="match_parent"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/rounded_edittext_bg" />

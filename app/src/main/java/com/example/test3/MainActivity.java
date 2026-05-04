@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity {
         /** Настройка Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Мои финансы");
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().setTitle("Мои финансы");
 
 
         expenseService = new ExpenseService(getBaseContext());
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         loadExpenses();
 
     }
+
 
     private void loadExpenses() {
         ArrayList<Expense> allExpenseListDb = expenseService.getExpenseList();
@@ -109,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -263,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /** Обновляет список при каждом возврате на главную активити */
         loadExpenses();
     }
 
@@ -395,9 +394,9 @@ public class MainActivity extends AppCompatActivity {
 
     /** Длинные займы с собственнных средств */
     public void openLongLoansOwnFunds(View view) {
-        LongLoansUniversalActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
-//        Intent intent = new Intent(this, LongLoansActivity.class);
-//        startActivity(intent);
+        LongLoansUniversalActivity.start(this, 4L,
+                DepositService.TYPE_MYSELF_LOAN_REPAYMENT,
+                "Длинные займы (собственные средства)");
     }
 
 
@@ -405,14 +404,9 @@ public class MainActivity extends AppCompatActivity {
     public void openMonthExpensePlanning(View view) {
         Log.d("openMonthExpensePlannyng", "startMethod");
 
-//        MonthExpensePlannyngActivity.start(this, 4L, DepositService.TYPE_MYSELF_LOAN_REPAYMENT, "Длинные займы (собственные средства)");
-
-//        /*
         Intent intent = new Intent(this, MonthExpensePlanningActivity.class);          /** Универсальная Активити */
         intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_MONTHLY_EXPENSE_PLANNING);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-//        */
 
     }
 
@@ -422,8 +416,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "openMonthUtilityService startMethod");
 
         Intent intent = new Intent(this, MonthUtilityServiceActivity.class);
-//        intent.putExtra(EXTRA_EXPENSE_TYPE, TYPE_EXPENSE_UTILITY_BILLS);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
 
     }
@@ -440,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /** Ежемесячное планирование возвратов длинных займов */
     public void openMonthContributions(View view) {
         Log.d(TAG, "openMonthContributions startMethod");
 
