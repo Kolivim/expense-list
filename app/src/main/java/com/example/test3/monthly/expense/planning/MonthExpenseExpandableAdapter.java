@@ -4,6 +4,9 @@ import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_CONTRIBUTION;
 import static com.example.test3.util.Util.TYPE_DEPOSIT_MONTH_PLANNING;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 
 import com.example.test3.deposit.Deposit;
 import com.example.test3.expenseList.ExpenseDetailWithDeleteActivity;
@@ -31,6 +36,8 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
     private int selectedGroupPosition = -1;                                                         /** Для подсветки заголовка у выбранного месяца */
 
     private OnAddExpenseClickListener addExpenseListener;
+
+    private final int greenColor;
 
 
     public interface OnAddExpenseClickListener {
@@ -61,6 +68,7 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
         this.groups = groups;
         this.depositType = depositType;
         this.inflater = LayoutInflater.from(context);
+        this.greenColor = ContextCompat.getColor(context, R.color.mint_p);
     }
 
 
@@ -187,6 +195,10 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.list_child_expense, parent, false);
         }
 
+
+        View leftContainer = convertView.findViewById(R.id.leftContainer);
+
+
         Expense expense = (Expense) getChild(groupPosition, childPosition);
 
         TextView textViewInfo = convertView.findViewById(R.id.textViewExpenseInfo);
@@ -210,6 +222,31 @@ public class MonthExpenseExpandableAdapter extends BaseExpandableListAdapter {
             textViewInfo.setTextColor(ContextCompat.getColor(context, android.R.color.black));
         }
         /** !Устанавливает цвет */
+
+
+        /** Устанавливает цвет фона : */
+        double totalExpense = expense.getExpenseListTotalAmount();
+        double totalDeposit = expense.getDepositListTotalAmount();
+
+        if (Math.abs(totalExpense - totalDeposit) < 0.01) {
+            Drawable original = ContextCompat.getDrawable(context, R.drawable.rounded_edittext_bg);
+            GradientDrawable newBg = (GradientDrawable) original.getConstantState().newDrawable().mutate();
+            newBg.setColor(greenColor);
+            leftContainer.setBackground(newBg);
+        } else {
+            leftContainer.setBackground(ContextCompat.getDrawable(context, R.drawable.rounded_edittext_bg));
+        }
+
+        /*
+        View leftContainer = convertView.findViewById(R.id.leftContainer);
+        if (Math.abs(totalExpense - totalDeposit) < 0.01) {
+            Log.d("getChildView", "Расход полностью погашен");
+            ViewCompat.setBackgroundTintList(leftContainer, ColorStateList.valueOf(greenColor));
+        } else {
+            ViewCompat.setBackgroundTintList(leftContainer, null);
+        }
+        */
+        /** !Устанавливает цвет фона */
 
 
         View depositContainer = convertView.findViewById(R.id.depositContainer);
