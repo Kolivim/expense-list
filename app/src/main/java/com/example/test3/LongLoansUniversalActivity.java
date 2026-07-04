@@ -1,5 +1,7 @@
 package com.example.test3;
 
+import static com.example.test3.service.DepositService.TYPE_MYSELF_LOAN_REPAYMENT;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +28,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class LongLoansUniversalActivity extends AppCompatActivity {
 
@@ -36,6 +39,8 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
 
     private ListView listViewLoans;
     private TextView textViewTotalAmount;
+    private TextView textViewTotalDeposits;
+    private TextView textViewTotalBalance;
     private Button buttonSave, buttonBack, buttonUpdate, buttonDelete;
     private EditText editTextDate, editTextName, editTextAmount;
 
@@ -50,6 +55,7 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
     private Long repaymentType;                                                                     /** depositType */
 
 
+    /** Long repaymentType - это DepositType */
     public static void start(Context context, long loanType, Long repaymentType, String title) {
         Intent intent = new Intent(context, LongLoansUniversalActivity.class);
         intent.putExtra(EXTRA_LOAN_TYPE, loanType);
@@ -100,6 +106,8 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
 
         listViewLoans = findViewById(R.id.listViewLongLoans);
         textViewTotalAmount = findViewById(R.id.textViewLongLoansTotal);
+        textViewTotalDeposits = findViewById(R.id.textViewTotalDeposits);
+        textViewTotalBalance = findViewById(R.id.textViewTotalBalance);
 
         buttonSave = findViewById(R.id.buttonSaveLoan);
         buttonBack = findViewById(R.id.buttonBackLongLoans);
@@ -143,15 +151,22 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
 
         loansList = expenseService.getExpenseLongLoanList(loanType);
 
-        if (loansList.isEmpty()) {
-            textViewTotalAmount.setText("Общая сумма: 0.00 руб.");
-        } else {
-            double total = 0.0;
-            for (Expense loan : loansList) {
-                total += loan.getExpenseListTotalAmount();
-            }
-            textViewTotalAmount.setText(String.format("Общая сумма: %.2f руб.", total));
-        }
+        /** Добавляет список депозитов к каждой из Expense */
+        loansList.stream().forEach(expense -> {
+            List<Deposit> repayments = depositService.getRepaymentsForExpense(expense.getId(), repaymentType);
+            expense.setDepositList(repayments.isEmpty() ? null : repayments);
+        });
+
+        double total = loansList.stream()
+                .mapToDouble(Expense::getExpenseListTotalAmount)
+                .sum();
+        textViewTotalAmount.setText(getString(R.string.total_expense_amount, total));
+
+        double totalLoanListRepaid = getExpenseListTotalRepaid(loansList);
+        textViewTotalDeposits.setText(getString(R.string.total_deposit_amount, totalLoanListRepaid));
+
+        textViewTotalBalance.setText(getString(R.string.total_expense_to_refund_amount, total - totalLoanListRepaid));
+
 
         loanAdapter = new LongLoanUniversalAdapter(this, loansList, expenseService, depositService, repaymentType);
         loanAdapter.setOnItemClickListener((expense, position) -> {
@@ -428,6 +443,30 @@ public class LongLoansUniversalActivity extends AppCompatActivity {
         editTextName.setText("");
         editTextAmount.setText("");
         editTextDate.setText("");
+    }
+
+
+    /** Есть дубль в LongLoansActivity с другим типом, просто Expense, в Листе */
+    private double getExpenseListTotalRepaid(ArrayList<ExpenseLongLoans> loanList) {
+        Log.d(TAG, "getExpenseListTotalRepaid() startMethod, loanList: " + loanList);
+
+        if (loanList == null) return 0.0;
+
+        double total = loanList.stream()
+                .filter(Objects::nonNull)
+                .map(Expense::getDepositList)
+                .filter(Objects::nonNull)                                                       /** depositList != null */
+                .flatMap(List::stream)
+                .filter(Objects::nonNull)                                                   /** deposit != null */
+                .map(Deposit::getPayments)
+                .filter(Objects::nonNull)                                               /** paymentList != null */
+                .flatMap(List::stream)
+                .filter(Objects::nonNull)                                           /** payment != null */
+                .mapToDouble(Double::doubleValue)
+                .sum();
+
+        Log.d(TAG, "getExpenseListTotalRepaid() endMethod, к возврату total = " + total);
+        return total;
     }
 
 

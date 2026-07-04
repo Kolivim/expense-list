@@ -1,5 +1,7 @@
 package com.example.test3;
 
+import static com.example.test3.service.DepositService.TYPE_CREDIT_LOAN_REPAYMENT;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -105,7 +107,7 @@ public class LongLoansActivity extends AppCompatActivity {
 
         /** Добавляет список депозитов к каждой из Expense */
         loansList.stream().forEach(expense -> {
-            List<Deposit> repayments = depositService.getRepaymentsForExpense(expense.getId());
+            List<Deposit> repayments = depositService.getRepaymentsForExpense(expense.getId(), TYPE_CREDIT_LOAN_REPAYMENT);
             expense.setDepositList(repayments.isEmpty() ? null : repayments);
         });
 

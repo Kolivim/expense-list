@@ -668,7 +668,9 @@ public class DepositService {
      * @param expenseId ID займа (Expense)
      * @return список Погашений
      */
-    public List<Deposit> getRepaymentsForExpense(long expenseId) {
+    // todo: выполнить переход на getRepaymentsForExpense(long expenseId, long depositType)
+    @Deprecated
+    public List<Deposit> getRepaymentsForExpense(long expenseId/*, long depositType*/) {
         List<Deposit> repayments = new ArrayList<>();
 
         Cursor cursor = dbRead.rawQuery(
@@ -676,6 +678,34 @@ public class DepositService {
                         " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + TYPE_CREDIT_LOAN_REPAYMENT +
                             " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId +
                             " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
+                        " ORDER BY " + ExpenseSQLite.DEPOSIT_DATETIME + " ASC",
+                null);
+
+        while (cursor.moveToNext()) {
+            Deposit deposit = cursorToDeposit(cursor);
+            loadPaymentsForDeposit(deposit);
+            repayments.add(deposit);
+        }
+
+        cursor.close();
+        return repayments;
+    }
+
+
+    /**
+     * Получает список Погашений(Deposit) с типом 3, для указанного займа
+     * @param expenseId ID займа (Expense)
+     * @param depositType Тип Deposit'а
+     * @return список Погашений
+     */
+    public List<Deposit> getRepaymentsForExpense(long expenseId, long depositType) {
+        List<Deposit> repayments = new ArrayList<>();
+
+        Cursor cursor = dbRead.rawQuery(
+                "SELECT * FROM " + ExpenseSQLite.TABLE_DEPOSIT +
+                        " WHERE " + ExpenseSQLite.DEPOSIT_DEPOSIT_TYPE_ID + " = " + depositType +
+                        " AND " + ExpenseSQLite.DEPOSIT_EXPENSE_ID + " = " + expenseId +
+                        " AND " + ExpenseSQLite.DEPOSIT_IS_DELETED + " = 0" +
                         " ORDER BY " + ExpenseSQLite.DEPOSIT_DATETIME + " ASC",
                 null);
 
