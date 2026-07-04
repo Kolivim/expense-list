@@ -4,12 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.time.ZonedDateTime;
 
 public class ExpenseSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final String TAG = "ExpenseSQLite";
+
+    private static final int DATABASE_VERSION = 7;                                                  /** У меня 7 версия БД в залитом APK */
 
     private static final String DATABASE_NAME = "ExpenseDB";
 
@@ -440,11 +443,12 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        Log.d(TAG, "onUpgrade() startMethod, версия БД, указанная в APK, больше текущей, oldVersion = " + oldVersion +
+                " , newVersion = " + newVersion);
 
         // TODO: Реализовать миграции вместо затирания таблиц, в проде
 
         /** Дополнить выводом в файл либо миграцией : */
-//        /*
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE);
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE_PAYMENT);
@@ -471,7 +475,6 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
 
         onCreate(sqLiteDatabase);
-//        */
 
 
         /*
@@ -482,11 +485,14 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
         */
         /** !Дополнить выводом в файл либо миграцией */
 
-
+        Log.d(TAG, "onUpgrade() endMethod, версия БД, указанная в APK, больше текущей, oldVersion = " + oldVersion +
+                " , newVersion = " + newVersion);
     }
 
 
     public void onDowngrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        Log.d(TAG, "onDowngrade() startMethod, версия БД, указанная в APK, меньше текущей, oldVersion = " + oldVersion +
+                " , newVersion = " + newVersion);
 
 //        onUpgrade(db, oldVersion, newVersion);
 
@@ -516,14 +522,19 @@ public class ExpenseSQLite extends SQLiteOpenHelper {
 
 
         onCreate(sqLiteDatabase);
+
+        Log.d(TAG, "onDowngrade() endMethod, версия БД, указанная в APK, меньше текущей, oldVersion = " + oldVersion +
+                " , newVersion = " + newVersion);
     }
 
 
     @Override
     public void onOpen(SQLiteDatabase db) {
+        Log.d(TAG, "onOpen() startMethod, версия БД, указанная в APK db = " + db);
         super.onOpen(db);
         /** Включает поддержку внешних ключей */
         db.execSQL("PRAGMA foreign_keys=ON;");
+        Log.d(TAG, "onOpen() endMethod, версия БД, указанная в APK db = " + db);
     }
 
 

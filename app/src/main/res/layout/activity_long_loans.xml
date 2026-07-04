@@ -13,11 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Длинные займы (кредитные средства)"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginTop="20dp"/>
 
     <!--
     <TextView
@@ -37,8 +36,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp">
+        android:padding="4dp">
+<!--        android:layout_marginBottom="16dp" >-->
         <!-- android:background="@android:drawable/edit_text" -->
 
         <TextView
@@ -49,6 +48,49 @@
             android:textStyle="bold"
             android:text="Общая сумма: 0.00 руб."
             android:textColor="#2196F3"/>
+
+    </LinearLayout>
+
+    <!-- Общая статистика -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/rounded_edittext_bg"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp">
+
+        <!--
+        <TextView
+            android:id="@+id/textViewTotalExpenses"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:text="Всего расходов: 0.00 руб."
+            android:gravity="center"/>
+        -->
+
+        <TextView
+            android:id="@+id/textViewTotalDeposits"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:text="Всего взносов: 0.00 руб."
+            android:textColor="@color/warm_orange"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/textViewTotalBalance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:text="Баланс: 0.00 руб."
+            android:textColor="@color/purple"
+            android:gravity="center"/>
 
     </LinearLayout>
 
